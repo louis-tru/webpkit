@@ -55,7 +55,7 @@ class PrivPage extends Component {
 				this.setState({ component: this.props.component });
 			} else {
 				var route = this.props.route;
-				var com = (await route.component()).default;
+				var com = (await route.page()).default;
 				this.setState({ component: com });
 			}
 		} catch (e) {

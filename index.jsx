@@ -29,55 +29,28 @@
  * ***** END LICENSE BLOCK ***** */
 
 import 'normalize.css';
-import '../utils.css';
 import './utils.css';
-import rem from './rem';
+import './pc.css';
 import qkit from 'qkit';
 import sdk from 'dphoto-magic-sdk';
 import path from 'qkit/path';
-import '../_fix';
-import error from '../error';
-import dialog from '../dialog';
-import { NavPage, Nav } from './nav';
+import './_fix';
+import error from './error';
+import dialog from './dialog';
+import { Router, Page } from './router';
 import ReactDom from 'react-dom';
 import React, { Component } from 'react';
 import _404 from './404';
-
-/**
- * @class MyPage
- */
-export class MyPage extends NavPage {
-
-	name = 'test';
-	platform = 'iphonex';
-
-	getMainClass(cls = '') {
-		var cls_1 = 'main ';
-		if (qkit.dev) {
-			cls_1 += 'test ';
-		}
-		if (this.platform == 'android') {
-			cls_1 += 'android ';
-		} else if (this.platform == 'iphonex') {
-			cls_1 += 'iphonex '; 
-		}
-		return cls_1 + this.name + ' ' + cls;
-	}
-
-	get mainClass() {
-		return this.getMainClass();
-	}
-}
+import {HashRouter, Route, Switch} from 'react-router-dom';
 
 /**
  * @class Root
  */
 export class Root extends Component {
 
-	state = { isLoaded: true };
+	state = { isLoaded: false };
 
 	async componentDidMount() {
-		rem.initialize();
 		try {
 			await initialize(this.props.config || {});
 			this.setState({ isLoaded: true });
@@ -86,45 +59,19 @@ export class Root extends Component {
 			return;
 		}
 		await this.onLoad();
-
-		setTimeout(e=>window.history.replaceState({}, this.props.title||'', '#/'), 10);
-		window.addEventListener('hashchange', (e)=>{ // 不管前进或后退都当成后退处理
-			this.refs.nav.current.popPage(true);
-		});
 	}
 
 	onLoad() {
 	}
 
-	onNav(e){
-		if (e.type == 'pop') {
-			// window.history.go(-e.count);
-		} else if (e.type == 'push') {
-			window.history.pushState({}, this.props.title||'', '#' + e.url);
-		} else { // replace
-			window.history.replaceState({}, this.props.title||'', '#' + e.url);
-		}
-	}
-
-	onEnd(e) {
-		// console.log('closeApp');
-	}
-
 	render() {
-		var url = location.hash ? location.hash.replace(/^#/, '') : '/';
 		return (
 			this.state.isLoaded ?
-			<Nav 
-				ref="nav"
+			<Router ref="router" 
 				notFound={_404}
 				routes={this.props.routes||[]}
-				onNav={e=>this.onNav(e)}
-				onEnd={e=>this.onEnd(e)}
-				initUrl={url}
 			/>:
-			<view className="init-loading">
-				Loading..
-			</view>
+			<view className="init-loading">Loading..</view>
 		);
 	}
 }
@@ -145,8 +92,7 @@ export {
 	React,
 	ReactDom,
 	Component,
-	Nav,
-	NavPage,
+	Router, Page,
 	dialog,
 	sdk,
 };

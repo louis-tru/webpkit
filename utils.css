@@ -19,7 +19,6 @@ html,body,div,label,ul,li,ol,dl,dd,dt,p,h1,h2,h3,h4,h5,h6,form,fieldset,legend,i
 body {
 	margin: 0;
 	padding: 0;
-	font-size: 0.2rem;
 	background: #fff;
 	overflow: hidden;
 	font-family:sans-serif,STHeiti,Microsoft YaHei,Helvetica,Arial;
@@ -67,15 +66,11 @@ select {
 
 .main {
 	width: 100vw;
-	/*min-height: 100vh;*/
 	position: relative;
 	z-index: 1;
 	background-size: 100%;
-	padding-top: 1.3rem;
 	background-repeat: no-repeat;
 	line-height: initial;
 	height: 100vh;
-	overflow: scroll;
-	-webkit-overflow-scrolling : touch;
-	overflow-scrolling : touch;
+	overflow: auto;
 }

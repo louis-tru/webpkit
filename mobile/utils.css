@@ -1,20 +1,16 @@
 
 /*@import "../utils.css"*/
 
-/*.main {
-	width: 7.5rem;
-	min-height: 100vh;
-	position: relative;
-	z-index: 1;
-	background-size: 100%;
+body {
+	font-size: 0.2rem;
+}
+
+.main {
 	padding-top: 1.3rem;
-	background-repeat: no-repeat;
-	line-height: initial;
-	height: 100vh;
 	overflow: scroll;
 	-webkit-overflow-scrolling : touch;
 	overflow-scrolling : touch;
-}*/
+}
 
 .main .title {
 	/*position: absolute;*/
