@@ -1,0 +1,19 @@
+{
+	"presets": [
+		"es2016",
+		"react",
+		// "stage-2",
+		["env", {
+			"targets": { 
+				"node": "current",
+			},
+		}],
+	],
+	"plugins": [
+		// "transform-runtime",
+		// "transform-vue-jsx",
+		"syntax-dynamic-import",
+		"transform-object-rest-spread",
+		"transform-class-properties",
+	]
+}

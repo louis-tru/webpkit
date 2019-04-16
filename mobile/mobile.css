@@ -1,0 +1,317 @@
+
+/*@import "../utils.css"*/
+
+/*.main {
+	width: 7.5rem;
+	min-height: 100vh;
+	position: relative;
+	z-index: 1;
+	background-size: 100%;
+	padding-top: 1.3rem;
+	background-repeat: no-repeat;
+	line-height: initial;
+	height: 100vh;
+	overflow: scroll;
+	-webkit-overflow-scrolling : touch;
+	overflow-scrolling : touch;
+}*/
+
+.main .title {
+	/*position: absolute;*/
+	position: fixed;
+	z-index: 2;
+	width: 100%;
+	top: 0;
+	background-color: rgba(255,255,255,0.98);
+	transform: translateZ(1px);
+}
+
+.main .title .a {
+	height: 0.4rem;
+}
+
+.test .title .a {
+	background: url(./test.png);
+	background-size: 100%;
+	background-position-y: center;
+	background-repeat: no-repeat;
+}
+
+.test {
+	background-repeat: repeat;
+}
+
+.iphonex {
+	padding-top: 1.74rem;
+}
+
+.iphonex .title .a {
+	height: 0.88rem;
+}
+
+.android {
+	padding-top: 0.9rem;
+}
+
+.android .title .a {
+	height: 0;
+}
+
+.main .title .b {
+	height: 0.9rem;
+	text-align: center;
+	font-size: 0.35rem;
+	line-height: 0.9rem;
+	color: #333;
+	position: relative;
+	border-bottom: solid 0.015rem #d9d9d9;
+	font-weight: bold;
+}
+
+.main .title .b > view {
+	position: absolute;
+	 padding-left: 0.1rem; 
+	padding-right: 0.2rem;
+	height: 100%;
+	font-weight: initial;
+	width: 1.4rem;
+	background-image: url(./icon1.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 0.48rem;
+}
+
+.main .title .b > view:active {
+	opacity: 0.5;
+}
+
+/*
+.main .title .b > view:before { 
+	font-family: iconfont;
+	font-style: normal;
+	content: "\e626";
+	font-size: 0.5rem;
+	line-height: 0.8rem;
+	left: 0.1rem;
+}*/
+
+.foot {
+	/*position: absolute;*/
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	background: rgba(255,255,255,0.98);
+	z-index: 1;
+}
+
+.foot.btns {
+	padding: 0.2rem 0.2rem 0.32rem;
+}
+
+.foot.btns_one {
+	padding: 0.2rem 0.2rem 1.42rem;
+	background: none;
+}
+
+.foot.btns_mini {
+	display: flex;
+	justify-content: center;
+	padding: 0 0.16rem;
+	border-top: solid 0.02rem #ECECEC;
+}
+
+.btn {
+	background: #084697;
+	color: #fff;
+	height: 0.92rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0.1rem;
+	font-size: 0.3rem;
+	margin: 0.18rem;
+	cursor: pointer;
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+	-webkit-user-select: none;
+	-moz-user-focus: none;
+	-moz-user-select: none;
+	user-select: none;
+	outline: none;
+	border: none;
+	flex: 1;
+}
+
+.btn:active {
+	opacity: 0.7;
+}
+
+.btn.trans {
+	background: none;
+	color: #084697;
+}
+
+.btn.white {
+	background: #fff;
+	color: #084697;
+}
+
+.btn.disable {
+	background: none;
+	color: rgba(0,0,0,0);
+	cursor: default;
+}
+
+.btn.gray {
+	background: #c9c9d2;
+	color: #fff;
+}
+
+.foot.btns_mini > .btn {
+	margin: 0.16rem 0.16rem;
+}
+
+.radio {
+	width: 0.76rem;
+	height: 0.76rem;
+	background: url(./icon2.png);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 0.48rem;
+}
+
+.radio.on {
+	background-image: url(./icon2_on.png);
+}
+
+.form_item {
+	display: flex;
+	min-height: 1.06rem;
+	align-items: center;
+	/*padding-left: 0.3rem;*/
+	/*padding-right: 0.3rem;*/
+	background: #fff;
+	position: relative;
+	margin-bottom: 0.02rem;
+}
+
+.form_item:after {
+	height: 0.02rem;
+	background: #ECECEC;
+	content: "";
+	position: absolute;
+	bottom: -0.02rem;
+	z-index: 1;
+	left: 0.3rem;
+	right: 0.3rem;
+}
+
+.form_item.next {
+}
+
+.form_item.vertical {
+	display: block;
+}
+
+.form_item.noborder:after {
+	content: none;
+}
+
+.form_division {
+	height: 0.24rem;
+	background: #F6F6F6;
+}
+
+.form_item .label {
+	width: 2.6rem;
+	font-size: 0.28rem;
+	color: #626262;
+	margin-left: 0.3rem;
+	margin-right: 0.3rem;
+	border: none;
+	height: 1.06rem;
+	line-height: 1.06rem;
+}
+
+.form_item .value {
+	height: 0.44rem;
+	line-height: 0.44rem;
+	width: 4rem;
+	border: none;
+	font-size: 0.28rem;
+	text-align: right;
+	color: #000;
+	background: none;
+}
+
+.form_item textarea.value {
+	width: 6.9rem;
+	height: 3.08rem;
+	text-align: left;
+	font-size: 0.12rem;
+	margin-bottom: 0.88rem;
+	margin-left: 0.3rem;
+	margin-right: 0.3rem;
+}
+
+.form_item .textarea_count {
+	position: absolute;
+	bottom: 0.32rem;
+	right: 0.3rem;
+	color: #C9C9D2;
+	font-size: 0.2rem;
+}
+
+.form_item.next .value {
+	width: 3.62rem;
+}
+
+.form_item.next:active {
+	background: #fafafa;
+}
+
+.form_item.next:before {
+	font-family: iconfont;
+	font-style: normal;
+	content: "\e626";
+	font-size: 0.4rem;
+	right: 0.18rem;
+	position: absolute;
+	transform: translateY(-0.02rem) scaleX(-1);
+	color: #C7C7CC;
+}
+
+.form_item .label.active:active,
+.form_item .value.active:active {
+	opacity: 0.5;
+}
+
+.form_item input::placeholder,
+.form_item textarea::placeholder,
+.form_item .placeholder {
+	color: #C9C9D2;
+	font-size: 0.28rem;
+}
+
+.form_item select {
+	position: absolute;
+	right: 0;
+	z-index: 1;
+	color: #000;
+	opacity: 0.01;
+}
+
+.form_title {
+	height: 1.2rem;
+	display: flex;
+	align-items: center;
+	/* color: #004697; */
+	font-size: 0.44rem;
+	padding-left: 0.34rem;
+}
+
+.form_todo {
+	line-height: 0.88rem;
+	font-size: 0.28rem;
+	color: #626262;
+	padding: 0 0.32rem
+}
