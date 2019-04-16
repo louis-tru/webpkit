@@ -30,7 +30,7 @@
 
 import 'normalize.css';
 import '../utils.css';
-import './mobile.css';
+import './utils.css';
 import rem from './rem';
 import qkit from 'qkit';
 import sdk from 'dphoto-magic-sdk';
