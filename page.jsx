@@ -28,65 +28,90 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import 'normalize.css';
-import './utils.css';
-import './pc.css';
-import qkit from 'qkit';
-import sdk from 'dphoto-magic-sdk';
-import path from 'qkit/path';
-import './_fix';
-import error from './error';
-import dialog from './dialog';
-import { Router, Page } from './router';
-import ReactDom from 'react-dom';
 import React, { Component } from 'react';
-import {Link} from 'react-router-dom';
 
 /**
- * @class Root
+ * @class Page
  */
-export class Root extends Component {
+export default class Page extends Component {
 
-	state = { isLoaded: false };
-
-	async componentDidMount() {
-		try {
-			await initialize(this.props.config || {});
-		} catch(e) {
-			error.defaultErrorHandle(e);
+	constructor(props) {
+		super(props);
+		this._url = this.props.location.pathname + this.props.location.search;
+		var search = this.props.location.search.substr(1);
+		this._params = {};
+		this._router = this.props.router;
+		if (search) {
+			search.split('&').forEach(e=>{
+				var [key,...value] = e.split('=');
+				if (value.length) {
+					if (value.length > 1) {
+						value = value.join('=');
+					}
+					this._params[key] = decodeURIComponent(value);
+				}
+			});
 		}
-		this.setState({ isLoaded: true });
 	}
 
-	render() {
-		return (
-			this.state.isLoaded ?
-			<Router ref="router" 
-				notFound={this.props.notFound} routes={this.props.routes}
-			/>:
-			<view className="init-loading">Loading..</view>
-		);
+	get url() {
+		return this._url;
 	}
+
+	get pathname() {
+		return this.location.pathname;
+	}
+
+	get history() {
+		return this.props.history;
+	}
+
+	get location() {
+		return this.props.location;
+	}
+
+	get match() {
+		return this.props.match;
+	}
+
+	get params() {
+		return this.props.match.params;
+	}
+
+	componentDidMount() {
+		this._router._current = this;
+		this.onLoad();
+	}
+
+	componentWillUnmount() {
+		this.onUnload();
+		if (this._router._current === this) {
+			this._router._current = null;
+		}
+	}
+
+	onLoad() {
+		// overwrite
+	}
+
+	onUnload() {
+		// overwrite
+	}
+
+	goBack() {
+		this.history.goBack()
+	} 
+
+	goForward() {
+		this.history.goForward()
+	}
+
+	goto(url) {
+		if (this._router.type == 'hash') {
+			location.hash = url;
+		} else {
+			location.href = url;
+		}
+	}
+
 }
-
-export async function initialize(config = {}) {
-	if (sdk.isLoaded) return;
-	var url = new path.URL(config.serviceAPI || qkit.config.serviceAPI);
-	await sdk.initialize(
-		path.getParam('D_SDK_HOST') || url.hostname,
-		path.getParam('D_SDK_PORT') || url.port);
-
-	sdk.addEventListener('Error', function(err) {
-		error.defaultErrorHandle(err.data);
-	});
-};
-
-export {
-	React,
-	ReactDom,
-	Component,
-	Router, Page,
-	dialog,
-	sdk,
-	Link,
-};

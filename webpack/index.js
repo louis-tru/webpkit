@@ -267,7 +267,7 @@ module.exports = {
 		// 		{ from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'index.html') },
 		// 	],
 		// },
-		// contentBase: false, // since we use CopyWebpackPlugin.
+		// contentBase: fasle, // since we use CopyWebpackPlugin.
 		hot: true,
 		compress: true,
 		host: HOST || config.dev.host,

@@ -32,92 +32,8 @@ import React, { Component } from 'react';
 import {HashRouter, Router as RouterRaw, Route, Switch} from 'react-router-dom';
 import error from './error';
 import qkit from 'qkit';
-
-/**
- * @class Page
- */
-export class Page extends Component {
-
-	constructor(props) {
-		super(props);
-		this._url = this.props.location.pathname + this.props.location.search;
-		var search = this.props.location.search.substr(1);
-		this._params = {};
-		this._router = this.props.router;
-		if (search) {
-			search.split('&').forEach(e=>{
-				var [key,...value] = e.split('=');
-				if (value.length) {
-					if (value.length > 1) {
-						value = value.join('=');
-					}
-					this._params[key] = decodeURIComponent(value);
-				}
-			});
-		}
-	}
-
-	get url() {
-		return this._url;
-	}
-
-	get pathname() {
-		return this.location.pathname;
-	}
-
-	get history() {
-		return this.props.history;
-	}
-
-	get location() {
-		return this.props.location;
-	}
-
-	get match() {
-		return this.props.match;
-	}
-
-	get params() {
-		return this.props.match.params;
-	}
-
-	componentDidMount() {
-		this._router._current = this;
-		this.onLoad();
-	}
-
-	componentWillUnmount() {
-		this.onUnload();
-		if (this._router._current === this) {
-			this._router._current = null;
-		}
-	}
-
-	onLoad() {
-		// overwrite
-	}
-
-	onUnload() {
-		// overwrite
-	}
-
-	goBack() {
-		this.history.goBack()
-	} 
-
-	goForward() {
-		this.history.goForward()
-	}
-
-	goto(url) {
-		if (this._router.type == 'hash') {
-			location.hash = url;
-		} else {
-			location.href = url;
-		}
-	}
-
-}
+import Page from './page';
+import NotFound from './404';
 
 /**
  * @class Loading
@@ -171,9 +87,22 @@ export class Router extends Component {
 
 	constructor(props) {
 		super(props);
-		this.type = this.props.type || 'hash';
+		this.type = this.props.type || 'url';
 		this._Router = this.type == 'hash' ? HashRouter: RouterRaw
-		this._routes = this.props.routes || [];
+		this._notFound = this.props.notFound || NotFound;
+		this._routes = {};
+
+		(this.props.routes || []).forEach(e=>{
+			if (e.path) {
+				if (Array.isArray(e.path)) {
+					e.path.forEach(j=>{
+						this._routes[j] = { ...e, path: j };
+					})
+				} else {
+					this._routes[e.path] = e;
+				}
+			}
+		});
 	}
 
 	render() {
@@ -181,10 +110,13 @@ export class Router extends Component {
 		return (
 			<_Router>
 				<Switch>
-					{this._routes.map(e=>route(this, e))}
+					{Object.values(this._routes).map(e=>route(this, e))}
+					{route(this, { page: e=>({ default:this._notFound }) })}
 				</Switch>
 			</_Router>
 		);
 	}
 
 }
+
+export { Page };
