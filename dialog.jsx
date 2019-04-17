@@ -28,10 +28,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import React, { Component } from 'react';
-import ReactDom from 'react-dom';
 import './utils.css';
 import './dialog.css';
+import React, { Component } from 'react';
+import ReactDom from 'react-dom';
 
 class Dialog extends Component {
 

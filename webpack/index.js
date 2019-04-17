@@ -184,6 +184,7 @@ module.exports = {
 		alias: {
 			'vue$': 'vue/dist/vue.esm.js',
 			'static': resolve('static'),
+			'nifty': path.join(__dirname, '../nifty'),
 		}
 	},
 	module: {

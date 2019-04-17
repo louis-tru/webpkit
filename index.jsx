@@ -30,11 +30,10 @@
 
 import 'normalize.css';
 import './utils.css';
-import './pc.css';
+import './_fix';
 import qkit from 'qkit';
 import sdk from 'dphoto-magic-sdk';
 import path from 'qkit/path';
-import './_fix';
 import error from './error';
 import dialog from './dialog';
 import { Router, Page } from './router';
@@ -46,8 +45,6 @@ import {Link} from 'react-router-dom';
  * @class Root
  */
 export class Root extends Component {
-
-	state = { isLoaded: false };
 
 	async componentDidMount() {
 		try {
@@ -64,7 +61,7 @@ export class Root extends Component {
 			<Router ref="router" 
 				notFound={this.props.notFound} routes={this.props.routes}
 			/>:
-			<view className="init-loading">Loading..</view>
+			<div className="init-loading">Loading..</div>
 		);
 	}
 }

@@ -29,6 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import React, { Component } from 'react';
+import {hashHistory} from 'react-router-dom';
 import {HashRouter, Router as RouterRaw, Route, Switch} from 'react-router-dom';
 import error from './error';
 import qkit from 'qkit';
@@ -40,7 +41,7 @@ import NotFound from './404';
  */
 class Loading extends Component {
 	render() {
-		return <view> {this.props.content||''} </view>
+		return <div> {this.props.content||''} </div>
 	}
 }
 
@@ -87,7 +88,7 @@ export class Router extends Component {
 
 	constructor(props) {
 		super(props);
-		this.type = this.props.type || 'url';
+		this.type = this.props.type || 'hash';
 		this._Router = this.type == 'hash' ? HashRouter: RouterRaw
 		this._notFound = this.props.notFound || NotFound;
 		this._routes = {};
@@ -108,7 +109,7 @@ export class Router extends Component {
 	render() {
 		var _Router = this._Router;
 		return (
-			<_Router>
+			<_Router history={hashHistory}>
 				<Switch>
 					{Object.values(this._routes).map(e=>route(this, e))}
 					{route(this, { page: e=>({ default:this._notFound }) })}

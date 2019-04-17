@@ -1,0 +1,106 @@
+body{
+    position: relative
+}
+#content-container{
+    background-color: #fff;
+}
+#page-content{
+    padding: 15px 25px 0
+}
+#mainnav-menu{
+    padding-top: 40px;
+}
+
+#mainnav-menu > li > a{
+    background-color: transparent !important
+}
+#mainnav-menu .active > a{
+    box-shadow: inset 3px 0 0 #2986b8;
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 0;
+    color: #fff !important
+}
+#mainnav-menu > .active > ul ~ a {
+    box-shadow: none !important;
+}
+.has-sub{
+    overflow: hidden
+}
+.chlog-label{
+    width: 115px;
+}
+.chlog-label > .label-table{
+    width: 100%
+}
+
+pre{
+    border-radius: 0;
+    padding: 10px;
+}
+ol.linenums{
+    padding-left: 30px;
+}
+
+li.L0, li.L1, li.L2, li.L3, li.L4, li.L5, li.L6, li.L7, li.L8, li.L9{
+    padding-left: 0.3em
+}
+.prettyprint.pre-trans{
+    background: transparent;
+    padding: 0;
+    margin:0
+}
+
+.docs-content{
+    background-color: #ecf0f5;
+    padding: 50px;
+    margin-left: 210px
+}
+
+.docs-section{
+    margin-bottom: 115px;
+}
+
+
+.docs-spy{
+    padding: 20px 0 0;
+    margin-top: 220px
+}
+
+.fol-child{
+    padding-left: 30px !important
+}
+.fol-child2{
+    padding-left: 60px !important
+}
+
+.divider{
+    margin-bottom: 100px;
+}
+
+
+.table-credit{
+    table-layout:fixed
+}
+
+.table-credit td:nth-child(1){
+    width: 220px;
+    font-weight: 600;
+}
+
+.table-credit td:nth-child(2){
+    width: 70px;
+    text-align: center;
+    font-size: .86m;
+    color: rgba(0,0,0,.68);
+    font-weight: 600
+}
+.table-credit td:nth-child(3){
+    width: 300px;
+}
+.prettyprint .tag{
+    background-color: transparent;
+    border:0;
+    border-radius: 0;
+    font-size: inherit;
+    padding: 0
+}
