@@ -34,29 +34,29 @@ export default class ContentContainer extends Component {
 	render() {
 		return (
 			<div id="content-container">
-			  
-			  {/*--Page Title--*/}
-			  {/*--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--*/}
-			  <div id="page-title">
-				  <h1 className="page-header text-overflow">Dashboard</h1>
+				
+				{/*--Page Title--*/}
+				{/*--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--*/}
+				<div id="page-title">
+					<h1 className="page-header text-overflow">Dashboard</h1>
 
-				  {/*--Searchbox--*/}
-				  <div className="searchbox">
-					  <div className="input-group custom-search-form">
-						  <input type="text" className="form-control" placeholder="Search.."/>
-						  <span className="input-group-btn">
-							  <button className="text-muted" type="button"><i className="demo-pli-magnifi-glass"></i></button>
-						  </span>
-					  </div>
-				  </div>
-			  </div>
-			  {/*--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--*/}
-			  {/*--End page title--*/}
+					{/*--Searchbox--*/}
+					<div className="searchbox">
+						<div className="input-group custom-search-form">
+							<input type="text" className="form-control" placeholder="Search.."/>
+							<span className="input-group-btn">
+								<button className="text-muted" type="button"><i className="demo-pli-magnifi-glass"></i></button>
+							</span>
+						</div>
+					</div>
+				</div>
+				{/*--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--*/}
+				{/*--End page title--*/}
 
-			  {/*--Page content--*/}
-			  {/*--===================================================--*/}
-			  <div id="page-content">
-				  
+				{/*--Page content--*/}
+				{/*--===================================================--*/}
+				<div id="page-content">
+					
 					<div className="row">
 						<div className="col-lg-7">
 					
@@ -569,9 +569,9 @@ export default class ContentContainer extends Component {
 					
 					
 
-			  </div>
-			  {/*--===================================================--*/}
-			  {/*--End page content--*/}
+				</div>
+				{/*--===================================================--*/}
+				{/*--End page content--*/}
 
 			</div>
 		);

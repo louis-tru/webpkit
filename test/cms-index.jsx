@@ -28,20 +28,38 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import CMSPage from './cms-page';
+import { React, CMSPage } from '../cms';
 
-export * from '../index';
-export { CMSPage };
+import ContentContainer from './cms-content-container';
+import Aside from './cms-aside';
+import DemoSet from './cms-demo-set';
 
-require('./utils.css');
-global.jQuery = global.$ = require('jquery');
-global.Raphael = require('raphael');
-require('nifty/plugins/sparkline/jquery.sparkline.js');
-require('nifty/css/bootstrap.css');
-require('nifty/js/bootstrap.js');
-require('nifty/css/nifty.css');
-require('nifty/plugins/magic-check/css/magic-check.css');
-require('nifty/plugins/pace/pace.css');
-require('nifty/plugins/pace/pace.js');
-require('nifty/plugins/morris-js/morris.css');
-require('nifty/plugins/morris-js/morris.js');
+import 'nifty/css/demo/nifty-demo-icons.css';
+import 'nifty/css/demo/nifty-demo.css';
+
+export default class extends CMSPage {
+
+	onLoad() {
+		require('nifty/js/demo/nifty-demo.js');
+		require('nifty/js/demo/dashboard.js');
+	}
+
+	render(...agrs) {
+		return (
+			<div className="boxed">
+				{super.render(...agrs)}
+				<DemoSet />
+			</div>
+		);
+	}
+
+	content() {
+		return (
+			<div className="boxed">
+				<Aside />
+				<ContentContainer />
+			</div>
+		);
+	}
+
+}

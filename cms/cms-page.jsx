@@ -28,20 +28,51 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import CMSPage from './cms-page';
+import { React, Page } from '..';
+import Header from './header';
+import Footer from './footer';
+import Menu from './menu';
 
-export * from '../index';
-export { CMSPage };
+/**
+ * @class CMSPage
+ */
+export default class CMSPage extends Page {
 
-require('./utils.css');
-global.jQuery = global.$ = require('jquery');
-global.Raphael = require('raphael');
-require('nifty/plugins/sparkline/jquery.sparkline.js');
-require('nifty/css/bootstrap.css');
-require('nifty/js/bootstrap.js');
-require('nifty/css/nifty.css');
-require('nifty/plugins/magic-check/css/magic-check.css');
-require('nifty/plugins/pace/pace.css');
-require('nifty/plugins/pace/pace.js');
-require('nifty/plugins/morris-js/morris.css');
-require('nifty/plugins/morris-js/morris.js');
+	componentDidMount() {
+		require('nifty/js/nifty.js');
+		super.componentDidMount();
+	}
+
+	render() {
+		return (
+			<div id="container" className="effect aside-float aside-bright mainnav-lg">
+
+				{this.header()}
+
+				<Menu />
+
+				{this.content()}
+
+				{this.footer()}
+
+				<button className="scroll-top btn">
+					<i className="pci-chevron chevron-up"></i>
+				</button>
+
+			</div>
+		);
+	}
+
+	header() {
+		return <Header />;
+	}
+
+	content() {
+		return <div>Content</div>;
+	}
+
+	footer() {
+		return <Footer/>;
+	}
+
+}

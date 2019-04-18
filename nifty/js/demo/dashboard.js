@@ -7,7 +7,7 @@
 // - ThemeOn.net -
 
 
-$(window).on('load', function() {
+$(function() {
 
 
 

@@ -35,11 +35,12 @@ import qkit from 'qkit';
 import sdk from 'dphoto-magic-sdk';
 import path from 'qkit/path';
 import error from './error';
-import dialog from './dialog';
 import { Router, Page } from './router';
 import ReactDom from 'react-dom';
 import React, { Component } from 'react';
 import {Link} from 'react-router-dom';
+
+export * from './dialog';
 
 /**
  * @class Root
@@ -85,7 +86,6 @@ export {
 	ReactDom,
 	Component,
 	Router, Page,
-	dialog,
 	sdk,
 	Link,
 };
