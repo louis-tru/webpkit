@@ -68,10 +68,10 @@ class Dialog extends Component {
 		var buttons = props.buttons || {};
 
 		return (
-			<view ref="root" className="dialog" style={{opacity: this.state.opacity}}>
-				<view className="core">
-					<view className="a">{props.title/*||'温馨提示'*/}</view>
-					<view className="b">{
+			<div ref="root" className="dialog" style={{opacity: this.state.opacity}}>
+				<div className="core">
+					<div className="a">{props.title/*||'温馨提示'*/}</div>
+					<div className="b">{
 						props.prompt ? [
 							<div key={1}>{props.text}</div>,
 							<input key={2} 
@@ -85,23 +85,23 @@ class Dialog extends Component {
 								onChange={this.m_handleChange_1}
 							/>
 						] : props.text
-					}</view>
-					<view className="btns">
+					}</div>
+					<div className="btns">
 					{
 						(e=>{
 							var r = [];
 							for (var i in buttons) {
 								var t = i[0] == '@' ? i.substr(1) : i;
 								var cls = i[0] == '@' ? 'ok':'';
-								r.push(<view key={i} className={cls} 
-									onClick={this.m_handleClick_1.bind(this, buttons[i])}>{t}</view>);
+								r.push(<div key={i} className={cls} 
+									onClick={this.m_handleClick_1.bind(this, buttons[i])}>{t}</div>);
 							}
 							return r;
 						})()
 					}
-					</view>
-				</view>
-			</view>
+					</div>
+				</div>
+			</div>
 		);
 	}
 

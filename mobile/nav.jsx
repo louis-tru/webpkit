@@ -115,9 +115,9 @@ class PrivPage extends Component {
 			return React.createElement(component, { ...this.m_props, ref: 'self', priv: this });
 		} else {
 			return (
-				<view className="init-loading">
+				<div className="init-loading">
 					正在载入数据..
-				</view>
+				</div>
 			);
 		}
 	}
@@ -330,35 +330,38 @@ export class Nav extends Component {
 		var panel = document.createElement('div');
 		this.refs.root.appendChild(panel);
 
+		var self = this;
 		var prev = this.m_current;
-		var page = ReactDom.render(
-			<PrivPage {...props} index={this.length} panel={panel} />, panel
-		);
+		var el = <PrivPage {...props} index={this.length} panel={panel} />;
 
-		this.m_current = page;
-		this.m_pages.push(page);
+		ReactDom.render(el, panel, function() {
+			var page = this;
 
-		page.m_prev = prev;
+			self.m_current = page;
+			self.m_pages.push(page);
 
-		if (prev) {
-			prev.m_next = page;
-		}
+			page.m_prev = prev;
 
-		animate = animate ? 400: 0;
+			if (prev) {
+				prev.m_next = page;
+			}
 
-		if (animate) {
-			this.m_animating = true;
-			setTimeout(e=>this.m_animating = false, animate);
-		}
+			animate = animate ? 400: 0;
 
-		if (prev) {
-			prev.intoBackground(animate);
-		}
-		page.intoForeground(animate);
+			if (animate) {
+				self.m_animating = true;
+				setTimeout(e=>self.m_animating = false, animate);
+			}
 
-		if (this.props.onNav) {
-			this.props.onNav({ type: 'push', url: props.url, count: 1 });
-		}
+			if (prev) {
+				prev.intoBackground(animate);
+			}
+			page.intoForeground(animate);
+
+			if (self.props.onNav) {
+				self.props.onNav({ type: 'push', url: props.url, count: 1 });
+			}
+		});
 	}
 
 	pops(index, animate) {
@@ -424,8 +427,8 @@ export class Nav extends Component {
 
 	render() {
 		return (
-			<view className="root" ref="root">
-			</view>
+			<div className="root" ref="root">
+			</div>
 		);
 	}
 

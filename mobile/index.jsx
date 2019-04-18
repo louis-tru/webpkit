@@ -74,13 +74,14 @@ export class MyPage extends NavPage {
  */
 export class Root extends Component {
 
-	state = { isLoaded: true };
+	state = { isLoaded: false };
 
 	async componentDidMount() {
 		rem.initialize();
 		try {
 			await initialize(this.props.config || {});
 			this.setState({ isLoaded: true });
+			return
 		} catch(e) {
 			error.defaultErrorHandle(e);
 			return;
@@ -118,9 +119,9 @@ export class Root extends Component {
 				onEnd={e=>this.onEnd(e)}
 				initUrl={url}
 			/>:
-			<view className="init-loading">
+			<div className="init-loading">
 				Loading..
-			</view>
+			</div>
 		);
 	}
 }
