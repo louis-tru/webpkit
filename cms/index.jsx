@@ -30,21 +30,27 @@
 
 export * from '../index';
 
-import './cms.css';
-import 'nifty/css/bootstrap.min.css';
-import 'nifty/css/nifty.min.css';
-import 'nifty/css/demo/nifty-demo-icons.min.css';
-import 'nifty/css/demo/nifty-demo.min.css';
-import 'nifty/plugins/morris-js/morris.min.css';
-import 'nifty/plugins/magic-check/css/magic-check.min.css';
+import './utils.css';
 
-// import 'nifty/plugins/pace/pace.min.css';
-// import 'nifty/plugins/pace/pace.min.js';
-// import 'nifty/js/jquery-2.2.4.min.js';
-// import 'nifty/js/bootstrap.min.js';
-// import 'nifty/js/nifty.min.js';
-// import 'nifty/js/demo/nifty-demo.min.js';
-// import 'nifty/plugins/morris-js/morris.min.js';
-// import 'nifty/plugins/morris-js/raphael-js/raphael.min.js';
+// import jQuery from 'nifty/js/jquery-2.2.4.min.js';
+// global.jQuery = global.$ = jQuery;
 // import 'nifty/plugins/sparkline/jquery.sparkline.min.js';
-// import 'nifty/js/demo/dashboard.js';
+
+import 'nifty/css/bootstrap.css';
+import 'nifty/js/bootstrap.js';
+import 'nifty/css/nifty.css';
+import 'nifty/js/nifty.js';
+
+import 'nifty/plugins/magic-check/css/magic-check.css';
+import 'nifty/plugins/pace/pace.css';
+import 'nifty/plugins/pace/pace.js';
+
+import 'nifty/plugins/morris-js/morris.css';
+import 'nifty/plugins/morris-js/morris.js';
+// import 'nifty/plugins/morris-js/raphael-js/raphael.min.js';
+import Raphael from 'raphael'; global.Raphael = Raphael;
+
+import 'nifty/css/demo/nifty-demo-icons.css';
+import 'nifty/css/demo/nifty-demo.css';
+import 'nifty/js/demo/nifty-demo.js';
+import 'nifty/js/demo/dashboard.js';

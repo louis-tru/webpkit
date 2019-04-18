@@ -148,6 +148,12 @@ const prod_plugins = [
 const plugins = [
 	// http://vuejs.github.io/vue-loader/en/workflow/production.html
 	new webpack.DefinePlugin({ 'process.env': ENV }),
+	// new webpack.ProvidePlugin({
+	// 	$: "jquery",
+	// 	jQuery: "jquery",
+	// 	jquery: "jquery",
+	// 	"window.jQuery": "jquery",
+	// }),
 	// copy custom static assets
 	new CopyWebpackPlugin([{
 		from: resolve('static'),

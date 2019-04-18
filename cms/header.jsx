@@ -294,22 +294,22 @@ export default class extends Component {
 						              <ul className="list-unstyled list-inline text-justify">
 
 						                  <li className="pad-btm">
-						                      <img src="nifty/img//thumbs/mega-menu-2.jpg" alt="thumbs"/>
+						                      <img src="nifty/img/thumbs/mega-menu-2.jpg" alt="thumbs"/>
 						                  </li>
 						                  <li className="pad-btm">
-						                      <img src="nifty/img//thumbs/mega-menu-3.jpg" alt="thumbs"/>
+						                      <img src="nifty/img/thumbs/mega-menu-3.jpg" alt="thumbs"/>
 						                  </li>
 						                  <li className="pad-btm">
-						                      <img src="nifty/img//thumbs/mega-menu-1.jpg" alt="thumbs"/>
+						                      <img src="nifty/img/thumbs/mega-menu-1.jpg" alt="thumbs"/>
 						                  </li>
 						                  <li className="pad-btm">
-						                      <img src="nifty/img//thumbs/mega-menu-4.jpg" alt="thumbs"/>
+						                      <img src="nifty/img/thumbs/mega-menu-4.jpg" alt="thumbs"/>
 						                  </li>
 						                  <li className="pad-btm">
-						                      <img src="nifty/img//thumbs/mega-menu-5.jpg" alt="thumbs"/>
+						                      <img src="nifty/img/thumbs/mega-menu-5.jpg" alt="thumbs"/>
 						                  </li>
 						                  <li className="pad-btm">
-						                      <img src="nifty/img//thumbs/mega-menu-6.jpg" alt="thumbs"/>
+						                      <img src="nifty/img/thumbs/mega-menu-6.jpg" alt="thumbs"/>
 						                  </li>
 						              </ul>
 						              <a href="#" className="btn btn-sm btn-block btn-default">Browse Gallery</a>

@@ -85,15 +85,11 @@ export class Root extends Component {
 			error.defaultErrorHandle(e);
 			return;
 		}
-		await this.onLoad();
 
 		setTimeout(e=>window.history.replaceState({}, this.props.title||'', '#/'), 10);
 		window.addEventListener('hashchange', (e)=>{ // 不管前进或后退都当成后退处理
 			this.refs.nav.current.popPage(true);
 		});
-	}
-
-	onLoad() {
 	}
 
 	onNav(e){

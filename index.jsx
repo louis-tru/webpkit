@@ -46,6 +46,8 @@ import {Link} from 'react-router-dom';
  */
 export class Root extends Component {
 
+	state = { isLoaded: 0 };
+
 	async componentDidMount() {
 		try {
 			await initialize(this.props.config || {});

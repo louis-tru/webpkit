@@ -6,7 +6,7 @@
 // - ThemeOn.net -
 
 
-$(document).ready(function () {
+$(window).on('load', function () {
 
 
     // SETTINGS WINDOW
@@ -141,7 +141,7 @@ $(document).ready(function () {
 
             // Transition selectbox
             var effectArray = effectList.split(" ");
-            for (i = 0; i < effectArray.length; i++) {
+            for (var i = 0; i < effectArray.length; i++) {
                 if (niftyContainer.hasClass(effectArray[i])){
                     transitionVal.value = effectArray[i];
                     break;

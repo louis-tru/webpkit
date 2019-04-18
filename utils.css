@@ -1,7 +1,7 @@
 
 @import "./font/iconfont.css";
 
-* { 
+* {
 	-webkit-touch-callout: none; 
 	-webkit-touch-callout:none;
 	-moz-touch-callout:none;
@@ -9,40 +9,14 @@
 	touch-callout:none;
 }
 
-div, check, span, view, text, page, block, button, img, image, 
-html,body,div,label,ul,li,ol,dl,dd,dt,p,h1,h2,h3,h4,h5,h6,form,fieldset,legend,img,a,input,textarea {
-	box-sizing: border-box;
-	-webkit-user-select: none;
-	user-select: none;
-}
-
 body {
 	margin: 0;
 	padding: 0;
-	background: #fff;
-	overflow: hidden;
 	font-family:sans-serif,STHeiti,Microsoft YaHei,Helvetica,Arial;
 }
 
 view {
 	display: block;
-}
-
-input,textarea {
-	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-	-moz-user-focus: none;
-	-webkit-appearance:none;
-	outline: none;
-	border: none;
-	user-select: initial;
-}
-
-select {
-	vertical-align: middle;
-	margin: 0;
-	outline-style: none;
-	-webkit-appearance: none;
-	background: none;
 }
 
 .noselect {
@@ -57,20 +31,4 @@ select {
 
 .clear {
 	clear: both;
-}
-
-.root {
-	width: 100vw;
-	min-height: 100vh;
-}
-
-.main {
-	width: 100vw;
-	position: relative;
-	z-index: 1;
-	background-size: 100%;
-	background-repeat: no-repeat;
-	line-height: initial;
-	height: 100vh;
-	overflow: auto;
 }
