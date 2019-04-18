@@ -28,9 +28,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+import React, { Component } from 'react';
 import CMSPage from './cms-page';
 
-export * from '../index';
+export * from '..';
 export { CMSPage };
 
 require('./utils.css');
@@ -45,3 +46,89 @@ require('nifty/plugins/pace/pace.css');
 require('nifty/plugins/pace/pace.js');
 require('nifty/plugins/morris-js/morris.css');
 require('nifty/plugins/morris-js/morris.js');
+
+import { initialize, error, Router, Root } from '..';
+import {HashRouter, Route, Switch} from 'react-router-dom';
+import Login from './login';
+import Header from './header';
+import Footer from './footer';
+import Menu from './menu';
+import NotFound from './404';
+
+/**
+ * @class CMSRoot
+ */
+export class CMSRoot extends Root {
+
+	constructor(props) {
+		super(props);
+		this.state.is_404 = false;
+
+		window.addEventListener('hashchange', e=>{
+			if (this.state.is_404) {
+				this._no404();
+			}
+		});
+	}
+
+	render() {
+		var _NotFound = this.props.notFound || NotFound;
+
+		return (
+			this.state.isLoaded ?
+			this.state.is_404 ? <_NotFound />:
+			<HashRouter>
+				<Switch>
+					<Route path="/login">
+						<Login />
+					</Route>
+					<Route path="/404">
+						<_NotFound />
+					</Route>
+					<Route path="/">
+						<div id="container" className="effect aside-float aside-bright mainnav-lg">
+
+							{this.header()}
+							{this.menu()}
+
+							{/* -- Content -- */}
+							<Router ref="router"
+								notFound={_NotFound} routes={this.props.routes}
+							/>
+
+							{this.footer()}
+
+							<button className="scroll-top btn">
+								<i className="pci-chevron chevron-up"></i>
+							</button>
+
+						</div>
+					</Route>
+				</Switch>
+			</HashRouter>
+			:
+			<div className="init-loading">Loading..</div>
+		);
+	}
+
+	_404() {
+		this.setState({ is_404: true });
+	}
+
+	_no404() {
+		this.setState({ is_404: false });
+	}
+
+	menu() {
+		return <Menu />;
+	}
+
+	header() {
+		return <Header />;
+	}
+
+	footer() {
+		return <Footer/>;
+	}
+
+}

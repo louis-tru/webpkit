@@ -32,6 +32,7 @@ import { NavPage } from './nav';
 import React from 'react';
 
 export default class extends NavPage {
+
 	render() {
 		return (
 			<h1>404</h1>

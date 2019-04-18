@@ -29,9 +29,10 @@
  * ***** END LICENSE BLOCK ***** */
 
 import Page from './page';
-import React from 'react';
+import { Root, React, page } from '.';
 
 export default class extends Page {
+
 	render() {
 		return (
 			<h1>Not Found 404</h1>

@@ -29,9 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import { React, Page } from '..';
-import Header from './header';
-import Footer from './footer';
-import Menu from './menu';
+import { Root } from '..';
 
 /**
  * @class CMSPage
@@ -40,39 +38,12 @@ export default class CMSPage extends Page {
 
 	componentDidMount() {
 		require('nifty/js/nifty.js');
+		this.onLoadNifty();
 		super.componentDidMount();
 	}
 
-	render() {
-		return (
-			<div id="container" className="effect aside-float aside-bright mainnav-lg">
-
-				{this.header()}
-
-				<Menu />
-
-				{this.content()}
-
-				{this.footer()}
-
-				<button className="scroll-top btn">
-					<i className="pci-chevron chevron-up"></i>
-				</button>
-
-			</div>
-		);
-	}
-
-	header() {
-		return <Header />;
-	}
-
-	content() {
-		return <div>Content</div>;
-	}
-
-	footer() {
-		return <Footer/>;
+	onLoadNifty() {
+		// ...
 	}
 
 }

@@ -42,6 +42,8 @@ import {Link} from 'react-router-dom';
 
 export * from './dialog';
 
+var current = null;
+
 /**
  * @class Root
  */
@@ -50,6 +52,7 @@ export class Root extends Component {
 	state = { isLoaded: 0 };
 
 	async componentDidMount() {
+		current = this;
 		try {
 			await initialize(this.props.config || {});
 		} catch(e) {
@@ -66,6 +69,10 @@ export class Root extends Component {
 			/>:
 			<div className="init-loading">Loading..</div>
 		);
+	}
+
+	static get current() {
+		return current;
 	}
 }
 
@@ -88,4 +95,5 @@ export {
 	Router, Page,
 	sdk,
 	Link,
+	error,
 };

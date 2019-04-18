@@ -39,7 +39,7 @@ import 'nifty/css/demo/nifty-demo.css';
 
 export default class extends CMSPage {
 
-	onLoad() {
+	onLoadNifty() {
 		require('nifty/js/demo/nifty-demo.js');
 		require('nifty/js/demo/dashboard.js');
 	}
@@ -47,17 +47,11 @@ export default class extends CMSPage {
 	render(...agrs) {
 		return (
 			<div className="boxed">
-				{super.render(...agrs)}
+				<div className="boxed">
+					<Aside />
+					<ContentContainer />
+				</div>
 				<DemoSet />
-			</div>
-		);
-	}
-
-	content() {
-		return (
-			<div className="boxed">
-				<Aside />
-				<ContentContainer />
 			</div>
 		);
 	}

@@ -28,91 +28,21 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import React, { Component } from 'react';
+import CMSPage from './cms-page';
+import { Root, React } from '..';
 
-/**
- * @class Page
- */
-export default class Page extends Component {
-
-	constructor(props) {
-		super(props);
-		if (!this.props.router) return;
-		this._url = this.props.location.pathname + this.props.location.search;
-		var search = this.props.location.search.substr(1);
-		this._params = {};
-		this._router = this.props.router;
-		if (search) {
-			search.split('&').forEach(e=>{
-				var [key,...value] = e.split('=');
-				if (value.length) {
-					if (value.length > 1) {
-						value = value.join('=');
-					}
-					this._params[key] = decodeURIComponent(value);
-				}
-			});
-		}
-	}
-
-	get url() {
-		return this._url;
-	}
-
-	get pathname() {
-		return this.location && this.location.pathname;
-	}
-
-	get history() {
-		return this.props.history;
-	}
-
-	get location() {
-		return this.props.location;
-	}
-
-	get match() {
-		return this.props.match;
-	}
-
-	get params() {
-		return this.props.match && this.props.match.params;
-	}
+export default class extends CMSPage {
 
 	componentDidMount() {
-		this._router && (this._router._current = this);
-		this.onLoad();
-	}
-
-	componentWillUnmount() {
-		this.onUnload();
-		if (this._router && this._router._current === this) {
-			this._router._current = null;
+		if (Root.current) {
+			Root.current._404();
 		}
+		super.componentDidMount();
 	}
 
-	onLoad() {
-		// overwrite
+	render() {
+		return (
+			<h1>Not Found 404</h1>
+		);
 	}
-
-	onUnload() {
-		// overwrite
-	}
-
-	goBack() {
-		this.history.goBack()
-	} 
-
-	goForward() {
-		this.history.goForward()
-	}
-
-	goto(url) {
-		if (this._router.type == 'hash') {
-			location.hash = url;
-		} else {
-			location.href = url;
-		}
-	}
-
 }
