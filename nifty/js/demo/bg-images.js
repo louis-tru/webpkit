@@ -58,7 +58,7 @@ $(document).ready(function() {
         $imgHolder.addClass('disabled');
         var url = $el.attr('src').replace('/thumbs','');
 
-        $('<img/>').attr('src' , url).load(function(){
+        $('<img/>').load(url, function(){
             $target.css('background-image', 'url("' + url + '")').addClass('bg-img');
             $imgHolder.removeClass('disabled');
             $bgBtn.removeClass('active');

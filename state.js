@@ -28,72 +28,16 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import 'normalize.css';
-import './utils.css';
-import './_fix';
-import qkit from 'qkit';
-import sdk from 'dphoto-magic-sdk';
-import path from 'qkit/path';
-import error from './error';
-import { Router, Page } from './router';
-import ReactDom from 'react-dom';
-import React, { Component } from 'react';
-import {Link} from 'react-router-dom';
-
-export * from './dialog';
-
-var current = null;
+import { Component } from 'react';
+import storage from 'qkit/storage';
 
 /**
- * @class Root
+ * @class GlobalState
  */
-export class Root extends Component {
+export default class GlobalState extends Component {
 
-	state = { isLoaded: 0 };
-
-	async componentDidMount() {
-		current = this;
-		try {
-			await initialize_sdk(this.props.config || {});
-		} catch(e) {
-			error.defaultErrorHandle(e);
-		}
-		this.setState({ isLoaded: true });
+	constructor(props) {
+		super(props);
 	}
 
-	render() {
-		return (
-			this.state.isLoaded ?
-			<Router ref="router" 
-				notFound={this.props.notFound} routes={this.props.routes}
-			/>:
-			<div className="init-loading">Loading..</div>
-		);
-	}
-
-	static get current() {
-		return current;
-	}
 }
-
-export async function initialize_sdk(config = {}) {
-	if (sdk.isLoaded) return;
-	var url = new path.URL(config.serviceAPI || qkit.config.serviceAPI);
-	await sdk.initialize(
-		path.getParam('D_SDK_HOST') || url.hostname,
-		path.getParam('D_SDK_PORT') || url.port);
-
-	sdk.addEventListener('Error', function(err) {
-		error.defaultErrorHandle(err.data);
-	});
-};
-
-export {
-	React,
-	ReactDom,
-	Component,
-	Router, Page,
-	sdk,
-	Link,
-	error,
-};

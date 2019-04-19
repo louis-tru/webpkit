@@ -29,11 +29,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 import React, { Component } from 'react';
+import GlobalState from './state';
 
 /**
  * @class Page
  */
-export default class Page extends Component {
+export default class Page extends GlobalState {
 
 	constructor(props) {
 		super(props);
@@ -100,18 +101,20 @@ export default class Page extends Component {
 	}
 
 	goBack() {
-		this.history.goBack()
+		this.history && this.history.goBack()
 	} 
 
 	goForward() {
-		this.history.goForward()
+		this.history && this.history.goForward()
 	}
 
 	goto(url) {
-		if (this._router.type == 'hash') {
-			location.hash = url;
-		} else {
-			location.href = url;
+		if (this._router) {
+			if (this._router.type == 'hash') {
+				location.hash = url;
+			} else {
+				location.href = url;
+			}
 		}
 	}
 

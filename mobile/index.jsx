@@ -79,7 +79,7 @@ export class Root extends Component {
 	async componentDidMount() {
 		rem.initialize();
 		try {
-			await initialize(this.props.config || {});
+			await initialize_sdk(this.props.config || {});
 			this.setState({ isLoaded: true });
 			return
 		} catch(e) {
@@ -126,7 +126,7 @@ export class Root extends Component {
 	}
 }
 
-export async function initialize(config = {}) {
+export async function initialize_sdk(config = {}) {
 	if (sdk.isLoaded) return;
 	var url = new path.URL(config.serviceAPI || qkit.config.serviceAPI);
 	await sdk.initialize(
