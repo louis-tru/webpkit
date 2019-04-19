@@ -322,7 +322,128 @@ export default class extends Component {
 
 						</ul>
 						<ul className="nav navbar-top-links pull-right">
+							{/*--Language selector--*/}
+							{/*--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--*/}
+							<li className="dropdown">
+								<a id="demo-lang-switch" className="lang-selector dropdown-toggle" href="#" data-toggle="dropdown">
+									<span className="lang-selected">
+										<img className="lang-flag" src="nifty/img/flags/united-kingdom.png" alt="English" />
+									</span>
+								</a>
 
+								{/*--Language selector menu--*/}
+								<ul className="head-list dropdown-menu">
+									<li>
+										{/*--English--*/}
+										<a href="#" className="active">
+											<img className="lang-flag" src="nifty/img/flags/united-kingdom.png" alt="English"/>
+											<span className="lang-id">EN</span>
+											<span className="lang-name">English</span>
+										</a>
+									</li>
+									<li>
+										{/*--France--*/}
+										<a href="#">
+											<img className="lang-flag" src="nifty/img/flags/france.png" alt="France"/>
+											<span className="lang-id">FR</span>
+											<span className="lang-name">Fran&ccedil;ais</span>
+										</a>
+									</li>
+									<li>
+										{/*--Germany--*/}
+										<a href="#">
+											<img className="lang-flag" src="nifty/img/flags/germany.png" alt="Germany"/>
+											<span className="lang-id">DE</span>
+											<span className="lang-name">Deutsch</span>
+										</a>
+									</li>
+									<li>
+										{/*--Italy--*/}
+										<a href="#">
+											<img className="lang-flag" src="nifty/img/flags/italy.png" alt="Italy"/>
+											<span className="lang-id">IT</span>
+											<span className="lang-name">Italiano</span>
+										</a>
+									</li>
+									<li>
+										{/*--Spain--*/}
+										<a href="#">
+											<img className="lang-flag" src="nifty/img/flags/spain.png" alt="Spain"/>
+											<span className="lang-id">ES</span>
+											<span className="lang-name">Espa&ntilde;ol</span>
+										</a>
+									</li>
+								</ul>
+							</li>
+							{/*--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--*/}
+							{/*--End language selector--*/}
+
+
+
+							{/*--User dropdown--*/}
+							{/*--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--*/}
+							<li id="dropdown-user" className="dropdown">
+								<a href="#" data-toggle="dropdown" className="dropdown-toggle text-right">
+									<span className="pull-right">
+										{/*--<img className="img-circle img-user media-object" src="nifty/img/profile-photos/1.png" alt="Profile Picture">--*/}
+										<i className="demo-pli-male ic-user"></i>
+									</span>
+									<div className="username hidden-xs">Aaron Chavez</div>
+								</a>
+
+
+								<div className="dropdown-menu dropdown-menu-md dropdown-menu-right panel-default">
+
+									{/*-- Dropdown heading  --*/}
+									<div className="pad-all bord-btm">
+										<p className="text-main mar-btm"><span className="text-bold">750GB</span> of 1,000GB Used</p>
+										<div className="progress progress-sm">
+											<div className="progress-bar" style={{width: '70%'}}>
+												<span className="sr-only">70%</span>
+											</div>
+										</div>
+									</div>
+
+
+									{/*-- User dropdown menu --*/}
+									<ul className="head-list">
+										<li>
+											<a href="#">
+												<i className="demo-pli-male icon-lg icon-fw"></i> Profile
+											</a>
+										</li>
+										<li>
+											<a href="#">
+												<span className="badge badge-danger pull-right">9</span>
+												<i className="demo-pli-mail icon-lg icon-fw"></i> Messages
+											</a>
+										</li>
+										<li>
+											<a href="#">
+												<span className="label label-success pull-right">New</span>
+												<i className="demo-pli-gear icon-lg icon-fw"></i> Settings
+											</a>
+										</li>
+										<li>
+											<a href="#">
+												<i className="demo-pli-information icon-lg icon-fw"></i> Help
+											</a>
+										</li>
+										<li>
+											<a href="#">
+												<i className="demo-pli-computer-secure icon-lg icon-fw"></i> Lock screen
+											</a>
+										</li>
+									</ul>
+
+									{/*-- Dropdown footer --*/}
+									<div className="pad-all text-right">
+										<a href="pages-login.html" className="btn btn-primary">
+											<i className="demo-pli-unlock"></i> Logout
+										</a>
+									</div>
+								</div>
+							</li>
 							{/*--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--*/}
 							{/*--End user dropdown--*/}
 

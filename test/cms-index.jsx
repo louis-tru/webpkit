@@ -42,7 +42,7 @@ export default class extends CMSPage {
 	onLoadNifty() {
 		this.reloadNifty();
 		require('nifty/js/demo/nifty-demo.js').default();
-		require('nifty/js/demo/dashboard.js').default();
+		require('nifty/js/demo/dashboard.jsx').default();
 	}
 
 	render(...agrs) {
