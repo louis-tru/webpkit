@@ -183,7 +183,7 @@ export default function() {
     }
 
 
-    $(window).only('resizeEnd', function(){
+    $(window).on('resizeEnd?dashboard', function(){
         hddSparkline();
         earningSparkline();
         salesSparkline();
@@ -202,7 +202,7 @@ export default function() {
     // -----------------------------------------------------------------
     // http://www.themeon.net
     // =================================================================
-    $('#demo-panel-network-refresh').niftyOverlay().only('click', function(){
+    $('#demo-panel-network-refresh').niftyOverlay().on('click?dashboard', function(){
         var $el = $(this), relTime;
 
         $el.niftyOverlay('show');

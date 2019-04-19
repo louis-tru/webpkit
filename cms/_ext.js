@@ -113,10 +113,6 @@ function on( elem, types, selector, data, fn, one ) {
 // var rawOn = jquery.prototype.on;
 
 jQuery.fn.extend({
-	only: function( types, selector, data, fn ) {
-		this.off(types);
-		return on( this, types, selector, data, fn );
-	},
 	on: function( types, selector, data, fn ) {
 		return on( this, types, selector, data, fn );
 	}

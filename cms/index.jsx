@@ -64,6 +64,7 @@ export class CMSRoot extends Root {
 	constructor(props) {
 		super(props);
 		this.state.is_404 = false;
+		//this.state.menu = 
 
 		window.addEventListener('hashchange', e=>{
 			if (this.state.is_404) {
