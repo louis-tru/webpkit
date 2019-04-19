@@ -41,7 +41,7 @@ export default class Login extends CMSPage {
 
 	state = { $$url: '', };
 
-	onLoadNifty() {
+	onLoad() {
 
 		var $imgHolder 	= $('#demo-bg-list');
 		var $bgBtn 		= $imgHolder.find('.demo-chg-bg');
