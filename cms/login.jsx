@@ -53,14 +53,14 @@ export default class Login extends CMSPage {
 			e.stopPropagation();
 
 			var $el = $(this);
-			if ($el.hasClass('active') || $imgHolder.hasClass('disabled'))return;
+			if ($el.hasClass('active') || $imgHolder.hasClass('disabled')) return;
 			if ($el.hasClass('bg-trans')) {
-				$target.css('background-image','none').removeClass('bg-img');
+				self.setState({ $$url: '' });
+
+				// $target.css('background-image','none').removeClass('bg-img');
 				$imgHolder.removeClass('disabled');
 				$bgBtn.removeClass('active');
 				$el.addClass('active');
-
-				self.setState({ $$url: '' });
 
 				return;
 			}
@@ -72,7 +72,7 @@ export default class Login extends CMSPage {
 
 				self.setState({ $$url: url });
 
-				$target.css('background-image', 'url("' + url + '")').addClass('bg-img');
+				// $target.css('background-image', 'url("' + url + '")').addClass('bg-img');
 				$imgHolder.removeClass('disabled');
 				$bgBtn.removeClass('active');
 				$el.addClass('active');
