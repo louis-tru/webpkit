@@ -28,33 +28,77 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { React, CMSPage } from '../cms';
+var jQuery = require('jquery');
 
-import ContentContainer from './cms-content-container';
-import Aside from './cms-aside';
-import DemoSet from './cms-demo-set';
+function on( elem, types, selector, data, fn, one ) {
+	var origFn, type;
 
-import 'nifty/css/demo/nifty-demo-icons.css';
-import 'nifty/css/demo/nifty-demo.css';
+	// Types can be a map of types/handlers
+	if ( typeof types === "object" ) {
 
-export default class extends CMSPage {
+		// ( types-Object, selector, data )
+		if ( typeof selector !== "string" ) {
 
-	onLoadNifty() {
-		this.reloadNifty();
-		require('nifty/js/demo/nifty-demo.js').default();
-		require('nifty/js/demo/dashboard.js').default();
+			// ( types-Object, data )
+			data = data || selector;
+			selector = undefined;
+		}
+		for ( type in types ) {
+			on( elem, type, selector, data, types[ type ], one );
+		}
+		return elem;
 	}
 
-	render(...agrs) {
-		return (
-			<div className="boxed">
-				<div className="boxed">
-					<Aside />
-					<ContentContainer />
-				</div>
-				<DemoSet />
-			</div>
-		);
+	if ( data == null && fn == null ) {
+
+		// ( types, fn )
+		fn = selector;
+		data = selector = undefined;
+	} else if ( fn == null ) {
+		if ( typeof selector === "string" ) {
+
+			// ( types, selector, fn )
+			fn = data;
+			data = undefined;
+		} else {
+
+			// ( types, data, fn )
+			fn = data;
+			data = selector;
+			selector = undefined;
+		}
+	}
+	if ( fn === false ) {
+		fn = returnFalse;
+	} else if ( !fn ) {
+		return elem;
 	}
 
+	if ( one === 1 ) {
+		origFn = fn;
+		fn = function( event ) {
+
+			// Can use an empty set, since event contains the info
+			jQuery().off( event );
+			return origFn.apply( this, arguments );
+		};
+
+		// Use same guid so caller can remove using origFn
+		fn.guid = origFn.guid || ( origFn.guid = jQuery.guid++ );
+	}
+
+	// types
+
+	return elem.each( function() {
+		jQuery.event.add( this, types, fn, data, selector );
+	});
 }
+
+// var rawOn = jquery.prototype.on;
+
+jQuery.fn.extend({
+	only: function( types, selector, data, fn ) {
+		this.off(types);
+		return on( this, types, selector, data, fn );
+	}
+});

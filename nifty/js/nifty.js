@@ -395,15 +395,12 @@
  * - themeOn.net -
  * ========================================================================*/
 
-! function ($) {
+export function initialize() {
 	"use strict";
 
-	$(document).ready(function () {
-		$(document).trigger('nifty.ready');
-	});
+	var $ = jQuery;
 
-
-	$(document).on('nifty.ready', function () {
+	$(document).only('nifty.ready', function () {
 		//Activate the Bootstrap tooltips
 		var tooltip = $('.add-tooltip');
 		if (tooltip.length) tooltip.tooltip();
@@ -413,7 +410,7 @@
 
 
 		// Update nancoscroller
-		$('#navbar-container .navbar-top-links').on('shown.bs.dropdown', '.dropdown', function () {
+		$('#navbar-container .navbar-top-links').only('shown.bs.dropdown', '.dropdown', function () {
 			$(this).find('.nano').nanoScroller({
 				preventPageScrolling: true
 			});
@@ -422,7 +419,12 @@
 		$.niftyNav('bind');
 		$.niftyAside('bind');
 	});
-}(jQuery);
+
+	$(document).ready(function () {
+		$(document).trigger('nifty.ready');
+	});
+
+};
 
 
 
@@ -477,7 +479,7 @@
 		return chk;
 	};
 
-	$(document).on('nifty.ready', function () {
+	$(document).on('nifty.ready', function () {debugger
 		megadropdown = $('.mega-dropdown');
 		if (megadropdown.length) {
 			megadropdown.niftyMega();

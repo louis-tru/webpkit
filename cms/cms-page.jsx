@@ -36,8 +36,11 @@ import { Root } from '..';
  */
 export default class CMSPage extends Page {
 
+	reloadNifty() {
+		require('nifty/js/nifty.js').initialize();
+	}
+
 	componentDidMount() {
-		require('nifty/js/nifty.js');
 		this.onLoadNifty();
 		super.componentDidMount();
 	}

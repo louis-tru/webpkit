@@ -6,7 +6,7 @@
 // - ThemeOn.net -
 
 
-$(function () {
+export default function () {
 
 
 	// SETTINGS WINDOW
@@ -55,7 +55,7 @@ $(function () {
 				abstractBgList.append(bg_thumb_template('abstract'));
 
 				var boxedBgthumb = boxedLayoutImgBox.find('.thumbnail');
-				boxedBgthumb.on('click', function(){
+				boxedBgthumb.only('click', function(){
 					boxedBgthumb.removeClass('selected');
 					var url = $(this).children('img').prop('src').replace('thumbs','bg');
 					$(this).addClass('selected');
@@ -449,7 +449,7 @@ $(function () {
 				}
 			};
 
-			$('#demo-theme').on('click', '.demo-theme', function (e) {
+			$('#demo-theme').only('click', '.demo-theme', function (e) {
 				e.preventDefault();
 				var el = $(this);
 				if (el.hasClass('disabled')) {
@@ -475,7 +475,7 @@ $(function () {
 			niftyContainer.removeClass('mainnav-lg mainnav-sm').addClass('mainnav-out '+nav_mode);
 		}
 		var demoSetBody = $('#demo-set-body'), demoSetBtn = $('#demo-set-btn');
-		$('html').on('click', function (e) {
+		$('html').only('click', function (e) {
 			if (demoSetBody.hasClass('in')) {
 				if (!$(e.target).closest('#demo-set').length) {
 					demoSetBtn.trigger('click')
@@ -484,8 +484,8 @@ $(function () {
 		});
 
 		demoSetBtn.one('click', InitializeSettingWindow);
-		$('#demo-btn-close-settings').on('click', function () {
+		$('#demo-btn-close-settings').only('click', function () {
 			demoSetBtn.trigger('click')
 		});
 	};
-});
+}

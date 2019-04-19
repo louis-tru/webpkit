@@ -37,6 +37,7 @@ export { CMSPage };
 require('./utils.css');
 global.jQuery = global.$ = require('jquery');
 global.Raphael = require('raphael');
+require('./_ext');
 require('nifty/plugins/sparkline/jquery.sparkline.js');
 require('nifty/css/bootstrap.css');
 require('nifty/js/bootstrap.js');
@@ -69,6 +70,11 @@ export class CMSRoot extends Root {
 				this._no404();
 			}
 		});
+	}
+
+	async componentDidMount() {
+		await super.componentDidMount();
+		require('nifty/js/nifty.js').initialize();
 	}
 
 	render() {

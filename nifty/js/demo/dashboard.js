@@ -7,7 +7,7 @@
 // - ThemeOn.net -
 
 
-$(function() {
+export default function() {
 
 
 
@@ -183,7 +183,7 @@ $(function() {
     }
 
 
-    $(window).on('resizeEnd', function(){
+    $(window).only('resizeEnd', function(){
         hddSparkline();
         earningSparkline();
         salesSparkline();
@@ -202,7 +202,7 @@ $(function() {
     // -----------------------------------------------------------------
     // http://www.themeon.net
     // =================================================================
-    $('#demo-panel-network-refresh').niftyOverlay().on('click', function(){
+    $('#demo-panel-network-refresh').niftyOverlay().only('click', function(){
         var $el = $(this), relTime;
 
         $el.niftyOverlay('show');
@@ -233,4 +233,4 @@ $(function() {
         timer: 5000
     });
 
-});
+}
