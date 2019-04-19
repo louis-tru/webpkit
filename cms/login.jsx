@@ -39,8 +39,49 @@ import 'nifty/css/demo/nifty-demo.css';
  */
 export default class Login extends CMSPage {
 
+	state = { $$url: '', };
+
 	onLoadNifty() {
-		require('nifty/js/demo/bg-images.js');
+
+		var $imgHolder 	= $('#demo-bg-list');
+		var $bgBtn 		= $imgHolder.find('.demo-chg-bg');
+		var $target 	= $('#bg-overlay');
+		var self = this;
+
+		$bgBtn.on('click', function(e){
+			e.preventDefault();
+			e.stopPropagation();
+
+			var $el = $(this);
+			if ($el.hasClass('active') || $imgHolder.hasClass('disabled'))return;
+			if ($el.hasClass('bg-trans')) {
+				$target.css('background-image','none').removeClass('bg-img');
+				$imgHolder.removeClass('disabled');
+				$bgBtn.removeClass('active');
+				$el.addClass('active');
+
+				self.setState({ $$url: '' });
+
+				return;
+			}
+
+			$imgHolder.addClass('disabled');
+			var url = $el.attr('src').replace('/thumbs','');
+
+			$('<img/>').load(url, function(){
+
+				self.setState({ $$url: url });
+
+				$target.css('background-image', 'url("' + url + '")').addClass('bg-img');
+				$imgHolder.removeClass('disabled');
+				$bgBtn.removeClass('active');
+				$el.addClass('active');
+
+				$(this).remove();
+			})
+
+		});
+
 	}
 
 	render() {
@@ -49,7 +90,8 @@ export default class Login extends CMSPage {
 				
 				{/*-- BACKGROUND IMAGE --*/}
 				{/*--===================================================--*/}
-				<div id="bg-overlay"></div>
+				<div id="bg-overlay" className={this.state.$$url ? 'bg-img': ''} 
+					style={{backgroundImage: this.state.$$url?`url(${this.state.$$url})`:'none'}}></div>
 				
 				
 				{/*-- LOGIN FORM --*/}

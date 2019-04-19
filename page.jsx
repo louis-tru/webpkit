@@ -29,7 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import React, { Component } from 'react';
-import GlobalState from './state';
+import GlobalState from './global-state';
 
 /**
  * @class Page
@@ -81,11 +81,13 @@ export default class Page extends GlobalState {
 	}
 
 	componentDidMount() {
+		super.componentDidMount();
 		this._router && (this._router._current = this);
 		this.onLoad();
 	}
 
 	componentWillUnmount() {
+		super.componentWillUnmount();
 		this.onUnload();
 		if (this._router && this._router._current === this) {
 			this._router._current = null;
