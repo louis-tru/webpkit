@@ -400,7 +400,15 @@ export function initialize() {
 
 	var $ = jQuery;
 
-	$(document).only('nifty.ready', function () {
+	$(document).ready(function () {
+		var nav = $('#mainnav-menu');
+		if (!nav.length || !nav.attr('flag')) {
+			nav.attr('flag', 'ok');
+			$(document).trigger('nifty.ready');
+		}
+	});
+
+	$(document).on('nifty.ready?INIT', function () {
 		//Activate the Bootstrap tooltips
 		var tooltip = $('.add-tooltip');
 		if (tooltip.length) tooltip.tooltip();
@@ -410,7 +418,7 @@ export function initialize() {
 
 
 		// Update nancoscroller
-		$('#navbar-container .navbar-top-links').only('shown.bs.dropdown', '.dropdown', function () {
+		$('#navbar-container .navbar-top-links').on('shown.bs.dropdown?INIT', '.dropdown', function () {
 			$(this).find('.nano').nanoScroller({
 				preventPageScrolling: true
 			});
@@ -420,13 +428,7 @@ export function initialize() {
 		$.niftyAside('bind');
 	});
 
-	$(document).ready(function () {
-		$(document).trigger('nifty.ready');
-	});
-
-};
-
-
+}
 
 
 /* ========================================================================
@@ -447,7 +449,7 @@ export function initialize() {
 			var megaBtn = el.find('.mega-dropdown-toggle'),
 				megaMenu = el.find('.mega-dropdown-menu');
 
-			megaBtn.on('click', function (e) {
+			megaBtn.on('click?MEGA', function (e) {
 				e.preventDefault();
 				el.toggleClass('open');
 			});
@@ -479,11 +481,11 @@ export function initialize() {
 		return chk;
 	};
 
-	$(document).on('nifty.ready', function () {debugger
+	$(document).on('nifty.ready', function () {
 		megadropdown = $('.mega-dropdown');
 		if (megadropdown.length) {
 			megadropdown.niftyMega();
-			$('html').on('click', function (e) {
+			$('html').on('click?MEGA', function (e) {
 				if (!$(e.target).closest('.mega-dropdown').length) {
 					megadropdown.removeClass('open');
 				}
@@ -517,7 +519,7 @@ export function initialize() {
 				e.preventDefault();
 				var el = $(this).parents('.panel');
 
-				el.addClass('remove').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function (e) {
+				el.addClass('remove').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd?PANEL', function (e) {
 					if (e.originalEvent.propertyName == "opacity") {
 						el.remove();
 					}
@@ -572,7 +574,7 @@ export function initialize() {
 
 			calcScroll();
 			niftyWindow.scroll(calcScroll);
-			niftyScrollTop.on('click', function (e) {
+			niftyScrollTop.on('click?SCROLL', function (e) {
 				e.preventDefault();
 				$('body, html').animate({
 					scrollTop: 0
@@ -810,7 +812,7 @@ export function initialize() {
 					}
 				}
 
-				el.removeClass('in').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function (e) {
+				el.removeClass('in').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd?NIFTY', function (e) {
 					if (e.originalEvent.propertyName == "max-height") {
 						opt.onHidden();
 						el.remove();
@@ -954,7 +956,7 @@ export function initialize() {
 			};
 
 
-			$langBtn.on('click', function (e) {
+			$langBtn.on('click?NIFTY', function (e) {
 				if (options.dynamicMode) {
 					e.preventDefault();
 					e.stopPropagation();
@@ -1068,7 +1070,7 @@ export function initialize() {
 				el.removeClass('active');
 			}
 
-			$(input).on('change', changed);
+			$(input).on('change?NIFTY', changed);
 		},
 		methods = {
 			isChecked: function () {
@@ -1111,7 +1113,7 @@ export function initialize() {
 		return chk;
 	};
 
-	$(document).on('nifty.ready', bindForm).on('change', '.form-checkbox, .form-radio', bindForm).on('change', '.btn-file :file', function () {
+	$(document).on('nifty.ready', bindForm).on('change?', '.form-checkbox, .form-radio', bindForm).on('change', '.btn-file :file', function () {
 		var input = $(this),
 			numFiles = input.get(0).files ? input.get(0).files.length : 1,
 			label = input.val().replace(/\\/g, '/').replace(/.*\//, ''),
@@ -1254,13 +1256,13 @@ export function initialize() {
 					listSubScroll = false,
 					elHasSub = function () {
 						if ($listWidget.length) {
-							$el.on('click', function (e) {
+							$el.on('click?NN', function (e) {
 								e.preventDefault()
 							});
 						}
 						if ($listSub.length) {
 							//$listSub.removeClass('in').removeAttr('style');
-							$el.on('click', function (e) {
+							$el.on('click?NN', function (e) {
 								e.preventDefault()
 							}).parent('li').removeClass('active');
 							return true;
@@ -1280,13 +1282,13 @@ export function initialize() {
 						}, 100);
 					};
 
-				$(document).click(function (event) {
+				$(document).on('click?NN', function (event) {
 					if (!$(event.target).closest('#mainnav-container').length) {
 						$el.removeClass('hover').popover('hide');
 					}
 				});
 
-				$('#mainnav-menu-wrap > .nano').on("update", function (event, values) {
+				$('#mainnav-menu-wrap > .nano').on("update?NN", function (event, values) {
 					$el.removeClass('hover').popover('hide');
 				});
 
@@ -1315,7 +1317,7 @@ export function initialize() {
 							return $content;
 						},
 						template: '<div class="popover menu-popover"><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
-				}).on('show.bs.popover', function () {
+				}).on('show.bs.popover?NN', function () {
 					if (!$popover) {
 						$popover = $el.data('bs.popover').tip();
 						$poptitle = $popover.find('.popover-title');
@@ -1326,7 +1328,7 @@ export function initialize() {
 					}
 					if (!elHasSub && $listWidget.length == 0) return;
 				}).
-				on('shown.bs.popover', function () {
+				on('shown.bs.popover?NN', function () {
 					if (!elHasSub && $listWidget.length == 0) {
 						var margintop = 0 - (0.5 * $el.outerHeight());
 						$popcontent.css({
@@ -1391,13 +1393,13 @@ export function initialize() {
 						}
 					}
 					if ($poptitle.length) $poptitle.css('height', $el.outerHeight());
-					$popcontent.on('click', function () {
+					$popcontent.on('click?NN', function () {
 						$popcontent.find('.nano-pane').hide();
 						updateScrollBar($popcontent.find('.nano'));
 					});
 				})
 
-				.on('click', function () {
+				.on('click?NN', function () {
 						if (!niftyContainer.hasClass('mainnav-sm')) return;
 						$menulink.popover('hide');
 						$el.addClass('hover').popover('show');
@@ -1640,7 +1642,7 @@ export function initialize() {
 					mainNavHeight = $('#mainnav').height();
 
 					var transitionNav = null;
-					niftyMainNav.on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function (e) {
+					niftyMainNav.on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd?NN', function (e) {
 						if (transitionNav || e.target === niftyMainNav[0]) {
 							clearInterval(transitionNav);
 							transitionNav = setInterval(function () {
@@ -1654,7 +1656,7 @@ export function initialize() {
 
 					var toggleBtn = $('.mainnav-toggle');
 					if (toggleBtn.length) {
-						toggleBtn.on('click', function (e) {
+						toggleBtn.on('click?NN', function (e) {
 							e.preventDefault();
 							e.stopPropagation();
 
@@ -1701,7 +1703,7 @@ export function initialize() {
 						console.error(err.message);
 					}
 
-					$(window).on('resizeEnd', updateNav).trigger('resize');
+					$(window).on('resizeEnd?NN', updateNav).trigger('resize');
 				}
 		};
 
@@ -1864,8 +1866,8 @@ export function initialize() {
 			niftyAside = $('#aside-container');
 			if (niftyAside.length) {
 				niftyContainer = $('#container');
-				niftyWindow.on('resizeEnd', updateAside);
-				niftyAside.on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function (e) {
+				niftyWindow.on('resizeEnd?Aside', updateAside);
+				niftyAside.on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd?Aside', function (e) {
 					if (e.target == niftyAside[0]) {
 						niftyWindow.trigger('resize');
 					}
@@ -1883,7 +1885,7 @@ export function initialize() {
 
 				var toggleBtn = $('.aside-toggle');
 				if (toggleBtn.length) {
-					toggleBtn.on('click', function (e) {
+					toggleBtn.on('click?Aside', function (e) {
 						e.preventDefault();
 						$.niftyAside('toggleHideShow');
 					})
@@ -1978,7 +1980,7 @@ export function initialize() {
 					offset: {
 						top: $('#navbar').outerHeight()
 					}
-				}).on('affixed.bs.affix affix.bs.affix', function () {
+				}).on('affixed.bs.affix affix.bs.affix?AFFIX', function () {
 					updateScroll(el);
 				});
 			} else if (!niftyContainer.hasClass(className) || niftyContainer.hasClass('navbar-fixed')) {

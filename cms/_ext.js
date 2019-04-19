@@ -87,10 +87,26 @@ function on( elem, types, selector, data, fn, one ) {
 		fn.guid = origFn.guid || ( origFn.guid = jQuery.guid++ );
 	}
 
-	// types
-
 	return elem.each( function() {
-		jQuery.event.add( this, types, fn, data, selector );
+		var el = this;
+		var [ type, id ] = types.split('?');
+
+		if (id) {
+
+			id = `__${type}_${id}`; // handle id
+			var has = id in el;
+			el[id] = fn;
+
+			if (has) {
+				return;
+			}
+
+			fn = function(...args) {
+				return el[id].call(this, ...args);
+			};
+		}
+
+		jQuery.event.add( el, type, fn, data, selector );
 	});
 }
 
@@ -99,6 +115,9 @@ function on( elem, types, selector, data, fn, one ) {
 jQuery.fn.extend({
 	only: function( types, selector, data, fn ) {
 		this.off(types);
+		return on( this, types, selector, data, fn );
+	},
+	on: function( types, selector, data, fn ) {
 		return on( this, types, selector, data, fn );
 	}
 });
