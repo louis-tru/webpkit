@@ -29,10 +29,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 import React, { Component } from 'react';
-import CMSPage from './cms-page';
+import CMSPage from './page';
 
 export * from '..';
-export { CMSPage };
 
 require('./utils.css');
 global.jQuery = global.$ = require('jquery');
@@ -51,10 +50,13 @@ require('nifty/plugins/morris-js/morris.js');
 import { initialize, error, Router, Root } from '..';
 import {HashRouter, Route, Switch} from 'react-router-dom';
 import Login from './login';
+import Menu from './menu';
 import Header from './header';
 import Footer from './footer';
-import Menu from './menu';
+import ExamplesMenu from '../test/cms-menu';
 import NotFound from './404';
+
+export { CMSPage, Header, Footer, Menu };
 
 /**
  * @class CMSRoot
@@ -64,18 +66,12 @@ export class CMSRoot extends Root {
 	constructor(props) {
 		super(props);
 		this.state.is_404 = false;
-		//this.state.menu = 
 
 		window.addEventListener('hashchange', e=>{
 			if (this.state.is_404) {
 				this._no404();
 			}
 		});
-	}
-
-	async componentDidMount() {
-		await super.componentDidMount();
-		require('nifty/js/nifty.js').initialize();
 	}
 
 	render() {
@@ -127,15 +123,15 @@ export class CMSRoot extends Root {
 	}
 
 	menu() {
-		return <Menu />;
+		return this.props.menu || <ExamplesMenu />;
 	}
 
 	header() {
-		return <Header />;
+		return this.props.header || <Header />;
 	}
 
 	footer() {
-		return <Footer/>;
+		return this.props.footer || <Footer />;
 	}
 
 }

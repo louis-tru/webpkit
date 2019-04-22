@@ -39,8 +39,7 @@ import 'nifty/css/demo/nifty-demo.css';
 
 export default class extends CMSPage {
 
-	onLoadNifty() {
-		this.reloadNifty();
+	onLoad() {
 		require('nifty/js/demo/nifty-demo.js').default();
 		require('nifty/js/demo/dashboard.jsx').default();
 	}

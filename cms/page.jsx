@@ -29,7 +29,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 import { React, Page } from '..';
-import { Root } from '..';
 
 /**
  * @class CMSPage
@@ -40,13 +39,10 @@ export default class CMSPage extends Page {
 		require('nifty/js/nifty.js').initialize();
 	}
 
-	componentDidMount() {
-		this.onLoadNifty();
-		super.componentDidMount();
-	}
-
-	onLoadNifty() {
-		// ...
+	async componentDidMount() {
+		this.reloadNifty();
+		await super.componentDidMount();
+		
 	}
 
 }

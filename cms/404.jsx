@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import CMSPage from './cms-page';
+import CMSPage from './page';
 import { Root, React } from '..';
 
 export default class extends CMSPage {

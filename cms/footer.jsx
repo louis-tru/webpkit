@@ -39,13 +39,13 @@ export default class extends Component {
 				{/*-- Visible when footer positions are fixed --*/}
 				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}
 				<div className="show-fixed pull-right">
-				    You have <a href="#" className="text-bold text-main"><span className="label label-danger">3</span> pending action.</a>
+					You have <a href="#" className="text-bold text-main"><span className="label label-danger">3</span> pending action.</a>
 				</div>
 
 				{/*-- Visible when footer positions are static --*/}
 				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}
 				<div className="hide-fixed pull-right pad-rgt">
-				    14GB of <strong>512GB</strong> Free.
+					14GB of <strong>512GB</strong> Free.
 				</div>
 
 				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}

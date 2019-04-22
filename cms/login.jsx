@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import CMSPage from './cms-page';
+import CMSPage from './page';
 import { Root, React } from '..';
 
 import 'nifty/css/demo/nifty-demo-icons.css';
