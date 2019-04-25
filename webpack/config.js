@@ -33,6 +33,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const devinline = process.env.DEV_INLINE == 'false' ? false: true;
 const productName = process.env.PRODUCT_NAME || 'app';
 const prot = Number(process.env.PORT) || 8080;
 const assetsPublicPath = process.env.VIRTUAL || '';
@@ -53,6 +54,11 @@ module.exports = {
 	assetsPublicPath: assetsPublicPath,
 	staticAssets: staticAssets,
 	dev: {
+
+		inline: devinline,
+
+		hotOnly: false,
+		hot: true,
 
 		proxyTable: assetsPublicPath ? (e=>{
 			var proxyTable = {};
@@ -82,7 +88,8 @@ module.exports = {
 		// https://vue-loader.vuejs.org/en/options.html#cachebusting
 		cacheBusting: true,
 
-		cssSourceMap: true
+		cssSourceMap: true,
+
 	},
 
 	build: {

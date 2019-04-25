@@ -28,6 +28,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+global.__resourceQuery = '?https://52block.net/test_wx'
+
 const path = require('path');
 const utils = require('./utils');
 const config = require('./config');
@@ -158,11 +160,22 @@ const plugins = [
 	...(isProd ? prod_plugins: develop_plugins),
 ];
 
+var devClient = [];
+
+if (!isProd && config.dev.inline === false) {
+	devClient.push('cport-h5/webpack/dev-client');
+	if (config.dev.hotOnly) {
+		devClient.push('webpack/hot/only-dev-server');
+	} else if (config.dev.hot) {
+		devClient.push('webpack/hot/dev-server');
+	}
+}
+
 module.exports = {
 	externals: require('./externals'),
 	context: utils.resolve('.'),
-	entry: {
-		[name]: `./${name}/index`,
+	entry:{
+		[name]: [ ...devClient, `./${name}/index` ],
 	},
 	output: {
 		path: config.output, // build output dir
@@ -254,6 +267,7 @@ module.exports = {
 	},
 	// these devServer options should be customized in /config/index.js
 	devServer: {
+		inline: config.dev.inline,
 		clientLogLevel: 'warning',
 		// historyApiFallback: {
 		// 	rewrites: [
@@ -262,7 +276,8 @@ module.exports = {
 		// },
 		// contentBase: fasle, // since we use CopyWebpackPlugin.
 		disableHostCheck: true, // Invalid Host header
-		hot: true,
+		hotOnly: config.dev.hotOnly,
+		hot: config.dev.hot,
 		compress: true,
 		host: HOST,
 		port: PORT,
@@ -271,6 +286,6 @@ module.exports = {
 		publicPath: path.join('/', config.assetsPublicPath),
 		proxy: config.dev.proxyTable,
 		quiet: true, // necessary for FriendlyErrorsPlugin
-		watchOptions: { poll: config.dev.poll, }
+		watchOptions: { poll: config.dev.poll, },
 	},
 };
