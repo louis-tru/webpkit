@@ -28,8 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-'use strict'
-require('./check-versions')()
+require('./check-versions')();
 
 process.env.NODE_ENV = 'production';
 
@@ -44,7 +43,7 @@ const webpackConfig = require('./index');
 const spinner = ora('building for production...');
 spinner.start();
 
-rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {
+rm(path.join(config.output, config.productName), err => {
 	if (err) throw err
 	webpack(webpackConfig, (err, stats) => {
 		spinner.stop()

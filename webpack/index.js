@@ -28,8 +28,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-'use strict'
-
 const path = require('path');
 const utils = require('./utils');
 const config = require('./config');
@@ -41,22 +39,17 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const isProduction =
+const isProd =
 	process.env.NODE_ENV === 'production' ||
 	process.env.NODE_ENV === 'prod';
-const sourceMapEnabled = isProduction
+const sourceMapEnabled = isProd
 	? config.build.productionSourceMap
 	: config.dev.cssSourceMap;
-const isProd = !!isProduction;
 
-const HOST = '0.0.0.0';
-const PORT = Number(process.env.PORT) || 8092;
+const HOST = config.dev.host;
+const PORT = config.dev.port;
 const ENV = { NODE_ENV: isProd ? '"production"': '"development"' };
-const productName = config.productName;
-
-function resolve(dir) {
-	return path.join(config.root, dir)
-}
+const name = config.productName;
 
 // develop plugins
 const develop_plugins = [
@@ -81,7 +74,7 @@ const prod_plugins = [
 	}),
 	// extract css into its own file
 	new ExtractTextPlugin({
-		filename: utils.assetsPath('css/[name].[contenthash].css'),
+		filename: utils.assetsPath('[name].[contenthash].css'),
 		// Setting the following option to `false` will not extract CSS from codesplit chunks.
 		// Their CSS will instead be inserted dynamically with style-loader when the codesplit chunk has been loaded by webpack.
 		// It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`, 
@@ -108,7 +101,7 @@ const prod_plugins = [
 			return (
 				module.resource &&
 				/\.js$/.test(module.resource) &&
-				module.resource.indexOf( resolve('node_modules') ) === 0
+				module.resource.indexOf( utils.resolve('node_modules') ) === 0
 			)
 		}
 	}),
@@ -149,17 +142,17 @@ const plugins = [
 	// http://vuejs.github.io/vue-loader/en/workflow/production.html
 	new webpack.DefinePlugin({ 'process.env': ENV }),
 	// copy custom static assets
-	new CopyWebpackPlugin([{
-		from: resolve('static'),
-		to: 'static',
+	new CopyWebpackPlugin(config.staticAssets.map(e=>({
+		from: utils.resolve(e),
+		to: e,
 		ignore: ['.*', '*.mp4', '*.mp3'],
-	}]),
+	}))),
 	// generate dist index.html with correct asset hash for caching.
 	// you can customize output by editing /index.html
 	// see https://github.com/ampedandwired/html-webpack-plugin
 	new HtmlWebpackPlugin({
-		filename: productName == 'app' ? 'index.html': productName + '.html',
-		template: productName + '/index.html',
+		filename: name == 'app' ? 'index.html': name + '.html',
+		template: name + '/index.html',
 		inject: true,
 	}),
 	...(isProd ? prod_plugins: develop_plugins),
@@ -167,23 +160,22 @@ const plugins = [
 
 module.exports = {
 	externals: require('./externals'),
-	context: resolve('.'),
+	context: utils.resolve('.'),
 	entry: {
-		[productName]: `./${productName}/index`,
+		[name]: `./${name}/index`,
 	},
 	output: {
-		path: config.build.assetsRoot,
-		filename: isProd ? utils.assetsPath('js/[name].min.js?[chunkhash]'): '[name].js',
-		publicPath: isProduction
-			? config.build.assetsPublicPath: config.dev.assetsPublicPath,
+		path: config.output, // build output dir
+		filename: isProd ? utils.assetsPath('[name].min.js?[chunkhash]'): '[name].js',
 			...(isProd ? {
-		chunkFilename: utils.assetsPath('js/[chunkhash].js') }: {}),
+		chunkFilename: utils.assetsPath('[chunkhash].js') }: {}),
+		publicPath: '',
 	},
 	resolve: {
 		extensions: ['.js', '.vue', '.json', '.jsx', '.css'],
 		alias: {
 			'vue$': 'vue/dist/vue.esm.js',
-			'static': resolve('static'),
+			'static': utils.resolve('static'),
 			'nifty': path.join(__dirname, '../nifty'),
 		}
 	},
@@ -195,7 +187,7 @@ module.exports = {
 				options: {
 					loaders: utils.cssLoaders({
 						sourceMap: sourceMapEnabled,
-						extract: isProduction,
+						extract: isProd,
 					}),
 					cssSourceMap: sourceMapEnabled,
 					cacheBusting: config.dev.cacheBusting,
@@ -210,7 +202,7 @@ module.exports = {
 			{
 				test: /\.(js|jsx)$/,
 				loader: 'babel-loader',
-				include: [resolve('.'), path.join(__dirname, '..')],
+				include: [utils.resolve('.'), path.join(__dirname, '..')],
 				exclude: /node_modules/,
 				options: {
 					babelrc: __dirname + '/../.babelrc',
@@ -221,7 +213,7 @@ module.exports = {
 				loader: 'url-loader',
 				options: {
 					limit: 10000,
-					name: utils.assetsPath('img/[name].[hash:7].[ext]')
+					name: utils.assetsPath('[name].[hash:7].[ext]')
 				}
 			},
 			{
@@ -229,7 +221,7 @@ module.exports = {
 				loader: 'url-loader',
 				options: {
 					limit: 10000,
-					name: utils.assetsPath('media/[name].[hash:7].[ext]')
+					name: utils.assetsPath('[name].[hash:7].[ext]')
 				}
 			},
 			{
@@ -237,7 +229,7 @@ module.exports = {
 				loader: 'url-loader',
 				options: {
 					limit: 10000,
-					name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
+					name: utils.assetsPath('[name].[hash:7].[ext]')
 				}
 			},
 			...utils.styleLoaders({ sourceMap: sourceMapEnabled, usePostCSS: true, extract: isProd, }),
@@ -265,17 +257,18 @@ module.exports = {
 		clientLogLevel: 'warning',
 		// historyApiFallback: {
 		// 	rewrites: [
-		// 		{ from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'index.html') },
+		// 		{ from: /.*/, to: path.posix.join(config.assetsPublicPath, 'index.html') },
 		// 	],
 		// },
 		// contentBase: fasle, // since we use CopyWebpackPlugin.
+		disableHostCheck: true, // Invalid Host header
 		hot: true,
 		compress: true,
-		host: HOST || config.dev.host,
-		port: PORT || config.dev.port,
+		host: HOST,
+		port: PORT,
 		open: config.dev.autoOpenBrowser,
 		overlay: config.dev.errorOverlay ? { warnings: false, errors: true }: false,
-		publicPath: config.dev.assetsPublicPath,
+		publicPath: path.join('/', config.assetsPublicPath),
 		proxy: config.dev.proxyTable,
 		quiet: true, // necessary for FriendlyErrorsPlugin
 		watchOptions: { poll: config.dev.poll, }

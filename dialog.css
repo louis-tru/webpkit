@@ -54,7 +54,7 @@
 	justify-content: space-around;
 }
 
-.dialog .btns > view {
+.dialog .btns > div {
 	color: #999;
 	font-size: 0.32rem;
 	flex: 1;
@@ -63,16 +63,16 @@
 	border-right: solid 0.015rem #e8e8e8;
 }
 
-.dialog .btns > view:active {
+.dialog .btns > div:active {
 	/*opacity: 0.5;*/
 	background: #eee;
 }
 
-.dialog .btns > view:first-child {
+.dialog .btns > div:first-child {
 	border-bottom-left-radius: 0.3rem;
 }
 
-.dialog .btns > view:last-child {
+.dialog .btns > div:last-child {
 	border-right: none;
 	border-bottom-right-radius: 0.3rem;
 }

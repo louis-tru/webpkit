@@ -28,29 +28,42 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-'use strict'
 // Template version: 1.3.1
 // see http://vuejs-templates.github.io/webpack for documentation.
 
+const fs = require('fs');
 const path = require('path');
-
 const productName = process.env.PRODUCT_NAME || 'app';
+const prot = Number(process.env.PORT) || 8080;
+const assetsPublicPath = process.env.VIRTUAL || '';
+const source = path.resolve(process.env.ROOT_DIR || process.cwd());
+const output = path.resolve(process.env.OUTPUT ||  'out/public', assetsPublicPath);
 
-const root = path.resolve(process.env.ROOT_DIR || process.cwd());
+var staticAssets = [];
+
+if (fs.existsSync(source + '/.static')) {
+	staticAssets = fs.readFileSync(source + '/.static', 'utf8')
+		.split('\n').map(e=>e.trim()).filter(e=>e);
+}
 
 module.exports = {
 	productName: productName,
-	root: root,
+	source: source,
+	output: output,
+	assetsPublicPath: assetsPublicPath,
+	staticAssets: staticAssets,
 	dev: {
 
-		// Paths
-		assetsSubDirectory: productName,
-		assetsPublicPath: '/',
-		proxyTable: {},
+		proxyTable: assetsPublicPath ? (e=>{
+			var proxyTable = {};
+			for (var e of staticAssets)
+				proxyTable[path.join('/', e)] = path.join('/', assetsPublicPath, e);
+			return proxyTable;
+		})():{},
 
 		// Various Dev Server settings
 		host: '0.0.0.0', // can be overwritten by process.env.HOST
-		port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+		port: prot, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
 		autoOpenBrowser: false,
 		errorOverlay: true,
 		notifyOnErrors: true,
@@ -73,10 +86,6 @@ module.exports = {
 	},
 
 	build: {
-		// Paths
-		assetsRoot: path.resolve(process.env.OUTPUT ||  'out/public'),
-		assetsSubDirectory: productName,
-		assetsPublicPath: '/',
 
 		/**
 		 * Source Maps
@@ -99,4 +108,4 @@ module.exports = {
 		// Set to `true` or `false` to always turn it on or off
 		bundleAnalyzerReport: process.env.npm_config_report
 	}
-}
+};

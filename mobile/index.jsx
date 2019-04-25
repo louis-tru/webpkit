@@ -37,7 +37,7 @@ import sdk from 'dphoto-magic-sdk';
 import path from 'qkit/path';
 import '../_fix';
 import error from '../error';
-import dialog from '../dialog';
+import * as dialog from '../dialog';
 import { NavPage, Nav } from './nav';
 import ReactDom from 'react-dom';
 import React, { Component } from 'react';
@@ -131,7 +131,10 @@ export async function initialize_sdk(config = {}) {
 	var url = new path.URL(config.serviceAPI || qkit.config.serviceAPI);
 	await sdk.initialize(
 		path.getParam('D_SDK_HOST') || url.hostname,
-		path.getParam('D_SDK_PORT') || url.port);
+		path.getParam('D_SDK_PORT') || url.port,
+		path.getParam('D_SDK_SSL') || /^(http|ws)s/.test(url.protocol),
+		path.getParam('D_SDK_VIRTUAL') || url.filename
+	);
 
 	sdk.addEventListener('Error', function(err) {
 		error.defaultErrorHandle(err.data);

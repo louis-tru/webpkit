@@ -28,75 +28,44 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import 'normalize.css';
-import './utils.css';
-import './_fix';
-import qkit from 'qkit';
-import sdk from 'dphoto-magic-sdk';
-import path from 'qkit/path';
-import error from './error';
-import { Router, Page } from './router';
-import ReactDom from 'react-dom';
-import React, { Component } from 'react';
-import {Link} from 'react-router-dom';
+import crypto from 'crypto-tx';
+import hash_js from 'hash.js';
+import { Buffer } from 'buffer';
+import { Signer } from 'qkit/request';
 
-export * from './dialog';
-
-var current = null;
+var privateKey = crypto.genPrivateKey();
+var publicKey = crypto.getPublic(privateKey);
 
 /**
- * @class Root
+ * @class MySigner
  */
-export class Root extends Component {
+class MySigner extends Signer {
 
-	state = { isLoaded: 0 };
+	setExtra(extra) {
+		this.m_extra = extra;
+	}
 
-	async componentDidMount() {
-		current = this;
-		try {
-			await initialize_sdk(this.props.config || {});
-		} catch(e) {
-			error.defaultErrorHandle(e);
+	sign(url, data_str = null) {
+		var st = Date.now();
+		var message = new Buffer(32);
+		var fuzz_key = '0a37eb70c1737777bc111d03af4fcd091bc6d913baa2f90316511c61943dbce2';
+		var {signature, recovery } = crypto.sign(message, privateKey);
+		var sign = signature.toString('hex') + (recovery ? '01' : '00');
+
+		var sha256 = hash_js.sha256();
+		if (data_str) {
+			sha256.update(data_str);
 		}
-		this.setState({ isLoaded: true });
-	}
+		sha256.update(st + fuzz_key + url);
 
-	render() {
-		return (
-			this.state.isLoaded ?
-			<Router ref="router" 
-				notFound={this.props.notFound} routes={this.props.routes}
-			/>:
-			<div className="init-loading">Loading..</div>
-		);
-	}
-
-	static get current() {
-		return current;
+		return Object.assign({
+			st, sign: sha256.digest('base64'),
+		}, this.m_extra);
 	}
 }
 
-export async function initialize_sdk(config = {}) {
-	if (sdk.isLoaded) return;
-	var url = new path.URL(config.serviceAPI || qkit.config.serviceAPI);
-	await sdk.initialize(
-		path.getParam('D_SDK_HOST') || url.hostname,
-		path.getParam('D_SDK_PORT') || url.port,
-		path.getParam('D_SDK_SSL') || /^(http|ws)s/.test(url.protocol),
-		path.getParam('D_SDK_VIRTUAL') || url.filename
-	);
-
-	sdk.addEventListener('Error', function(err) {
-		error.defaultErrorHandle(err.data);
-	});
-};
+var signer = new MySigner();
 
 export {
-	React,
-	ReactDom,
-	Component,
-	Router, Page,
-	sdk,
-	Link,
-	error,
+	privateKey, publicKey, signer,
 };
