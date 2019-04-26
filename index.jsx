@@ -39,6 +39,7 @@ import { Router, Page } from './router';
 import ReactDom from 'react-dom';
 import React, { Component } from 'react';
 import {Link} from 'react-router-dom';
+import GlobalState from './global-state';
 
 export * from './dialog';
 
@@ -47,18 +48,27 @@ var current = null;
 /**
  * @class Root
  */
-export class Root extends Component {
+export class Root extends GlobalState {
 
-	state = { isLoaded: 0 };
+	state = { isLoaded: false };
 
 	async componentDidMount() {
 		current = this;
+
 		try {
-			await initialize_sdk(this.props.config || {});
+			await this.onLoad();
+
+			if ( typeof this.props.onLoad == 'function') {
+				await this.props.onLoad(this);
+			}
 		} catch(e) {
-			error.defaultErrorHandle(e);
+			error.defaultErrorHandle(e); return;
 		}
 		this.setState({ isLoaded: true });
+	}
+
+	async onLoad() {
+		await initializeSdk(this.props.config || {});
 	}
 
 	render() {
@@ -76,7 +86,7 @@ export class Root extends Component {
 	}
 }
 
-export async function initialize_sdk(config = {}) {
+export async function initializeSdk(config = {}) {
 	if (sdk.isLoaded) return;
 	var url = new path.URL(config.serviceAPI || qkit.config.serviceAPI);
 	await sdk.initialize(

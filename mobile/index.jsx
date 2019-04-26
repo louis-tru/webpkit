@@ -42,6 +42,7 @@ import { NavPage, Nav } from './nav';
 import ReactDom from 'react-dom';
 import React, { Component } from 'react';
 import _404 from './404';
+import GlobalState from '../global-state';
 
 /**
  * @class MyPage
@@ -72,25 +73,31 @@ export class MyPage extends NavPage {
 /**
  * @class Root
  */
-export class Root extends Component {
+export class Root extends GlobalState {
 
 	state = { isLoaded: false };
 
 	async componentDidMount() {
 		rem.initialize();
+
 		try {
-			await initialize_sdk(this.props.config || {});
-			this.setState({ isLoaded: true });
-			return
+			await this.onLoad();
+
+			if ( typeof this.props.onLoad == 'function') {
+				await this.props.onLoad(this);
+			}
 		} catch(e) {
-			error.defaultErrorHandle(e);
-			return;
+			error.defaultErrorHandle(e); return;
 		}
 
 		setTimeout(e=>window.history.replaceState({}, this.props.title||'', '#/'), 10);
 		window.addEventListener('hashchange', (e)=>{ // 不管前进或后退都当成后退处理
 			this.refs.nav.current.popPage(true);
 		});
+	}
+
+	async onLoad() {
+		await initializeSdk(this.props.config || {});
 	}
 
 	onNav(e){
@@ -126,7 +133,7 @@ export class Root extends Component {
 	}
 }
 
-export async function initialize_sdk(config = {}) {
+export async function initializeSdk(config = {}) {
 	if (sdk.isLoaded) return;
 	var url = new path.URL(config.serviceAPI || qkit.config.serviceAPI);
 	await sdk.initialize(

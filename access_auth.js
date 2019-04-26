@@ -32,9 +32,29 @@ import crypto from 'crypto-tx';
 import hash_js from 'hash.js';
 import { Buffer } from 'buffer';
 import { Signer } from 'qkit/request';
+import storage from 'qkit/storage';
 
-var privateKey = crypto.genPrivateKey();
-var publicKey = crypto.getPublic(privateKey);
+var privateKeyBytes;
+var publicKeyBytes;
+var publicKey;
+
+var hex = storage.get('access_auth_key');
+if (hex) { // use priv 
+	genAccessKey_0(Buffer.from(hex, 'hex'));
+} else {
+	genAccessKey();
+}
+
+function genAccessKey_0(privatekey) {
+	privateKeyBytes = privatekey;
+	publicKeyBytes = crypto.getPublic(privatekey, true);
+	publicKey = '0x' + publicKeyBytes.toString('hex');
+}
+
+function genAccessKey() {
+	genAccessKey_0(crypto.genPrivateKey());
+	storage.set('access_auth_key', privateKeyBytes.toString('hex'));
+}
 
 /**
  * @class MySigner
@@ -47,25 +67,31 @@ class MySigner extends Signer {
 
 	sign(url, data_str = null) {
 		var st = Date.now();
-		var message = new Buffer(32);
 		var fuzz_key = '0a37eb70c1737777bc111d03af4fcd091bc6d913baa2f90316511c61943dbce2';
-		var {signature, recovery } = crypto.sign(message, privateKey);
-		var sign = signature.toString('hex') + (recovery ? '01' : '00');
-
 		var sha256 = hash_js.sha256();
 		if (data_str) {
 			sha256.update(data_str);
 		}
 		sha256.update(st + fuzz_key + url);
 
+		var message = Buffer.from(sha256.digest());
+		var {signature, recovery } = crypto.sign(message, privateKeyBytes);
+		var sign = new Buffer(65);
+
+		signature.copy(sign);
+		sign[64] = recovery;
+
 		return Object.assign({
-			st, sign: sha256.digest('base64'),
+			st, sign: sign.toString('base64'),
 		}, this.m_extra);
 	}
 }
 
 var signer = new MySigner();
 
-export {
-	privateKey, publicKey, signer,
+export default {
+	genAccessKey,
+	signer,
+	get publicKeyBytes() { return publicKeyBytes },
+	get publicKey() { return publicKey },
 };
