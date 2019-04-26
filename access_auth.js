@@ -72,6 +72,7 @@ class MySigner extends Signer {
 		if (data_str) {
 			sha256.update(data_str);
 		}
+		url = url.replace(/^.+\/service-api\//, '/service-api/');
 		sha256.update(st + fuzz_key + url);
 
 		var message = Buffer.from(sha256.digest());
