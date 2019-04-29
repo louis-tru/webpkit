@@ -182,7 +182,7 @@ module.exports = {
 		filename: isProd ? utils.assetsPath('[name].min.js?[chunkhash]'): '[name].js',
 			...(isProd ? {
 		chunkFilename: utils.assetsPath('[chunkhash].js') }: {}),
-		publicPath: '',
+		publicPath: config.publicPath,
 	},
 	resolve: {
 		extensions: ['.js', '.vue', '.json', '.jsx', '.css'],

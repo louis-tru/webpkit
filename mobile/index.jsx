@@ -45,32 +45,6 @@ import _404 from './404';
 import GlobalState from '../global-state';
 
 /**
- * @class MyPage
- */
-export class MyPage extends NavPage {
-
-	name = 'test';
-	platform = 'iphonex';
-
-	getMainClass(cls = '') {
-		var cls_1 = 'main ';
-		if (qkit.dev) {
-			cls_1 += 'test ';
-		}
-		if (this.platform == 'android') {
-			cls_1 += 'android ';
-		} else if (this.platform == 'iphonex') {
-			cls_1 += 'iphonex '; 
-		}
-		return cls_1 + this.name + ' ' + cls;
-	}
-
-	get mainClass() {
-		return this.getMainClass();
-	}
-}
-
-/**
  * @class Root
  */
 export class Root extends GlobalState {
@@ -81,18 +55,21 @@ export class Root extends GlobalState {
 		rem.initialize();
 
 		try {
-			await this.onLoad();
+			var initurl = await this.onLoad();
 
 			if ( typeof this.props.onLoad == 'function') {
-				await this.props.onLoad(this);
+				initurl = (await this.props.onLoad(this)) || initurl;
 			}
+			this.m_initurl = initurl;
 		} catch(e) {
 			error.defaultErrorHandle(e); return;
 		}
 
+		this.setState({ isLoaded: true });
+
 		setTimeout(e=>window.history.replaceState({}, this.props.title||'', '#/'), 10);
-		window.addEventListener('hashchange', (e)=>{ // 不管前进或后退都当成后退处理
-			this.refs.nav.current.popPage(true);
+		window.addEventListener('hashchange', (e)=>{
+			this.refs.nav.current.popPage(true); // 不管前进或后退都当成后退处理
 		});
 	}
 
@@ -115,7 +92,7 @@ export class Root extends GlobalState {
 	}
 
 	render() {
-		var url = location.hash ? location.hash.replace(/^#/, '') : '/';
+		var url = this.m_initurl || (location.hash ? location.hash.replace(/^#/, '') : '/');
 		return (
 			this.state.isLoaded ?
 			<Nav 

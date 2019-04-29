@@ -39,6 +39,7 @@ const prot = Number(process.env.PORT) || 8080;
 const assetsPublicPath = process.env.VIRTUAL || '';
 const source = path.resolve(process.env.ROOT_DIR || process.cwd());
 const output = path.resolve(process.env.OUTPUT ||  'out/public', assetsPublicPath);
+const publicPath = process.env.PUBLIC_PATH || '';
 
 var staticAssets = [];
 
@@ -53,6 +54,8 @@ module.exports = {
 	output: output,
 	assetsPublicPath: assetsPublicPath,
 	staticAssets: staticAssets,
+	publicPath: publicPath,
+
 	dev: {
 
 		inline: devinline,
