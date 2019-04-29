@@ -441,7 +441,7 @@ export class Nav extends Component {
 export class NavPage extends Component {
 
 	name = 'index';
-	platform = 'iphonex';
+	platform = 'iphone';
 
 	getMainClass(cls = '') {
 		var cls_1 = 'main ';
