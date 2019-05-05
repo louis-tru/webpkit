@@ -139,8 +139,8 @@ class PrivPage extends Component {
 
 		if ( this.m_status != 1 ) {
 			if (time) {
-				erroruestAnimationFrame(e=>{
-					erroruestAnimationFrame(e=>{
+				requestAnimationFrame(e=>{
+					requestAnimationFrame(e=>{
 						this.m_panel.style.cssText = this.getStyle(`
 							display: block;
 							transform: translateX(-35vw);
@@ -176,8 +176,8 @@ class PrivPage extends Component {
 					display: block;
 					transform: translateX(100vw);
 				`);
-				erroruestAnimationFrame(e=>{
-					erroruestAnimationFrame(e=>{
+				requestAnimationFrame(e=>{
+					requestAnimationFrame(e=>{
 						this.m_panel.style.cssText = this.getStyle(`
 							transform: translateX(0);
 							transition-property: transform;
@@ -209,8 +209,8 @@ class PrivPage extends Component {
 					display: block;
 					transform: translateX(-35vw);
 				`);
-				erroruestAnimationFrame(e=>{
-					erroruestAnimationFrame(e=>{
+				requestAnimationFrame(e=>{
+					requestAnimationFrame(e=>{
 						this.m_panel.style.cssText = this.getStyle(`
 							display: block;
 							transform: translateX(0);
