@@ -67,7 +67,7 @@ export default class Login extends CMSPage {
 
 			$imgHolder.addClass('disabled');
 			var url = $el.attr('src').replace('/thumbs','');
-
+			
 			$('<img/>').load(url, function(){
 
 				self.setState({ $$url: url });
@@ -103,7 +103,7 @@ export default class Login extends CMSPage {
 								<h3 className="h4 mar-no">Account Login</h3>
 								<p className="text-muted">Sign In to your account</p>
 							</div>
-							<form action="index.html">
+							<form action="#/account">
 								<div className="form-group">
 									<input type="text" className="form-control" placeholder="Username" autoFocus />
 								</div>

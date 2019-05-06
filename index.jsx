@@ -54,7 +54,7 @@ export class Root extends Component {
 	async componentDidMount() {
 		current = this;
 		try {
-			await initialize_sdk(this.props.config || {});
+			// await initialize_sdk(this.props.config || {});
 		} catch(e) {
 			error.defaultErrorHandle(e);
 		}
