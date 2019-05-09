@@ -31,6 +31,7 @@
 import qkit from 'qkit';
 import React, { Component } from 'react';
 import ReactDom from 'react-dom';
+import GlobalState from '../global-state';
 import error from '../error';
 
 class PrivPage extends Component {
@@ -106,7 +107,8 @@ class PrivPage extends Component {
 	}
 
 	replace(props) {
-		this.props = this.m_props = { ...props, index: this.m_index, panel: this.m_panel };
+		this.props = 
+		this.m_props = { ...props, index: this.m_index, panel: this.m_panel };
 		this.loader();
 	}
 
@@ -276,7 +278,7 @@ export class Nav extends Component {
 		routes.forEach(e=>{
 			this.m_routes[e.path] = e;
 		});
-		this.push(this.props.initUrl);
+		this.push(this.props.initUrl, 0);
 	}
 
 	get length() {
@@ -323,9 +325,9 @@ export class Nav extends Component {
 		return props;
 	}
 
-	push(url, animate = 1) {
+	m_push(url, animate, index, cb) {
 
-		if (this.m_animating) return;
+		if (this.m_animating) return false;
 
 		var props = this.m_parseProps(url);
 		var panel = document.createElement('div');
@@ -333,7 +335,7 @@ export class Nav extends Component {
 
 		var self = this;
 		var prev = this.m_current;
-		var el = <PrivPage {...props} index={this.length} panel={panel} />;
+		var el = <PrivPage {...props} index={index} panel={panel} />;
 
 		ReactDom.render(el, panel, function() {
 			var page = this;
@@ -362,23 +364,31 @@ export class Nav extends Component {
 			if (self.props.onNav) {
 				self.props.onNav({ type: 'push', url: props.url, count: 1 });
 			}
+
+			if (cb) cb(page);
 		});
+
+		return true;
+	}
+
+	push(url, animate = 1) {
+		return this.m_push(url, animate, this.length);
 	}
 
 	pops(index, animate = 1) {
 
-		if (this.m_animating) return;
+		if (this.m_animating) return false;
 
 		if (this.length == 1 && index <= -1) {
 			if (this.props.onEnd) {
 				this.props.onEnd();
 			}
-			return;
+			return false;
 		}
 
 		index = Math.max(0, index);
 
-		if (index >= this.length - 1) return;
+		if (index >= this.length - 1) return false;
 
 		var page = this.m_pages[index];
 		var arr = this.m_pages.splice(index + 1);
@@ -406,16 +416,41 @@ export class Nav extends Component {
 		if (this.props.onNav) {
 			this.props.onNav({ type: 'pop', url: page.url, count: arr.length + 1 });
 		}
+
+		return true;
 	}
 
 	pop(animate = 1) {
-		this.pops(this.length - 2, animate);
+		return this.pops(this.length - 2, animate);
 	}
 
-	replace(url, index = -1) {
-		if (index >= 0) {
-			this.pops(0, 0);
+	replace(url, animate = 0, index = -1) {
+		if (this.m_animating) return false;
+
+		if (index >= 0 && index < this.length - 1) { // pop
+			this.pops(index, animate);
 		}
+		else if (animate) { // ani push
+
+			var cur = this.m_current;
+			if (!cur) return false;
+
+			qkit.assert(this.length > 0);
+
+			return this.m_push(url, animate, this.length - 1, page=>{
+				setTimeout(e=>{
+					cur.intoLeave(0);
+				}, 400);
+				var prev = cur.m_prev;
+				if (prev) {
+					prev.m_next = page;
+				}
+				page.m_prev = prev;
+				this.m_pages.deleteValue(cur);
+				this.props.onNav({ type: 'replace', url: page.url, count: 0 });
+			});
+		}
+
 		var props = this.m_parseProps(url);
 		if (this.m_current) {
 			this.m_current.replace(props);
@@ -423,6 +458,8 @@ export class Nav extends Component {
 				this.props.onNav({ type: 'replace', url: props.url, count: 0 });
 			}
 		}
+
+		return true;
 	}
 	
 	get current() {
@@ -438,9 +475,8 @@ export class Nav extends Component {
 
 }
 
-export class NavPage extends Component {
+export class NavPage extends GlobalState {
 
-	name = 'index';
 	platform = 'iphone';
 
 	getMainClass(cls = '') {
@@ -453,11 +489,11 @@ export class NavPage extends Component {
 		} else if (this.platform == 'iphonex') {
 			cls_1 += 'iphonex '; 
 		}
-		return cls_1 + this.name + ' ' + cls;
+		return cls_1 + cls;
 	}
 
-	get mcls() {
-		return this.getMainClass();
+	mcls(cls = '') {
+		return this.getMainClass(cls);
 	}
 
 	get nav() {
@@ -481,6 +517,7 @@ export class NavPage extends Component {
 	}
 
 	componentDidMount() {
+		super.componentDidMount();
 		this.onLoad();
 		if (this.props.priv.status == 0) {
 			this.onShow();
@@ -488,6 +525,7 @@ export class NavPage extends Component {
 	}
 
 	componentWillUnmount() {
+		super.componentWillUnmount();
 		if (this.props.priv.status == -1) {
 			this.onHide();
 		}
@@ -511,15 +549,15 @@ export class NavPage extends Component {
 	}
 	
 	pushPage(url, animate = 1) {
-		this.nav.push(url, animate);
+		return this.nav.push(url, animate);
 	}
 
 	popPage(animate = 1) {
-		this.nav.pop(animate);
+		return this.nav.pop(animate);
 	}
 
-	replacePage(url) {
-		this.nav.replace(url);
+	replacePage(url, animate = 0, index = -1) {
+		return this.nav.replace(url, animate, index);
 	}
 
 }

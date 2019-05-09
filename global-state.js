@@ -98,7 +98,10 @@ function setGlobalState(self, state) {
 		}
 	}
 
-	var r = Component.prototype.setState.call(self, state);
+	var r = null;
+
+	if (self)
+		r = Component.prototype.setState.call(self, state);
 
 	if (global_state.length) {
 		for (var com of global_state_components_arr) {
@@ -137,6 +140,14 @@ export default class GlobalState extends Component {
 
 	componentWillUnmount() {
 		unregisterState(this);
+	}
+
+	static getGlobalState() {
+		return Object.create(global_states);
+	}
+
+	static setGlobalState(state) {
+		setGlobalState(null, state);
 	}
 
 }

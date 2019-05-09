@@ -29,6 +29,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 import 'normalize.css';
+import 'antd-mobile';
+import 'antd-mobile/dist/antd-mobile.css';
 import '../utils.css';
 import './utils.css';
 import rem from './rem';

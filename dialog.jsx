@@ -108,7 +108,7 @@ class Dialog extends Component {
 	static show(title, text, buttons, prompt) {
 		var div = document.createElement('div');
 		document.body.appendChild(div);
-		ReactDom.render(
+		return ReactDom.render(
 			<Dialog 
 				title={title} 
 				buttons={buttons}
@@ -123,7 +123,7 @@ export function alert(text, cb) {
 	cb = cb || function() {}
 	var o = typeof text == 'string' ? { text: text, title: '' }: text;
 	var { text, title } = o;
-	Dialog.show(title, text, {
+	return Dialog.show(title, text, {
 		'确定': e=>{ cb() },
 	});
 }
@@ -132,7 +132,7 @@ export function confirm(text, cb) {
 	cb = cb || function() {};
 	var o = typeof text == 'string' ? { text: text, title: '' } : text;
 	var { text, title } = o;
-	Dialog.show(title, text, {
+	return Dialog.show(title, text, {
 		'取消': e=>cb(false),
 		'@确定': e=>cb(true),
 	});
@@ -142,7 +142,7 @@ export function prompt(text, cb) {
 	cb = cb || function() {}
 	var o = typeof text == 'string' ? { text: text, title: '' }: text;
 	var { text, title } = o;
-	Dialog.show(title, text, {
+	return Dialog.show(title, text, {
 		'取消': e=> cb(e.refs.prompt.value, false),
 		'@确定': e=> cb(e.refs.prompt.value, true),
 	}, true);

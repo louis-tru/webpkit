@@ -30,9 +30,16 @@
 
 import * as dialog from './dialog';
 
+var dialog_handles = {};
+
 function defaultErrorHandle(err) {
 	if (err.code) {
-		dialog.alert((err && err.message) || 'An unknown exception');
+		if ( !dialog_handles[err.code] ) {
+			var dag = dialog.alert((err && err.message) || 'An unknown exception', ()=>{
+				delete dialog_handles[err.code];
+			});
+			dialog_handles[err.code] = dag;
+		}
 	} else {
 		throw err;
 	}
