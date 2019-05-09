@@ -30,7 +30,7 @@
 
 import CMSPage from './page';
 import { Root, React } from '..';
-
+import {alert} from '../dialog'
 import 'nifty/css/demo/nifty-demo-icons.css';
 import 'nifty/css/demo/nifty-demo.css';
 
@@ -39,7 +39,7 @@ import 'nifty/css/demo/nifty-demo.css';
  */
 export default class Login extends CMSPage {
 
-	state = { $$url: '', };
+	state = { $$url: '', verificationtext: '获取验证码'};
 
 	onLoad() {
 
@@ -51,12 +51,12 @@ export default class Login extends CMSPage {
 		$bgBtn.on('click', function(e){
 			e.preventDefault();
 			e.stopPropagation();
-
+			
 			var $el = $(this);
 			if ($el.hasClass('active') || $imgHolder.hasClass('disabled')) return;
 			if ($el.hasClass('bg-trans')) {
 				self.setState({ $$url: '' });
-
+				
 				// $target.css('background-image','none').removeClass('bg-img');
 				$imgHolder.removeClass('disabled');
 				$bgBtn.removeClass('active');
@@ -67,7 +67,7 @@ export default class Login extends CMSPage {
 
 			$imgHolder.addClass('disabled');
 			var url = $el.attr('src').replace('/thumbs','');
-
+			
 			$('<img/>').load(url, function(){
 
 				self.setState({ $$url: url });
@@ -83,7 +83,20 @@ export default class Login extends CMSPage {
 		});
 
 	}
-
+	signin() {
+		// 点击登录
+	}
+	getVerificationCode() {
+		// 获取验证码
+	}
+	changeVerificationText(text) {
+	}
+	checkPhone(phone) {
+		return (/^1[34578]\d{9}$/.test(phone))
+	}
+	showErrordialog(text) {
+		alert(text)
+	}
 	render() {
 		return (
 			<div id="container" className="cls-container">
@@ -103,18 +116,19 @@ export default class Login extends CMSPage {
 								<h3 className="h4 mar-no">Account Login</h3>
 								<p className="text-muted">Sign In to your account</p>
 							</div>
-							<form action="index.html">
+							<form>
 								<div className="form-group">
-									<input type="text" className="form-control" placeholder="Username" autoFocus />
+									<input type="text" className="form-control" placeholder="手机号：" ref="uname" autoFocus />
 								</div>
-								<div className="form-group">
-									<input type="password" className="form-control" placeholder="Password" />
+								<div className="form-group" style={{position: 'relative'}}>
+									<input type="password" className="form-control" placeholder="输入验证码" ref="upwd"/>
+									<button className="btn btn-default" style={{position: 'absolute', top: 0,right: '1px', padding: '4px 12px'}} onClick={()=>{this.getVerificationCode()}}>{this.state.verificationtext}</button>
 								</div>
 								<div className="checkbox pad-btm text-left">
 									<input id="demo-form-checkbox" className="magic-checkbox" type="checkbox" />
 									<label for="demo-form-checkbox">Remember me</label>
 								</div>
-								<button className="btn btn-primary btn-lg btn-block" type="submit">Sign In</button>
+								<button className="btn btn-primary btn-lg btn-block" type="submit" onClick={()=>{this.signin()}}>Sign In</button>
 							</form>
 						</div>
 				

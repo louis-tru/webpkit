@@ -429,7 +429,7 @@ export default class extends Component {
 
 						{/*-- Dropdown footer --*/}
 						<div className="pad-all text-right">
-							<a href="pages-login.html" className="btn btn-primary">
+							<a href="#/login" className="btn btn-primary">
 								<i className="demo-pli-unlock"></i> Logout
 							</a>
 						</div>
