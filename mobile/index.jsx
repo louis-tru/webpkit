@@ -37,60 +37,44 @@ import sdk from 'dphoto-magic-sdk';
 import path from 'qkit/path';
 import '../_fix';
 import error from '../error';
-import dialog from '../dialog';
+import * as dialog from '../dialog';
 import { NavPage, Nav } from './nav';
 import ReactDom from 'react-dom';
 import React, { Component } from 'react';
 import _404 from './404';
-
-/**
- * @class MyPage
- */
-export class MyPage extends NavPage {
-
-	name = 'test';
-	platform = 'iphonex';
-
-	getMainClass(cls = '') {
-		var cls_1 = 'main ';
-		if (qkit.dev) {
-			cls_1 += 'test ';
-		}
-		if (this.platform == 'android') {
-			cls_1 += 'android ';
-		} else if (this.platform == 'iphonex') {
-			cls_1 += 'iphonex '; 
-		}
-		return cls_1 + this.name + ' ' + cls;
-	}
-
-	get mainClass() {
-		return this.getMainClass();
-	}
-}
+import GlobalState from '../global-state';
 
 /**
  * @class Root
  */
-export class Root extends Component {
+export class Root extends GlobalState {
 
 	state = { isLoaded: false };
 
 	async componentDidMount() {
 		rem.initialize();
+
 		try {
-			await initialize_sdk(this.props.config || {});
-			this.setState({ isLoaded: true });
-			return
+			var initurl = await this.onLoad();
+
+			if ( typeof this.props.onLoad == 'function') {
+				initurl = (await this.props.onLoad(this)) || initurl;
+			}
+			this.m_initurl = initurl;
 		} catch(e) {
-			error.defaultErrorHandle(e);
-			return;
+			error.defaultErrorHandle(e); return;
 		}
 
+		this.setState({ isLoaded: true });
+
 		setTimeout(e=>window.history.replaceState({}, this.props.title||'', '#/'), 10);
-		window.addEventListener('hashchange', (e)=>{ // 不管前进或后退都当成后退处理
-			this.refs.nav.current.popPage(true);
+		window.addEventListener('hashchange', (e)=>{
+			this.refs.nav.current.popPage(true); // 不管前进或后退都当成后退处理
 		});
+	}
+
+	async onLoad() {
+		await initializeSdk(this.props.config || {});
 	}
 
 	onNav(e){
@@ -108,7 +92,7 @@ export class Root extends Component {
 	}
 
 	render() {
-		var url = location.hash ? location.hash.replace(/^#/, '') : '/';
+		var url = this.m_initurl || (location.hash ? location.hash.replace(/^#/, '') : '/');
 		return (
 			this.state.isLoaded ?
 			<Nav 
@@ -126,12 +110,15 @@ export class Root extends Component {
 	}
 }
 
-export async function initialize_sdk(config = {}) {
+export async function initializeSdk(config = {}) {
 	if (sdk.isLoaded) return;
 	var url = new path.URL(config.serviceAPI || qkit.config.serviceAPI);
 	await sdk.initialize(
 		path.getParam('D_SDK_HOST') || url.hostname,
-		path.getParam('D_SDK_PORT') || url.port);
+		path.getParam('D_SDK_PORT') || url.port,
+		path.getParam('D_SDK_SSL') || /^(http|ws)s/.test(url.protocol),
+		path.getParam('D_SDK_VIRTUAL') || url.filename
+	);
 
 	sdk.addEventListener('Error', function(err) {
 		error.defaultErrorHandle(err.data);

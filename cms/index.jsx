@@ -55,6 +55,8 @@ import Header from './header';
 import Footer from './footer';
 import ExamplesMenu from '../test/cms-menu';
 import NotFound from './404';
+import { createHashHistory } from 'history';
+const history = createHashHistory();
 
 export { CMSPage, Header, Footer, Menu };
 
@@ -80,10 +82,11 @@ export class CMSRoot extends Root {
 		return (
 			this.state.isLoaded ?
 			this.state.is_404 ? <_NotFound />:
-			<HashRouter>
+			<HashRouter history={history}>
 				<Switch>
 					<Route path="/login">
-						<Login />
+
+						{this.login()}
 					</Route>
 					<Route path="/404">
 						<_NotFound />
@@ -120,6 +123,10 @@ export class CMSRoot extends Root {
 
 	_no404() {
 		this.setState({ is_404: false });
+	}
+
+	login() {
+		return this.props.login || <Login {...props} />;
 	}
 
 	menu() {

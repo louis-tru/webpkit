@@ -28,18 +28,17 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-'use strict'
 const path = require('path')
 const config = require('./config')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const packageConfig = require(config.root + '/package.json')
+const packageConfig = require(config.source + '/package.json')
 
 exports.assetsPath = function (_path) {
-	const assetsSubDirectory = process.env.NODE_ENV === 'production'
-		? config.build.assetsSubDirectory
-		: config.dev.assetsSubDirectory
+	return path.posix.join(config.productName, _path)
+}
 
-	return path.posix.join(assetsSubDirectory, _path)
+exports.resolve = function(dir) {
+	return path.join(config.source, dir)
 }
 
 exports.cssLoaders = function (options) {

@@ -28,56 +28,71 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const chalk = require('chalk');
-const semver = require('semver');
-const packageConfig = require('../package.json');
-const shell = require('shelljs');
+import crypto from 'crypto-tx';
+import hash_js from 'hash.js';
+import { Buffer } from 'buffer';
+import { Signer } from 'qkit/request';
+import storage from 'qkit/storage';
 
-function exec (cmd) {
-	return require('child_process').execSync(cmd).toString().trim()
+var privateKeyBytes;
+var publicKeyBytes;
+var publicKey;
+
+var hex = storage.get('access_auth_key');
+if (hex) { // use priv 
+	genAccessKey_0(Buffer.from(hex, 'hex'));
+} else {
+	genAccessKey();
 }
 
-const versionRequirements = [
-	{
-		name: 'node',
-		currentVersion: semver.clean(process.version),
-		versionRequirement: packageConfig.engines.node
+function genAccessKey_0(privatekey) {
+	privateKeyBytes = privatekey;
+	publicKeyBytes = crypto.getPublic(privatekey, true);
+	publicKey = '0x' + publicKeyBytes.toString('hex');
+}
+
+function genAccessKey() {
+	genAccessKey_0(crypto.genPrivateKey());
+	storage.set('access_auth_key', privateKeyBytes.toString('hex'));
+}
+
+/**
+ * @class MySigner
+ */
+class MySigner extends Signer {
+
+	setExtra(extra) {
+		this.m_extra = extra;
 	}
-]
 
-if (shell.which('npm')) {
-	versionRequirements.push({
-		name: 'npm',
-		currentVersion: exec('npm --version'),
-		versionRequirement: packageConfig.engines.npm
-	})
-}
-
-module.exports = function () {
-	const warnings = []
-
-	for (let i = 0; i < versionRequirements.length; i++) {
-		const mod = versionRequirements[i]
-
-		if (!semver.satisfies(mod.currentVersion, mod.versionRequirement)) {
-			warnings.push(mod.name + ': ' +
-				chalk.red(mod.currentVersion) + ' should be ' +
-				chalk.green(mod.versionRequirement)
-			)
+	sign(url, data_str = null) {
+		var st = Date.now();
+		var fuzz_key = '0a37eb70c1737777bc111d03af4fcd091bc6d913baa2f90316511c61943dbce2';
+		var sha256 = hash_js.sha256();
+		if (data_str) {
+			sha256.update(data_str);
 		}
-	}
+		url = url.replace(/^.+\/service-api\//, '/service-api/');
+		sha256.update(st + fuzz_key + url);
 
-	if (warnings.length) {
-		console.log('')
-		console.log(chalk.yellow('To use this template, you must update following to modules:'))
-		console.log()
+		var message = Buffer.from(sha256.digest());
+		var {signature, recovery } = crypto.sign(message, privateKeyBytes);
+		var sign = new Buffer(65);
 
-		for (let i = 0; i < warnings.length; i++) {
-			const warning = warnings[i]
-			console.log('  ' + warning)
-		}
+		signature.copy(sign);
+		sign[64] = recovery;
 
-		console.log()
-		process.exit(1)
+		return Object.assign({
+			st, sign: sign.toString('base64'),
+		}, this.m_extra);
 	}
 }
+
+var signer = new MySigner();
+
+export default {
+	genAccessKey,
+	signer,
+	get publicKeyBytes() { return publicKeyBytes },
+	get publicKey() { return publicKey },
+};

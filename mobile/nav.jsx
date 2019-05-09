@@ -28,6 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+import qkit from 'qkit';
 import React, { Component } from 'react';
 import ReactDom from 'react-dom';
 import error from '../error';
@@ -138,8 +139,8 @@ class PrivPage extends Component {
 
 		if ( this.m_status != 1 ) {
 			if (time) {
-				erroruestAnimationFrame(e=>{
-					erroruestAnimationFrame(e=>{
+				requestAnimationFrame(e=>{
+					requestAnimationFrame(e=>{
 						this.m_panel.style.cssText = this.getStyle(`
 							display: block;
 							transform: translateX(-35vw);
@@ -175,8 +176,8 @@ class PrivPage extends Component {
 					display: block;
 					transform: translateX(100vw);
 				`);
-				erroruestAnimationFrame(e=>{
-					erroruestAnimationFrame(e=>{
+				requestAnimationFrame(e=>{
+					requestAnimationFrame(e=>{
 						this.m_panel.style.cssText = this.getStyle(`
 							transform: translateX(0);
 							transition-property: transform;
@@ -208,8 +209,8 @@ class PrivPage extends Component {
 					display: block;
 					transform: translateX(-35vw);
 				`);
-				erroruestAnimationFrame(e=>{
-					erroruestAnimationFrame(e=>{
+				requestAnimationFrame(e=>{
+					requestAnimationFrame(e=>{
 						this.m_panel.style.cssText = this.getStyle(`
 							display: block;
 							transform: translateX(0);
@@ -322,7 +323,7 @@ export class Nav extends Component {
 		return props;
 	}
 
-	push(url, animate) {
+	push(url, animate = 1) {
 
 		if (this.m_animating) return;
 
@@ -364,7 +365,7 @@ export class Nav extends Component {
 		});
 	}
 
-	pops(index, animate) {
+	pops(index, animate = 1) {
 
 		if (this.m_animating) return;
 
@@ -407,11 +408,14 @@ export class Nav extends Component {
 		}
 	}
 
-	pop(animate) {
+	pop(animate = 1) {
 		this.pops(this.length - 2, animate);
 	}
 
-	replace(url) {
+	replace(url, index = -1) {
+		if (index >= 0) {
+			this.pops(0, 0);
+		}
 		var props = this.m_parseProps(url);
 		if (this.m_current) {
 			this.m_current.replace(props);
@@ -435,6 +439,26 @@ export class Nav extends Component {
 }
 
 export class NavPage extends Component {
+
+	name = 'index';
+	platform = 'iphone';
+
+	getMainClass(cls = '') {
+		var cls_1 = 'main ';
+		if (qkit.dev) {
+			cls_1 += 'test ';
+		}
+		if (this.platform == 'android') {
+			cls_1 += 'android ';
+		} else if (this.platform == 'iphonex') {
+			cls_1 += 'iphonex '; 
+		}
+		return cls_1 + this.name + ' ' + cls;
+	}
+
+	get mcls() {
+		return this.getMainClass();
+	}
 
 	get nav() {
 		return this.props.nav;
@@ -486,11 +510,11 @@ export class NavPage extends Component {
 		// overwrite
 	}
 	
-	pushPage(url, animate) {
+	pushPage(url, animate = 1) {
 		this.nav.push(url, animate);
 	}
 
-	popPage(animate) {
+	popPage(animate = 1) {
 		this.nav.pop(animate);
 	}
 

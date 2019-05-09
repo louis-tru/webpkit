@@ -104,7 +104,7 @@ body {
 	font-weight: bold;
 }
 
-.main .title .b > view {
+.main .title .b > div {
 	position: absolute;
 	 padding-left: 0.1rem; 
 	padding-right: 0.2rem;
@@ -117,12 +117,12 @@ body {
 	background-size: 0.48rem;
 }
 
-.main .title .b > view:active {
+.main .title .b > div:active {
 	opacity: 0.5;
 }
 
 /*
-.main .title .b > view:before { 
+.main .title .b > div:before { 
 	font-family: iconfont;
 	font-style: normal;
 	content: "\e626";
