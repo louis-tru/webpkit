@@ -92,6 +92,27 @@ export class AForm extends GlobalState {
 		// overwrite
 	}
 
+	rulesRequired(message) {
+		return {
+			validator: (rule, value, callback, source, options)=>{
+				if (value) {
+					if (Array.isArray(value)) {
+						if ( value.every(e=>e) ) {
+							callback();
+						} else {
+							callback(rule.message);
+						}
+					} else {
+						callback();
+					}
+				} else {
+					callback(rule.message);
+				}
+			},
+			message,
+		};
+	}
+
 };
 
 export class AFItem extends Component {
@@ -138,7 +159,7 @@ export class AFItem extends Component {
 						if (ch.type == 'input') {
 							new_children.push(getFieldDecorator(name, {
 								initialValue,
-								rules, //rules:[{ validator: (rule, value, callback, source, options)=>{} }]
+								rules,
 							})(React.cloneElement(ch, {...propss, key: i})));
 						} else {
 							new_children.push(ch);

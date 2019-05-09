@@ -197,6 +197,11 @@ body {
 	color: #084697;
 }
 
+.btn.light {
+	background: #F0F4F9;
+	color: #004697;
+}
+
 .btn.disable, .btn.gray {
 	background: #c9c9d2;
 	color: #fff;
@@ -250,6 +255,7 @@ body {
 
 .form_item.vertical {
 	display: block;
+	margin-bottom: 3rem;
 }
 
 .form_item.noborder:after {
@@ -455,6 +461,11 @@ body {
 	position: relative;
 }
 
+.ccform .am-list-extra span, 
+.form_item .label.value {
+	color: #C9C9D2;
+}
+
 .ccform .cc-item-wrap > div:first-child {
 	/*flex: 1;*/
 }
@@ -482,4 +493,19 @@ body {
 	bottom: 0;
 	margin-top: auto;
 	margin-bottom: auto;
+}
+
+.ccform .am-textarea-item {
+	padding-left: 0.3rem;
+	padding-right: 0.3rem;
+}
+
+.ccform .am-textarea-item .am-textarea-control {
+	padding-top: 0;
+	padding-bottom: 0.4rem;
+}
+
+.ccform .am-textarea-item .am-textarea-count {
+	right: 0.3rem;
+	bottom: 0.34rem;
 }
