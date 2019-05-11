@@ -100,8 +100,23 @@ body {
 	line-height: 0.9rem;
 	color: #333;
 	position: relative;
-	border-bottom: solid 0.015rem #d9d9d9;
+	/*border-bottom: solid 0.015rem #d9d9d9;*/
 	font-weight: bold;
+}
+
+.main .title .b:after {
+	content: '';
+	position: absolute;
+	background-color: #d9d9d9;
+	display: block;
+	z-index: 1;
+	top: auto;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 1px;
+	transform-origin: 50% 100%;
+	transform: scaleY(0.5);
 }
 
 .main .title .b > div {
@@ -159,10 +174,24 @@ body {
 	display: flex;
 	justify-content: center;
 	padding: 0 0.16rem;
-	border-top: solid 0.02rem #ECECEC;
+	/*border-top: solid 0.02rem #ECECEC;*/
 }
 
-.btn {
+.btns_mini:before {
+	content: '';
+	position: absolute;
+	background-color: #ddd;
+	display: block;
+	z-index: 1;
+	top: 0;
+	right: 0;
+	left: 0;
+	height: 1px;
+	transform-origin: 50% 100%;
+	transform: scaleY(0.5);
+}
+
+.foot .btn {
 	background: #084697;
 	color: #fff;
 	height: 0.92rem;
@@ -183,26 +212,26 @@ body {
 	flex: 1;
 }
 
-.btn:active {
+.foot .btn:active {
 	opacity: 0.7;
 }
 
-.btn.trans {
+.foot .btn.trans {
 	background: none;
 	color: #084697;
 }
 
-.btn.white {
+.foot .btn.white {
 	background: #fff;
 	color: #084697;
 }
 
-.btn.light {
+.foot .btn.light {
 	background: #F0F4F9;
 	color: #004697;
 }
 
-.btn.disable, .btn.gray {
+.foot .btn.disable, .btn.gray {
 	background: #c9c9d2;
 	color: #fff;
 	/*pointer-events: none;*/
@@ -223,6 +252,11 @@ body {
 
 .radio.on {
 	background-image: url(./icon2_on.png);
+}
+
+.division {
+	height: 0.2rem;
+	background: #F6F6F6;
 }
 
 .form_item {
