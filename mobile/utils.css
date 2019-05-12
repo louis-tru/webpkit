@@ -250,6 +250,14 @@ body {
 	background-size: 0.48rem;
 }
 
+.line {
+	background-color: #ddd;
+	display: block;
+	width: 100%;
+	height: 1px;
+	transform-origin: 50% 100%;
+}
+
 .radio.on {
 	background-image: url(./icon2_on.png);
 }
@@ -488,6 +496,10 @@ body {
 		transform: scaleY(0.5);
 	}
 
+	.line {
+		transform: scaleY(0.5);
+	}
+
 }
 
 @media (-webkit-min-device-pixel-ratio: 2) and 
@@ -503,6 +515,10 @@ body {
 	}
 
 	.form_item:after {
+		transform: scaleY(0.33);
+	}
+
+	.line {
 		transform: scaleY(0.33);
 	}
 
