@@ -78,7 +78,8 @@ body {
 }
 
 .iphonex {
-	padding-top: 1.74rem;
+	/*padding-top: 1.74rem;*/
+	padding-top: 1.78rem;
 }
 
 .iphonex .title .a {
@@ -191,7 +192,8 @@ body {
 	transform: scaleY(0.5);
 }
 
-.foot .btn {
+/*.foot */
+.btn {
 	background: #084697;
 	color: #fff;
 	height: 0.92rem;
@@ -212,26 +214,31 @@ body {
 	flex: 1;
 }
 
-.foot .btn:active {
+/*.foot */
+.btn:active {
 	opacity: 0.7;
 }
 
-.foot .btn.trans {
+/*.foot */
+.btn.trans {
 	background: none;
 	color: #084697;
 }
 
-.foot .btn.white {
+/*.foot */
+.btn.white {
 	background: #fff;
 	color: #084697;
 }
 
-.foot .btn.light {
+/*.foot */
+.btn.light {
 	background: #F0F4F9;
 	color: #004697;
 }
 
-.foot .btn.disable, .btn.gray {
+/*.foot */
+.btn.disable, .btn.gray {
 	background: #c9c9d2;
 	color: #fff;
 	/*pointer-events: none;*/
@@ -260,11 +267,6 @@ body {
 
 .radio.on {
 	background-image: url(./icon2_on.png);
-}
-
-.division {
-	height: 0.2rem;
-	background: #F6F6F6;
 }
 
 .form_item {
@@ -297,15 +299,14 @@ body {
 
 .form_item.vertical {
 	display: block;
-	margin-bottom: 3rem;
 }
 
 .form_item.noborder:after {
 	content: none;
 }
 
-.form_division {
-	height: 0.24rem;
+.form_division, .division {
+	height: 0.2rem;
 	background: #F6F6F6;
 }
 
@@ -331,12 +332,26 @@ body {
 	font-size: 0.32rem;
 }
 
-.form_item.show .edit {
-	width: 0.3rem;
-	height: 0.3rem;
-	/*background: url(./icon6.png);*/
-	background-color: #f00;
-	padding: 0.34rem;
+.form_item.show .edit,
+.form_item.show .add
+{
+	width: 0.44rem;
+	height: 0.44rem;
+	background: url(./icon6.png);
+	padding: 0.2rem 0.28rem;
+	background-size: 0.44rem;
+	background-repeat: no-repeat;
+	background-position: center;
+	box-sizing: content-box;
+}
+
+.form_item.show .edit:active,
+.form_item.show .add:active {
+	opacity: 0.5;
+}
+
+.form_item.show .add {
+	background-image: url(./icon7.png);
 }
 
 .form_item .value {
@@ -354,7 +369,7 @@ body {
 	width: 6.9rem;
 	height: 3.08rem;
 	text-align: left;
-	font-size: 0.12rem;
+	font-size: 0.28rem;
 	margin-bottom: 0.88rem;
 	margin-left: 0.3rem;
 	margin-right: 0.3rem;
@@ -394,7 +409,7 @@ body {
 
 .form_item input::placeholder,
 .form_item textarea::placeholder,
-.form_item .placeholder,
+.form_item .placeholder
 {
 	color: #C9C9D2;
 	font-size: 0.28rem;
