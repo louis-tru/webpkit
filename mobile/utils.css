@@ -193,7 +193,7 @@ body {
 }
 
 /*.foot */
-.btn {
+.g_btn {
 	background: #084697;
 	color: #fff;
 	height: 0.92rem;
@@ -215,36 +215,36 @@ body {
 }
 
 /*.foot */
-.btn:active {
+.g_btn:active {
 	opacity: 0.7;
 }
 
 /*.foot */
-.btn.trans {
+.g_btn.trans {
 	background: none;
 	color: #084697;
 }
 
 /*.foot */
-.btn.white {
+.g_btn.white {
 	background: #fff;
 	color: #084697;
 }
 
 /*.foot */
-.btn.light {
+.g_btn.light {
 	background: #F0F4F9;
 	color: #004697;
 }
 
 /*.foot */
-.btn.disable, .btn.gray {
+.g_btn.disable, .g_btn.gray {
 	background: #c9c9d2;
 	color: #fff;
 	/*pointer-events: none;*/
 }
 
-.foot.btns_mini > .btn {
+.foot.btns_mini > .g_btn {
 	margin: 0.16rem 0.16rem;
 }
 
