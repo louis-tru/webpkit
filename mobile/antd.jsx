@@ -95,9 +95,9 @@ export class AForm extends GlobalState {
 	rulesRequired(message) {
 		return {
 			validator: (rule, value, callback, source, options)=>{
-				if (value) {
+				if (value && value !== 'undefined') {
 					if (Array.isArray(value)) {
-						if ( value.every(e=>e) ) {
+						if ( value.length && value.every(e=>e&&e!=='undefined') ) {
 							callback();
 						} else {
 							callback(rule.message);
