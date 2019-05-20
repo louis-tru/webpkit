@@ -56,7 +56,11 @@ export class AForm extends GlobalState {
 	getFieldValue = (...args)=>this.props.form.getFieldValue(...args);
 
 	get canSubmit() {
-		if (this.isFieldsTouched()) {
+		return this.isCanSubmit();
+	}
+
+	isCanSubmit(is_force = false) {
+		if (is_force || this.isFieldsTouched()) {
 
 			var errors = this.getFieldsError();
 			for (var i in errors) {
