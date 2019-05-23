@@ -78,7 +78,8 @@ body {
 }
 
 .iphonex {
-	padding-top: 1.74rem;
+	/*padding-top: 1.74rem;*/
+	padding-top: 1.78rem;
 }
 
 .iphonex .title .a {
@@ -100,8 +101,23 @@ body {
 	line-height: 0.9rem;
 	color: #333;
 	position: relative;
-	border-bottom: solid 0.015rem #d9d9d9;
+	/*border-bottom: solid 0.015rem #d9d9d9;*/
 	font-weight: bold;
+}
+
+.main .title .b:after {
+	content: '';
+	position: absolute;
+	background-color: #d9d9d9;
+	display: block;
+	z-index: 1;
+	top: auto;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 1px;
+	transform-origin: 50% 100%;
+	transform: scaleY(0.5);
 }
 
 .main .title .b > div {
@@ -142,7 +158,7 @@ body {
 
 @media only screen and (min-aspect-ratio: 2/3) {
 	.foot {
-		display: none;
+		display: none !important;
 	}
 }
 
@@ -159,10 +175,25 @@ body {
 	display: flex;
 	justify-content: center;
 	padding: 0 0.16rem;
-	border-top: solid 0.02rem #ECECEC;
+	/*border-top: solid 0.02rem #ECECEC;*/
 }
 
-.btn {
+.btns_mini:before {
+	content: '';
+	position: absolute;
+	background-color: #ddd;
+	display: block;
+	z-index: 1;
+	top: 0;
+	right: 0;
+	left: 0;
+	height: 1px;
+	transform-origin: 50% 100%;
+	transform: scaleY(0.5);
+}
+
+/*.foot */
+.g_btn {
 	background: #084697;
 	color: #fff;
 	height: 0.92rem;
@@ -183,27 +214,37 @@ body {
 	flex: 1;
 }
 
-.btn:active {
+/*.foot */
+.g_btn:active {
 	opacity: 0.7;
 }
 
-.btn.trans {
+/*.foot */
+.g_btn.trans {
 	background: none;
 	color: #084697;
 }
 
-.btn.white {
+/*.foot */
+.g_btn.white {
 	background: #fff;
 	color: #084697;
 }
 
-.btn.disable, .btn.gray {
+/*.foot */
+.g_btn.light {
+	background: #F0F4F9;
+	color: #004697;
+}
+
+/*.foot */
+.g_btn.disable, .g_btn.gray {
 	background: #c9c9d2;
 	color: #fff;
 	/*pointer-events: none;*/
 }
 
-.foot.btns_mini > .btn {
+.foot.btns_mini > .g_btn {
 	margin: 0.16rem 0.16rem;
 }
 
@@ -214,6 +255,14 @@ body {
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 0.48rem;
+}
+
+.line {
+	background-color: #ddd;
+	display: block;
+	width: 100%;
+	height: 1px;
+	transform-origin: 50% 100%;
 }
 
 .radio.on {
@@ -256,8 +305,8 @@ body {
 	content: none;
 }
 
-.form_division {
-	height: 0.24rem;
+.form_division, .division {
+	height: 0.2rem;
 	background: #F6F6F6;
 }
 
@@ -270,6 +319,39 @@ body {
 	border: none;
 	height: 1.06rem;
 	line-height: 1.06rem;
+}
+
+.form_item.show {
+	min-height: 0.96rem;
+	justify-content: space-between;
+}
+
+.form_item.show .label {
+	color: #000;
+	height: 0.96rem;
+	font-size: 0.32rem;
+}
+
+.form_item.show .edit,
+.form_item.show .add
+{
+	width: 0.44rem;
+	height: 0.44rem;
+	background: url(./icon6.png);
+	padding: 0.2rem 0.28rem;
+	background-size: 0.44rem;
+	background-repeat: no-repeat;
+	background-position: center;
+	box-sizing: content-box;
+}
+
+.form_item.show .edit:active,
+.form_item.show .add:active {
+	opacity: 0.5;
+}
+
+.form_item.show .add {
+	background-image: url(./icon7.png);
 }
 
 .form_item .value {
@@ -287,7 +369,7 @@ body {
 	width: 6.9rem;
 	height: 3.08rem;
 	text-align: left;
-	font-size: 0.12rem;
+	font-size: 0.28rem;
 	margin-bottom: 0.88rem;
 	margin-left: 0.3rem;
 	margin-right: 0.3rem;
@@ -327,7 +409,7 @@ body {
 
 .form_item input::placeholder,
 .form_item textarea::placeholder,
-.form_item .placeholder,
+.form_item .placeholder
 {
 	color: #C9C9D2;
 	font-size: 0.28rem;
@@ -429,6 +511,10 @@ body {
 		transform: scaleY(0.5);
 	}
 
+	.line {
+		transform: scaleY(0.5);
+	}
+
 }
 
 @media (-webkit-min-device-pixel-ratio: 2) and 
@@ -447,12 +533,21 @@ body {
 		transform: scaleY(0.33);
 	}
 
+	.line {
+		transform: scaleY(0.33);
+	}
+
 }
 
 .ccform .cc-item-wrap {
 	/*display: flex;
 	align-items: center;*/
 	position: relative;
+}
+
+.ccform .am-list-extra span, 
+.form_item .label.value {
+	color: #C9C9D2;
 }
 
 .ccform .cc-item-wrap > div:first-child {
@@ -482,4 +577,19 @@ body {
 	bottom: 0;
 	margin-top: auto;
 	margin-bottom: auto;
+}
+
+.ccform .am-textarea-item {
+	padding-left: 0.3rem;
+	padding-right: 0.3rem;
+}
+
+.ccform .am-textarea-item .am-textarea-control {
+	padding-top: 0;
+	padding-bottom: 0.4rem;
+}
+
+.ccform .am-textarea-item .am-textarea-count {
+	right: 0.3rem;
+	bottom: 0.34rem;
 }

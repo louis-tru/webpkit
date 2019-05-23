@@ -81,10 +81,10 @@ class PrivPage extends Component {
 		this.loader();
 	}
 
-	onShow() {
+	onShow(data = {}) {
 		try {
 			if (this.refs.self.onShow) {
-				this.refs.self.onShow();
+				this.refs.self.onShow(data);
 			}
 		} catch(err) {
 			console.error(err);
@@ -137,6 +137,7 @@ class PrivPage extends Component {
 
 	intoBackground(time) {
 		if ( this.m_next == null ) return;
+
 		clearTimeout(this.m_timeout);
 
 		if ( this.m_status != 1 ) {
@@ -166,7 +167,7 @@ class PrivPage extends Component {
 		this.onHide();
 	}
 
-	intoForeground(time) {
+	intoForeground(time, data = {}) {
 		if ( this.m_status == 0 ) return;
 		this.m_next = null;
 
@@ -235,13 +236,14 @@ class PrivPage extends Component {
 				`);
 			}
 			this.m_status = 0;
-			this.onShow();
+			this.onShow(data);
 		}
 	}
 
 	intoLeave(time) { 
 		if ( this.m_status == 0 ) {
 			clearTimeout(this.m_timeout);
+
 			if ( time ) {
 				this.m_panel.style.cssText = this.getStyle(`
 					display: block;
@@ -293,10 +295,15 @@ export class Nav extends Component {
 		return this.m_routes;
 	}
 
-	m_parseProps(url) {
+	m_parseProps(args) {
+		if (typeof args == 'string') {
+			args = {url:args};
+		}
+		var { url, params = {} } = args;
+
 		url = url[0] != '/' ? '/' + url : url;
 
-		var params = {};
+		// var search = {};
 		var pathname = url;
 		var index = url.indexOf('?');
 
@@ -312,7 +319,11 @@ export class Nav extends Component {
 
 		var route = this.m_routes[pathname];
 		var props = { 
-			nav: this, url: url, pathname: pathname, params: params, route: route,
+			nav: this,
+			url: url,
+			pathname: pathname,
+			params: params, //Object.assign(search, params),
+			route: route,
 		};
 
 		if (!route) {
@@ -327,7 +338,7 @@ export class Nav extends Component {
 
 	m_push(url, animate, index, cb) {
 
-		if (this.m_animating) return false;
+		if (this.m_animating && animate) return false;
 
 		var props = this.m_parseProps(url);
 		var panel = document.createElement('div');
@@ -359,7 +370,7 @@ export class Nav extends Component {
 			if (prev) {
 				prev.intoBackground(animate);
 			}
-			page.intoForeground(animate);
+			page.intoForeground(animate, { active: 'push' });
 
 			if (self.props.onNav) {
 				self.props.onNav({ type: 'push', url: props.url, count: 1 });
@@ -375,9 +386,9 @@ export class Nav extends Component {
 		return this.m_push(url, animate, this.length);
 	}
 
-	pops(index, animate = 1) {
+	pops(result, index, animate = 1) {
 
-		if (this.m_animating) return false;
+		if (this.m_animating && animate) return false;
 
 		if (this.length == 1 && index <= -1) {
 			if (this.props.onEnd) {
@@ -410,7 +421,7 @@ export class Nav extends Component {
 		page.m_next = null;
 		next.m_prev = null;
 
-		page.intoForeground(animate);
+		page.intoForeground(animate, { ...result, active: 'pop' });
 		next.intoLeave(animate);
 
 		if (this.props.onNav) {
@@ -420,15 +431,15 @@ export class Nav extends Component {
 		return true;
 	}
 
-	pop(animate = 1) {
-		return this.pops(this.length - 2, animate);
+	pop(result = {}, animate = 1) {
+		return this.pops(result, this.length - 2, animate);
 	}
 
 	replace(url, animate = 0, index = -1) {
-		if (this.m_animating) return false;
+		// if (this.m_animating) return false;
 
 		if (index >= 0 && index < this.length - 1) { // pop
-			this.pops(index, animate);
+			if (!this.pops({}, index, animate)) return false;
 		}
 		else if (animate) { // ani push
 
@@ -520,7 +531,7 @@ export class NavPage extends GlobalState {
 		super.componentDidMount();
 		this.onLoad();
 		if (this.props.priv.status == 0) {
-			this.onShow();
+			this.onShow({ active: 'init' });
 		}
 	}
 
@@ -552,8 +563,8 @@ export class NavPage extends GlobalState {
 		return this.nav.push(url, animate);
 	}
 
-	popPage(animate = 1) {
-		return this.nav.pop(animate);
+	popPage(result = {}, animate = 1) {
+		return this.nav.pop(result, animate);
 	}
 
 	replacePage(url, animate = 0, index = -1) {

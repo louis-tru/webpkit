@@ -56,7 +56,11 @@ export class AForm extends GlobalState {
 	getFieldValue = (...args)=>this.props.form.getFieldValue(...args);
 
 	get canSubmit() {
-		if (this.isFieldsTouched()) {
+		return this.isCanSubmit();
+	}
+
+	isCanSubmit(is_force = false) {
+		if (is_force || this.isFieldsTouched()) {
 
 			var errors = this.getFieldsError();
 			for (var i in errors) {
@@ -90,6 +94,27 @@ export class AForm extends GlobalState {
 
 	onUnload() {
 		// overwrite
+	}
+
+	rulesRequired(message) {
+		return {
+			validator: (rule, value, callback, source, options)=>{
+				if (value && value !== 'undefined') {
+					if (Array.isArray(value)) {
+						if ( value.length && value.every(e=>e&&e!=='undefined') ) {
+							callback();
+						} else {
+							callback(rule.message);
+						}
+					} else {
+						callback();
+					}
+				} else {
+					callback(rule.message);
+				}
+			},
+			message,
+		};
 	}
 
 };
@@ -138,7 +163,7 @@ export class AFItem extends Component {
 						if (ch.type == 'input') {
 							new_children.push(getFieldDecorator(name, {
 								initialValue,
-								rules, //rules:[{ validator: (rule, value, callback, source, options)=>{} }]
+								rules,
 							})(React.cloneElement(ch, {...propss, key: i})));
 						} else {
 							new_children.push(ch);
