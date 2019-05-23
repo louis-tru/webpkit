@@ -57,9 +57,9 @@ function genAccessKey() {
 }
 
 /**
- * @class MySigner
+ * @class H5Signer
  */
-class MySigner extends Signer {
+class H5Signer extends Signer {
 
 	setExtra(extra) {
 		this.m_extra = extra;
@@ -88,7 +88,7 @@ class MySigner extends Signer {
 	}
 }
 
-var signer = new MySigner();
+var signer = new H5Signer();
 
 export default {
 	genAccessKey,
