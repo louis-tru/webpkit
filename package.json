@@ -74,7 +74,8 @@
     "vuex": "^3.0.1",
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^3.0.3",
-    "webpack-dev-server": "^2.9.1"
+    "webpack-dev-server": "^2.9.1",
+    "whatwg-fetch": "^3.0.0"
   },
   "engines": {
     "node": ">= 6.0.0",
