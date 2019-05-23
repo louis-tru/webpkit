@@ -116,7 +116,6 @@ class Dialog extends Component {
 				prompt={prompt}
 			/>, div);
 	}
-
 }
 
 export function alert(text, cb) {

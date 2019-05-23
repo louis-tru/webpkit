@@ -30,7 +30,7 @@
 
 import React, { Component } from 'react';
 import {hashHistory} from 'react-router-dom';
-import {HashRouter, Router as RouterRaw, Route, Switch} from 'react-router-dom';
+import {HashRouter, Router as RouterRaw, Route, Switch, Redirect} from 'react-router-dom';
 import error from './error';
 import qkit from 'qkit';
 import Page from './page';
@@ -50,7 +50,7 @@ function route(router, { path, page, ...args }) {
 	class _Route extends Component {
 
 		state = { com: Loading, isLoaded: false };
-
+		
 		async componentDidMount() {
 			if (!this.state.isLoaded) {
 				try {
@@ -76,7 +76,7 @@ function route(router, { path, page, ...args }) {
 		}
 	}
 
-	return <Route path={path} key={path} {...args} component={_Route} />
+	return <Route path={path} key={path} {...args} component={_Route}/>
 }
 
 /**
@@ -92,7 +92,7 @@ export class Router extends Component {
 		this._Router = this.type == 'hash' ? HashRouter: RouterRaw
 		this._notFound = this.props.notFound || NotFound;
 		this._routes = {};
-
+		
 		(this.props.routes || []).forEach(e=>{
 			if (e.path) {
 				if (Array.isArray(e.path)) {
@@ -108,6 +108,9 @@ export class Router extends Component {
 
 	render() {
 		var _Router = this._Router;
+		// if (true) {
+		// 	return <Redirect to="/login" />
+		// }
 		return (
 			<_Router history={hashHistory}>
 				<Switch>

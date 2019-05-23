@@ -32,10 +32,12 @@ import { React, Page, Link, Component } from '..';
 
 
 export default class extends Component {
-	render() {
+	renderText() {
+		if (this.props.text) {
+			return (<div style={{textAlign: 'center'}}>{this.props.text}</div>)
+		}
 		return (
-			<footer id="footer">
-
+			<div>
 				{/*-- Visible when footer positions are fixed --*/}
 				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}
 				<div className="show-fixed pull-right">
@@ -47,13 +49,19 @@ export default class extends Component {
 				<div className="hide-fixed pull-right pad-rgt">
 					14GB of <strong>512GB</strong> Free.
 				</div>
-
+				
 				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}
 				{/*-- Remove the class "show-fixed" and "hide-fixed" to make the content always appears. --*/}
 				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}
-
+				
 				<p className="pad-lft">&#0169; 2016 Your Company</p>
-
+			</div>
+		)
+	}
+	render() {
+		return (
+			<footer id="footer">
+				{this.renderText()}
 			</footer>
 		);
 	}
