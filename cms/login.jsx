@@ -39,10 +39,9 @@ import 'nifty/css/demo/nifty-demo.css';
  */
 export default class Login extends CMSPage {
 
-	state = { $$url: '', verificationtext: '获取验证码'};
-
-	onLoad() {
-
+	state = { $$url: '', verificationtext: '获取验证码', disabledbtn: false};
+	
+	componentDidMount() {
 		var $imgHolder 	= $('#demo-bg-list');
 		var $bgBtn 		= $imgHolder.find('.demo-chg-bg');
 		var $target 	= $('#bg-overlay');
@@ -57,7 +56,7 @@ export default class Login extends CMSPage {
 			if ($el.hasClass('bg-trans')) {
 				self.setState({ $$url: '' });
 				
-				// $target.css('background-image','none').removeClass('bg-img');
+				$target.css('background-image','none').removeClass('bg-img');
 				$imgHolder.removeClass('disabled');
 				$bgBtn.removeClass('active');
 				$el.addClass('active');
@@ -71,8 +70,8 @@ export default class Login extends CMSPage {
 			$('<img/>').load(url, function(){
 
 				self.setState({ $$url: url });
-
-				// $target.css('background-image', 'url("' + url + '")').addClass('bg-img');
+				
+				$target.css('background-image', 'url("' + url + '")').addClass('bg-img');
 				$imgHolder.removeClass('disabled');
 				$bgBtn.removeClass('active');
 				$el.addClass('active');
@@ -90,6 +89,7 @@ export default class Login extends CMSPage {
 		// 获取验证码
 	}
 	changeVerificationText(text) {
+
 	}
 	checkPhone(phone) {
 		return (/^1[34578]\d{9}$/.test(phone))
@@ -100,14 +100,13 @@ export default class Login extends CMSPage {
 	render() {
 		return (
 			<div id="container" className="cls-container">
-				
+				{/* {this.renderContent()} */}
 				{/*-- BACKGROUND IMAGE --*/}
 				{/*--===================================================--*/}
 				<div id="bg-overlay" className={this.state.$$url ? 'bg-img': ''} 
 					style={{backgroundImage: this.state.$$url?`url(${this.state.$$url})`:'none'}}></div>
 				
-				
-				{/*-- LOGIN FORM --*/}
+								{/*-- LOGIN FORM --*/}
 				{/*--===================================================--*/}
 				<div className="cls-content">
 					<div className="cls-content-sm panel">
@@ -116,20 +115,20 @@ export default class Login extends CMSPage {
 								<h3 className="h4 mar-no">Account Login</h3>
 								<p className="text-muted">Sign In to your account</p>
 							</div>
-							<form>
+							{/* <form> */}
 								<div className="form-group">
 									<input type="text" className="form-control" placeholder="手机号：" ref="uname" autoFocus />
 								</div>
 								<div className="form-group" style={{position: 'relative'}}>
 									<input type="password" className="form-control" placeholder="输入验证码" ref="upwd"/>
-									<button className="btn btn-default" style={{position: 'absolute', top: 0,right: '1px', padding: '4px 12px'}} onClick={()=>{this.getVerificationCode()}}>{this.state.verificationtext}</button>
+									<button className="btn btn-default" style={{position: 'absolute', top: 0,right: '1px', padding: '4px 12px'}} onClick={()=>{this.getVerificationCode()}} disabled={this.state.disabledbtn ? 'disabled' : ''}>{this.state.verificationtext}</button>
 								</div>
 								<div className="checkbox pad-btm text-left">
 									<input id="demo-form-checkbox" className="magic-checkbox" type="checkbox" />
-									<label for="demo-form-checkbox">Remember me</label>
+									<label htmlFor="demo-form-checkbox">Remember me</label>
 								</div>
 								<button className="btn btn-primary btn-lg btn-block" type="submit" onClick={()=>{this.signin()}}>Sign In</button>
-							</form>
+							{/* </form> */}
 						</div>
 				
 						<div className="pad-all">
@@ -150,8 +149,6 @@ export default class Login extends CMSPage {
 					</div>
 				</div>
 				{/*--===================================================--*/}
-				
-				
 				{/*-- DEMO PURPOSE ONLY --*/}
 				{/*--===================================================--*/}
 				<div className="demo-bg">
@@ -168,9 +165,6 @@ export default class Login extends CMSPage {
 					</div>
 				</div>
 				{/*--===================================================--*/}
-				
-				
-				
 			</div>
 		);
 	}

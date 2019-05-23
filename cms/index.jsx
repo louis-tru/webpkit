@@ -58,7 +58,7 @@ import NotFound from './404';
 import { createHashHistory } from 'history';
 const history = createHashHistory();
 
-export { CMSPage, Header, Footer, Menu };
+export { CMSPage, Header, Footer, Menu, Login };
 
 /**
  * @class CMSRoot
