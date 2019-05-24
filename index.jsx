@@ -57,7 +57,7 @@ export class Root extends GlobalState {
 
 		try {
 			// await initialize_sdk(this.props.config || {});
-			await this.onLoad();
+			// await this.onLoad();
 			
 			if ( typeof this.props.onLoad == 'function') {
 				await this.props.onLoad(this);
