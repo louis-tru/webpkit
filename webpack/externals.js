@@ -46,7 +46,7 @@ var externals = [
 	// 'stream',
 	// 'console',
 	// 'tty',
-	// 'net',
+	'net',
 	// 'dns',
 	// 'readline',
 	// 'string_decoder',
@@ -54,9 +54,9 @@ var externals = [
 	// 'domain',
 	// 'os',
 	// 'electron',
-	// 'http',
-	// 'https',
-	// 'crypto',
+	'http',
+	'https',
+	'crypto',
 	'dev-client'
 ];
 
