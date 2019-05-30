@@ -545,6 +545,17 @@ export class NavPage extends GlobalState {
 		return !this.state.loading_complete;
 	}
 
+	updateState(data) {
+		var state = {};
+		for (var i in data) {
+			var o = data[i];
+			if (typeof o == 'object' && !Array.isArray(o)) {
+				state[i] = Object.assign(this.state[i] || {}, data[i]);
+			}
+		}
+		this.setState(state);
+	}
+
 	async componentDidMount() {
 		super.componentDidMount();
 		await this.onLoad();

@@ -69,7 +69,9 @@ export class AForm extends GlobalState {
 				} else {
 					if (!this.isFieldValidating(i)) {
 						var val = this.getFieldValue(i);
-						if (!val || (Array.isArray(val) && !val.every(e=>e))) {
+						if ((!val && val+1!==1) || (Array.isArray(val) && 
+								!val.every(e=>(e||e+1===1)&&e!=='undefined'))
+						) {
 							return false;
 						}
 					}
@@ -99,9 +101,9 @@ export class AForm extends GlobalState {
 	rulesRequired(message) {
 		return {
 			validator: (rule, value, callback, source, options)=>{
-				if (value && value !== 'undefined') {
+				if ((value || value+1===1) && value !== 'undefined') {
 					if (Array.isArray(value)) {
-						if ( value.length && value.every(e=>e&&e!=='undefined') ) {
+						if ( value.length && value.every(e=>(e||e+1===1)&&e!=='undefined') ) {
 							callback();
 						} else {
 							callback(rule.message);

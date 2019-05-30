@@ -399,7 +399,7 @@ body {
 }
 
 .form_item .value {
-	height: 0.44rem;
+	/*height: 0.44rem;*/
 	line-height: 0.44rem;
 	width: 4rem;
 	border: none;
@@ -407,6 +407,11 @@ body {
 	text-align: right;
 	color: #000;
 	background: none;
+	padding: 0.15rem 0;
+}
+
+.form_item img.value {
+	padding: 0;
 }
 
 .form_item textarea.value {
