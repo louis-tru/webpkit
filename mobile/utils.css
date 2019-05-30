@@ -335,6 +335,16 @@ body {
 	right: 0.3rem;
 }
 
+.form_item_txt {
+	color: #626262;
+	font-size: 0.28rem;
+	padding: 0 0.3rem;
+}
+
+.form_item_txt:after {
+	content: none;
+}
+
 .form_item.next {
 }
 
