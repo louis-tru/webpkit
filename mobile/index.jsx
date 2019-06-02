@@ -69,7 +69,7 @@ export class Root extends GlobalState {
 
 		this.setState({ isLoaded: true });
 
-		setTimeout(e=>window.history.replaceState({}, this.props.title||'', '#/'), 10);
+		// setTimeout(e=>window.history.replaceState({}, this.props.title||'', '#/'), 10);
 		window.addEventListener('hashchange', (e)=>{
 			this.refs.nav.current.popPage(true); // 不管前进或后退都当成后退处理
 		});
