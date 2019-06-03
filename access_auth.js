@@ -76,7 +76,7 @@ class H5Signer extends Signer {
 		sha256.update(st + fuzz_key + url);
 
 		var message = Buffer.from(sha256.digest());
-		var {signature, recovery } = crypto.sign(message, privateKeyBytes);
+		var { signature, recovery } = crypto.sign(message, privateKeyBytes);
 		var sign = new Buffer(65);
 
 		signature.copy(sign);

@@ -60,26 +60,26 @@ export class AForm extends GlobalState {
 	}
 
 	isCanSubmit(is_force = false) {
-		if (is_force || this.isFieldsTouched()) {
+		// if (is_force || this.isFieldsTouched()) {
 
-			var errors = this.getFieldsError();
-			for (var i in errors) {
-				if (errors[i]) {
-					return false;
-				} else {
-					if (!this.isFieldValidating(i)) {
-						var val = this.getFieldValue(i);
-						if ((!val && val+1!==1) || (Array.isArray(val) && 
-								!val.every(e=>(e||e+1===1)&&e!=='undefined'))
-						) {
-							return false;
-						}
+		var errors = this.getFieldsError();
+		for (var i in errors) {
+			if (errors[i]) {
+				return false;
+			} else {
+				if (!this.isFieldValidating(i)) {
+					var val = this.getFieldValue(i);
+					if ((!val && val+1!==1) || (Array.isArray(val) && 
+							!val.every(e=>(e||e+1===1)&&e!=='undefined'))
+					) {
+						return false;
 					}
 				}
 			}
-			return true;
 		}
-		return false;
+		return true;
+		// }
+		// return false;
 	}
 
 	componentDidMount() {
