@@ -29,7 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import qkit from 'qkit';
-import { List, InputItem, Picker, Toast } from 'antd-mobile';
+import { List, InputItem, Picker, Toast, Icon } from 'antd-mobile';
 import { createForm } from 'rc-form';
 import React, { Component } from 'react';
 import GlobalState from '../global-state';

@@ -31,4 +31,26 @@ view {
 
 .clear {
 	clear: both;
+	float: none !important;
+	width: auto !important;
+	height: auto !important;
+	margin: auto !important;
+}
+
+.g_upload {
+	position: relative;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.g_upload div.upload_icon {
+	background-image: url(./img/icon_input_uploadpic@2x.png);
+	position: absolute;
+	z-index: 1;
+	width: 0.4rem;
+	height: 0.4rem;
+	background-size: 100%;
+	right: 0;
+	bottom: -0.04rem;
+	pointer-events:none;
 }
