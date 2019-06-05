@@ -181,7 +181,7 @@ body {
 	z-index: 1;
 }
 
-@media only screen and (min-aspect-ratio: 2/3) {
+@media only screen and (min-aspect-ratio: 4/5) {
 	.foot {
 		display: none !important;
 	}
