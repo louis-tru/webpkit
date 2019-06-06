@@ -680,3 +680,33 @@ body {
 	font-size: 0.24rem;
 	color: #444;
 }
+
+.g_load_btn {
+	padding: 0.22rem;
+}
+
+.g_load_btn div {
+	width: 6.9rem;
+	height: 0.92rem;
+	margin: auto;
+	text-align: center;
+	font-size: 0.28rem;
+	color: #2D2D2D;
+	line-height: 0.92rem;
+	background: #F8F8F8;
+	border: solid 0.01rem #ECECEC;
+}
+
+.g_load_btn div:active {
+	opacity: 0.5;
+}
+
+.g_load_btn div:after {
+	content: '';
+	background: url(../img/general_arrowdown@2x.png);
+	width: 0.26rem;
+	height: 0.18rem;
+	display: inline-block;
+	background-size: 100%;
+	margin-left: 0.08rem;
+}

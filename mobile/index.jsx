@@ -45,6 +45,7 @@ import ReactDom from 'react-dom';
 import React, { Component } from 'react';
 import _404 from './404';
 import GlobalState from '../global-state';
+import NavDataPage from './page';
 
 /**
  * @class Root
@@ -135,4 +136,5 @@ export {
 	NavPage,
 	dialog,
 	sdk,
+	NavDataPage,
 };
