@@ -33,7 +33,7 @@ import './dialog.css';
 import React, { Component } from 'react';
 import ReactDom from 'react-dom';
 
-class Dialog extends Component {
+export class Dialog extends Component {
 
 	constructor(props) {
 		super(props);
