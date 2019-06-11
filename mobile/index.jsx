@@ -65,7 +65,8 @@ export class Root extends GlobalState {
 			}
 			this.m_initurl = initurl;
 		} catch(e) {
-			error.defaultErrorHandle(e); return;
+			// error.defaultErrorHandle(e); 
+			return;
 		}
 
 		this.setState({ isLoaded: true });
