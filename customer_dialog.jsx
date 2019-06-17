@@ -9,7 +9,7 @@ class CustomizeDialog extends Component {
     super(props);
     this.state = { opacity: 0 };
   }
-
+  
   componentDidMount() {
     setTimeout(e => {
       this.setState({ opacity: 1 });
@@ -51,7 +51,7 @@ class CustomizeDialog extends Component {
               <div className="col-md-9">
 
                 {/* <!-- Radio Buttons --> */}
-                <div className="radio">
+                <div className="radio" ref="radio">
                   <input id="demo-form-radio" className="magic-radio" type="radio" name="form-radio-button" />
                   <label htmlFor="demo-form-radio">吴亦凡星球</label>
                 </div>
@@ -104,7 +104,7 @@ export function customize(clabel, cb) {
 
   return CustomizeDialog.show_customize(clabel, {
     '取消': e => cb(false),
-    '@确定': e => cb(true),
+    '@确定': e => cb(true, ),
     // '@确定': e => cb(e.refs.prompt.value, true),
   }, true);
 }
