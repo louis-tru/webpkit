@@ -37,6 +37,26 @@ view {
 	margin: auto !important;
 }
 
+.g_loading {
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0,0,0,0.1);
+	flex-direction: column;
+}
+
+.g_loading .text {
+	padding: 0.1rem;
+	font-size: 0.24rem;
+	color: #444;
+}
+
 .g_upload {
 	position: relative;
 	background-repeat: no-repeat;

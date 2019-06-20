@@ -28,71 +28,51 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import crypto from 'crypto-tx';
-import hash_js from 'hash.js';
-import { Buffer } from 'buffer';
-import { Signer } from 'qkit/request';
-import storage from 'qkit/storage';
+import React, { Component } from 'react';
 
-var privateKeyBytes;
-var publicKeyBytes;
-var publicKey;
+export default class Pageing extends Component {
 
-var hex = storage.get('access_auth_key');
-if (hex) { // use priv 
-	$gen_access_key(Buffer.from(hex, 'hex'));
-} else {
-	genAccessKey();
-}
-
-function $gen_access_key(privatekey) {
-	privateKeyBytes = privatekey;
-	publicKeyBytes = crypto.getPublic(privatekey, true);
-	publicKey = '0x' + publicKeyBytes.toString('hex');
-}
-
-function genAccessKey() {
-	$gen_access_key(crypto.genPrivateKey());
-	storage.set('access_auth_key', privateKeyBytes.toString('hex'));
-}
-
-/**
- * @class H5Signer
- */
-class H5Signer extends Signer {
-
-	setExtra(extra) {
-		this.m_extra = extra;
+	get page() {
+		return this.props.page;
 	}
 
-	sign(url, data_str = null) {
-		var st = Date.now();
-		var fuzz_key = '0a37eb70c1737777bc111d03af4fcd091bc6d913baa2f90316511c61943dbce2';
-		var sha256 = hash_js.sha256();
-		if (data_str) {
-			sha256.update(data_str);
-		}
-		url = url.replace(/^.+\/service-api\//, '/service-api/');
-		sha256.update(st + fuzz_key + url);
+	render() {
+		if (!this.page) return null;
+		var {dataPageCount, indexPage} = this.page;
+		if (dataPageCount <= 1) return null;
 
-		var message = Buffer.from(sha256.digest());
-		var { signature, recovery } = crypto.sign(message, privateKeyBytes);
-		var sign = new Buffer(65);
+		// var offset = Math.max(0, indexPage - 10);
+		var offset = 5;
 
-		signature.copy(sign);
-		sign[64] = recovery;
-
-		return Object.assign({
-			st, sign: sign.toString('base64'),
-		}, this.m_extra);
+		return (
+			<div class="text-right">
+				<ul class="pagination">
+					<li class={`footable-page-arrow ${indexPage?'':'disabled'}`}>
+						<a data-page="first" href="#first" onClick={e=>indexPage&&this.page.reload(0, 0)}>«</a>
+					</li>
+					<li class={`footable-page-arrow ${indexPage?'':'disabled'}`}>
+						<a data-page="prev" href="#prev" onClick={e=>indexPage&&this.page.reload(0, indexPage-1)}>‹</a>
+					</li>
+					{
+						Array.from({length:10}).map((e,i)=>{
+							var j = indexPage + i - offset;
+							if (j < 0 || j >= dataPageCount) return null;
+							return (
+								<li class={`footable-page ${indexPage==j?'active':''}`}>
+									<a data-page="0" href="#" onClick={e=>indexPage!=j&&this.page.reload(0, j)}>{j+1}</a>
+								</li>
+							);
+						}).filter(e=>e)
+					}
+					<li class={`footable-page-arrow ${indexPage+1<dataPageCount?'':'disabled'}`}>
+						<a data-page="next" href="#next" onClick={e=>indexPage+1<dataPageCount&&this.page.reload(0, indexPage+1)}>›</a>
+					</li>
+					<li class={`footable-page-arrow ${indexPage+1<dataPageCount?'':'disabled'}`}>
+						<a data-page="last" href="#last" onClick={e=>indexPage+1<dataPageCount&&this.page.reload(0, dataPageCount-1)}>»</a>
+					</li>
+				</ul>
+			</div>
+		);
 	}
+
 }
-
-var signer = new H5Signer();
-
-export default {
-	genAccessKey,
-	signer,
-	get publicKeyBytes() { return publicKeyBytes },
-	get publicKey() { return publicKey },
-};

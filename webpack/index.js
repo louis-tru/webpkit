@@ -269,12 +269,12 @@ module.exports = {
 	devServer: {
 		inline: config.dev.inline,
 		clientLogLevel: 'warning',
-		// historyApiFallback: {
-		// 	rewrites: [
-		// 		{ from: /.*/, to: path.posix.join(config.assetsPublicPath, 'index.html') },
-		// 	],
-		// },
-		// contentBase: fasle, // since we use CopyWebpackPlugin.
+		historyApiFallback: {
+			rewrites: [
+				{ from: /.*?\.html(\?.*)?$/, to: '/' },
+			],
+		},
+		// contentBase: false, // since we use CopyWebpackPlugin.
 		disableHostCheck: true, // Invalid Host header
 		hotOnly: config.dev.hotOnly,
 		hot: config.dev.hot,

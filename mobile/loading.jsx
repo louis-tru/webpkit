@@ -28,42 +28,4 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import qkit from 'qkit';
-import { React, sdk, Component } from '.';
-import { Toast, Icon } from './antd';
-import ReactDom from 'react-dom';
-
-export default class Loading extends Component {
-	state = { text: 'Loading..' };
-
-	componentDidMount() {
-		if (this.props.text) {
-			this.setState({ text: this.props.text });
-		}
-	}
-
-	// componentWillUnmount() {
-	// 	document.body.removeChild(this.refs.root.parentNode);
-	// }
-
-	render() {
-
-		return (
-			<div ref="root" class="g_loading">
-				<Icon type="loading" size="lg" />
-				<div class="text">{this.state.text}</div>
-			</div>
-		);
-	}
-
-	static show(text = 'Loading..', id = qkit.iid) {
-		var div = document.createElement('div');
-		document.body.appendChild(div);
-		div.id = id || qkit.iid;
-		return ReactDom.render(<Loading text={text ||'Loading..'} />, div);
-	}
-
-	static close(id) {
-		document.body.removeChild(document.querySelector(`#${id}`));
-	}
-}
+export * from '../loading';

@@ -35,13 +35,15 @@ import GlobalState from './global-state';
  * @class Page
  */
 export default class Page extends GlobalState {
+	state = {};
 
 	constructor(props) {
 		super(props);
 		if (!this.props.router) return;
 		this._url = this.props.location.pathname + this.props.location.search;
 		var search = this.props.location.search.substr(1);
-		this._params = {};
+		var params = this.props.location.params || {};
+		this._params = this.props.match ? { ...params, ...this.props.match.params }: params;
 		this._router = this.props.router;
 		if (search) {
 			search.split('&').forEach(e=>{
@@ -77,13 +79,29 @@ export default class Page extends GlobalState {
 	}
 
 	get params() {
-		return this.props.match && this.props.match.params;
+		return this._params;
 	}
 
-	componentDidMount() {
+	get loading() {
+		return !this.state.loading_complete;
+	}
+
+	updateState(data) {
+		var state = {};
+		for (var i in data) {
+			var o = data[i];
+			if (typeof o == 'object' && !Array.isArray(o)) {
+				state[i] = Object.assign(this.state[i] || {}, data[i]);
+			}
+		}
+		this.setState(state);
+	}
+
+	async componentDidMount() {
 		super.componentDidMount();
 		this._router && (this._router._current = this);
-		this.onLoad();
+		await this.onLoad();
+		this.setState({ loading_complete: true });
 	}
 
 	componentWillUnmount() {
@@ -110,14 +128,123 @@ export default class Page extends GlobalState {
 		this.history && this.history.goForward()
 	}
 
-	goto(url) {
-		if (this._router) {
-			if (this._router.type == 'hash') {
-				location.hash = url;
-			} else {
-				location.href = url;
+	goto(args) {
+		var history = this.history;
+		if (history) {
+			if (typeof args == 'string') {
+				args = {url:args};
+			}
+			var { url, params = {} } = args;
+			var pathname = url;
+			var search = '';
+			var index = url.indexOf('?');
+			if (index >= 0) {
+				pathname = url.substr(0, index);
+				search = url.substring(index);
+			}
+			history.push({ pathname, search, params });
+		}
+	}
+
+}
+
+var default_data_page = 10;
+
+/**
+ * @class DataPage
+ */
+export class DataPage {
+
+	static setDefaultDataPage(page) {
+		default_data_page = Number(page) || default_data_page;
+	}
+
+	get name() {
+		return this.m_name || '';
+	}
+
+	get dataPage() {
+		return this.m_dataPage || default_data_page;
+	}
+
+	set dataPage(value) {
+		this.m_dataPage = Number(value) || default_data_page;
+	}
+
+	get dataPageCount() {
+		return Math.ceil(this.total / this.dataPage);
+	}
+
+	get data() {
+		var name = `${this.name}_data`;
+		return this.state[name] || GlobalState.getGlobalState()[name] || [];
+	}
+
+	set data(value) {
+		this.setState({ [`${this.name}_data`]: value || [] });
+	}
+
+	get indexPage() {
+		return Math.ceil(this.index / this.dataPage);
+	}
+
+	get index() {
+		return this.m_index || 0;
+	}
+
+	set index(value) {
+		this.m_index = Number(value) || 0;
+	}
+
+	get total() {
+		return this.m_total || 0;
+	}
+
+	set total(value) {
+		this.m_total = Number(value) || 0;
+	}
+
+	get length() {
+		return this.data.length;
+	}
+
+	get hasMore() {
+		var data = this.state[`${this.name}_data`];
+		if (data && data.length) {
+			if (data.length % this.dataPage === 0) {
+				return true;
 			}
 		}
+		return false;
+	}
+
+	async loadMore() {
+		var rawData = this.data;
+		this.m_load_data_params = {
+			...this.m_load_data_params,
+			limit: [rawData.length, rawData.length + this.dataPage],
+		};
+		var { value, total } = await this.loadData(this.m_load_data_params);
+		this.total = total;
+		this.data = rawData.concat(value);
+	}
+
+	async reload(params, page = 0) {
+		var dataPage = this.dataPage;
+		this.m_load_data_params = {
+			...this.m_load_data_params,
+			limit: [Math.max(0, Number(page)||0) * dataPage, dataPage],
+			fetchTotal: 1,
+			...params,
+		};
+		var { value, total, index } = await this.loadData(this.m_load_data_params);
+		this.index = index;
+		this.total = total;
+		this.data = value;
+	}
+
+	async loadData(params) {
+		return [];
 	}
 
 }

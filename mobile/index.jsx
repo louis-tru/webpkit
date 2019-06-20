@@ -57,21 +57,17 @@ export class Root extends GlobalState {
 	async componentDidMount() {
 		rem.initialize();
 
-		try {
-			var initurl = await this.onLoad();
+		var path = await this.onLoad();
 
-			if ( typeof this.props.onLoad == 'function') {
-				initurl = (await this.props.onLoad(this)) || initurl;
-			}
-			this.m_initurl = initurl;
-		} catch(e) {
-			// error.defaultErrorHandle(e); 
-			return;
+		if ( typeof this.props.onLoad == 'function') {
+			path = (await this.props.onLoad(this)) || path;
 		}
+		this.m_path = path;
 
 		this.setState({ isLoaded: true });
 
 		// setTimeout(e=>window.history.replaceState({}, this.props.title||'', '#/'), 10);
+
 		window.addEventListener('hashchange', (e)=>{
 			this.refs.nav.current.popPage(true); // 不管前进或后退都当成后退处理
 		});
@@ -96,7 +92,7 @@ export class Root extends GlobalState {
 	}
 
 	render() {
-		var url = this.m_initurl || (location.hash ? location.hash.replace(/^#/, '') : '/');
+		var url = this.m_path || (location.hash ? location.hash.replace(/^#/, '') : '/');
 		return (
 			this.state.isLoaded ?
 			<Nav 
@@ -124,7 +120,7 @@ export async function initializeSdk(config = {}) {
 		path.getParam('D_SDK_VIRTUAL') || url.filename
 	);
 
-	sdk.addEventListener('Error', function(err) {
+	sdk.addEventListener('uncaughtException', function(err) {
 		error.defaultErrorHandle(err.data);
 	});
 };

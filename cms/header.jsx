@@ -455,7 +455,7 @@ export default class extends Component {
 					{/*--Brand logo & name--*/}
 					{/*--================================--*/}
 					<div className="navbar-header">
-						<a href="index.html" className="navbar-brand">
+						<a href="./" className="navbar-brand">
 							<img src="nifty/img/logo.png" alt="Nifty Logo" className="brand-icon" />
 							<div className="brand-title">
 								<span className="brand-text">{this.title}</span>

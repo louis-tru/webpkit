@@ -28,59 +28,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+import qkit from 'qkit';
 import { NavPage, Nav } from './nav';
 import React, { Component } from 'react';
 import GlobalState from '../global-state';
+import { DataPage } from '../page';
 
-export default class NavDataPage extends NavPage {
+export default qkit.extendClass(class NavDataPage extends NavPage { }, DataPage);
 
-	name = '';
-	dataPage = 30;
-
-	get data() {
-		var name = `${this.name}_data`;
-		return this.state[name] || GlobalState.getGlobalState()[name] || [];
-	}
-
-	set data(value) {
-		this.setState({ [`${this.name}_data`]: value || [] });
-	}
-
-	get hasMore() {
-		var data = this.state[`${this.name}_data`];
-		if (data && data.length) {
-			if (data.length % this.dataPage === 0) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	loadMore = async ()=>{
-		var rawData = this.data;
-		this.m_load_data_params = {
-			...this.m_load_data_params,
-			limit: [rawData.length, rawData.length + this.dataPage],
-		};
-		var data = await this.loadData(this.m_load_data_params);
-		this.data = rawData.concat(data);
-	}
-
-	constructor(props) {
-		super(props);
-	}
-
-	async reload(params) {
-		this.m_load_data_params = {
-			...this.m_load_data_params,
-			limit: [0, this.dataPage || 30],
-			...params,
-		};
-		this.data = await this.loadData(this.m_load_data_params);
-	}
-
-	async loadData(params) {
-		return [];
-	}
-
-}
+// export default NavDataPage;

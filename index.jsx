@@ -35,15 +35,18 @@ import qkit from 'qkit';
 import sdk from 'dphoto-magic-sdk';
 import path from 'qkit/path';
 import error from './error';
-import { Router, Page } from './router';
+import { Router } from './router';
+import Page, { DataPage } from './page';
 import ReactDom from 'react-dom';
 import React, { Component } from 'react';
 import {Link} from 'react-router-dom';
 import GlobalState from './global-state';
-
-export * from './dialog';
+import * as History from 'history';
+import * as dialog from './dialog'
 
 var current = null;
+
+const history = History.createBrowserHistory(); // History.createHashHistory();
 
 /**
  * @class Root
@@ -52,19 +55,20 @@ export class Root extends GlobalState {
 
 	state = { isLoaded: false };
 
+	constructor(props) {
+		super(props);
+		this.history = history;
+	}
+
 	async componentDidMount() {
 		current = this;
 
-		try {
-			await this.onLoad();
-			
-			if ( typeof this.props.onLoad == 'function') {
-				await this.props.onLoad(this);
-			}
-
-		} catch(e) {
-			error.defaultErrorHandle(e); return;
+		await this.onLoad();
+		
+		if ( typeof this.props.onLoad == 'function') {
+			await this.props.onLoad(this);
 		}
+
 		this.setState({ isLoaded: true });
 	}
 
@@ -76,7 +80,9 @@ export class Root extends GlobalState {
 		return (
 			this.state.isLoaded ?
 			<Router ref="router" 
-				notFound={this.props.notFound} routes={this.props.routes}
+				history={this.history}
+				notFound={this.props.notFound}
+				routes={this.props.routes}
 			/>:
 			<div className="init-loading">Loading..</div>
 		);
@@ -97,7 +103,7 @@ export async function initializeSdk(config = {}) {
 		path.getParam('D_SDK_VIRTUAL') || url.filename
 	);
 
-	sdk.addEventListener('Error', function(err) {
+	sdk.addEventListener('uncaughtException', function(err) {
 		error.defaultErrorHandle(err.data);
 	});
 };
@@ -106,8 +112,10 @@ export {
 	React,
 	ReactDom,
 	Component,
-	Router, Page,
+	Router,
+	Page, DataPage,
 	sdk,
 	Link,
 	error,
+	dialog,
 };

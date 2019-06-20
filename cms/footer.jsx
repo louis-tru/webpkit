@@ -32,6 +32,7 @@ import { React, Page, Link, Component } from '..';
 
 
 export default class extends Component {
+	
 	renderText() {
 		if (this.props.text) {
 			return (<div style={{textAlign: 'center'}}>{this.props.text}</div>)
@@ -58,6 +59,7 @@ export default class extends Component {
 			</div>
 		)
 	}
+
 	render() {
 		return (
 			<footer id="footer">
