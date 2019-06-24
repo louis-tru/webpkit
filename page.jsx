@@ -163,6 +163,10 @@ export class DataPage {
 		return this.m_name || '';
 	}
 
+	set name(value) {
+		this.m_name = value || '';
+	}
+
 	get dataPage() {
 		return this.m_dataPage || default_data_page;
 	}
@@ -222,7 +226,7 @@ export class DataPage {
 		var rawData = this.data;
 		this.m_load_data_params = {
 			...this.m_load_data_params,
-			limit: [rawData.length, rawData.length + this.dataPage],
+			limit: [rawData.length, this.dataPage],
 		};
 		var { value, total } = await this.loadData(this.m_load_data_params);
 		this.total = total;

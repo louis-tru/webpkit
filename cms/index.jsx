@@ -40,6 +40,7 @@ require('./_ext');
 require('nifty/plugins/sparkline/jquery.sparkline.js');
 require('nifty/css/bootstrap.css');
 require('nifty/js/bootstrap.js');
+require('nifty/plugins/font-awesome/css/font-awesome.min.css');
 require('nifty/css/nifty.css');
 require('nifty/plugins/magic-check/css/magic-check.css');
 require('nifty/plugins/pace/pace.css');

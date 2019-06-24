@@ -69,6 +69,10 @@ export class Root extends GlobalState {
 			await this.props.onLoad(this);
 		}
 
+		sdk.addEventListener('uncaughtException', function(err) {
+			error.defaultErrorHandle(err.data);
+		});
+
 		this.setState({ isLoaded: true });
 	}
 
@@ -103,9 +107,6 @@ export async function initializeSdk(config = {}) {
 		path.getParam('D_SDK_VIRTUAL') || url.filename
 	);
 
-	sdk.addEventListener('uncaughtException', function(err) {
-		error.defaultErrorHandle(err.data);
-	});
 };
 
 export {

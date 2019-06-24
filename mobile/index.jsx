@@ -64,6 +64,10 @@ export class Root extends GlobalState {
 		}
 		this.m_path = path;
 
+		sdk.addEventListener('uncaughtException', function(err) {
+			error.defaultErrorHandle(err.data);
+		});
+
 		this.setState({ isLoaded: true });
 
 		// setTimeout(e=>window.history.replaceState({}, this.props.title||'', '#/'), 10);
@@ -113,16 +117,13 @@ export class Root extends GlobalState {
 export async function initializeSdk(config = {}) {
 	if (sdk.isLoaded) return;
 	var url = new path.URL(config.serviceAPI || qkit.config.serviceAPI);
+
 	await sdk.initialize(
 		path.getParam('D_SDK_HOST') || url.hostname,
 		path.getParam('D_SDK_PORT') || url.port,
 		path.getParam('D_SDK_SSL') || /^(http|ws)s/.test(url.protocol),
 		path.getParam('D_SDK_VIRTUAL') || url.filename
 	);
-
-	sdk.addEventListener('uncaughtException', function(err) {
-		error.defaultErrorHandle(err.data);
-	});
 };
 
 export {

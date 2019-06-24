@@ -34,6 +34,8 @@ import React, { Component } from 'react';
 import GlobalState from '../global-state';
 import { DataPage } from '../page';
 
-export default qkit.extendClass(class NavDataPage extends NavPage { }, DataPage);
+export default class NavDataPage extends NavPage {}
+
+qkit.extendClass(NavDataPage, DataPage);
 
 // export default NavDataPage;

@@ -36,7 +36,7 @@ var socket = require('webpack-dev-server/client/socket');
 var overlay = require('webpack-dev-server/client/overlay');
 
 var __resourceQuery = '?' + path.resolve('http://0.0.0.0', 
-	location.pathname.replace(/\/[^\/]+/, ''), 'sockjs-node');
+	location.pathname.replace(/\/[^\/]*?/, ''), 'sockjs-node');
 
 var urlParts = void 0;
 var hotReload = true;
