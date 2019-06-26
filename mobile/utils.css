@@ -311,6 +311,7 @@ body {
 	background: #fff;
 	position: relative;
 	margin-bottom: 0.02rem;
+	/* justify-content: space-between; */
 }
 
 .form_item_tip {
@@ -426,6 +427,7 @@ body {
 	color: #000;
 	background: none;
 	padding: 0.15rem 0;
+	margin-right: 0.3rem;
 }
 
 .form_item img.value {
