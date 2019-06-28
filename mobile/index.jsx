@@ -29,8 +29,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 import 'normalize.css';
-import 'antd-mobile';
-import 'antd-mobile/dist/antd-mobile.css';
 import '../utils.css';
 import './utils.css';
 import rem from './rem';
@@ -55,7 +53,7 @@ export class Root extends GlobalState {
 	state = { isLoaded: false };
 
 	async componentDidMount() {
-		rem.initialize();
+		rem.initialize(this.props.scale);
 
 		var path = await this.onLoad();
 

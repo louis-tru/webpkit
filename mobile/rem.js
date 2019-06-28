@@ -37,6 +37,7 @@
 	var is_initialize = 0;
 	var atomPixel = 1;
 	var rootFontSize = 12;
+	var scale = 7.5
 
 	document.addEventListener("touchstart", function(){}, true);
 
@@ -45,13 +46,13 @@
 		if (width / dpr > 980) {
 			width = 980 * dpr;
 		}
-		var rem = width / 7.5;
+		var rem = width / scale;
 		
 		docEl.style.fontSize = rem + 'px';
 
 		rootFontSize = rem;
 		
-		atomPixel = width / 750;
+		atomPixel = width / (scale*100);
 
 		// if (doc.body && window.orientation == 0) {
 		// 	var _rem = rem;
@@ -65,10 +66,12 @@
 		// }
 	}
 
-	function initialize() {
+	function initialize(_scale) {
 
 		if (is_initialize) return;
 		is_initialize = 1;
+
+		scale = _scale || scale;
 
 		var tid;
 		win.addEventListener('resize', function() {

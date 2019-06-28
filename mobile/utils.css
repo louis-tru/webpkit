@@ -179,6 +179,7 @@ body {
 	width: 100%;
 	background: rgba(255,255,255,0.98);
 	z-index: 1;
+	transform: translateZ(1px);
 }
 
 @media only screen and (min-aspect-ratio: 4/5) {
