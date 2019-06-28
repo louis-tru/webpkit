@@ -125,14 +125,14 @@ body {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	height: 0.5px;
+	height: 1px;
 	transform-origin: 50% 100%;
 	transform: scaleY(0.5) translateZ(1px);
 }
 
 .main .title .b > div:first-child {
 	position: absolute;
-	 padding-left: 0.1rem; 
+	padding-left: 0.1rem; 
 	padding-right: 0.2rem;
 	height: 100%;
 	font-weight: initial;
@@ -557,10 +557,10 @@ body {
 
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
 
-	.main .title .b {
-		border-bottom-width: 0.005rem;
+	.main .title .b:after {
+		transform: scaleY(0.5) translateZ(1px);
 	}
-
+	
 	.ccform .am-list-item .am-list-line:after {
 		content: '';
 		position: absolute;
@@ -591,8 +591,8 @@ body {
 (-webkit-min-device-pixel-ratio: 3), (min-resolution: 2dppx) and 
 (min-resolution: 3dppx) {
 
-	.main .title .b {
-		border-bottom-width: 0.0033rem;
+	.main .title .b:after {
+		transform: scaleY(0.33) translateZ(1px);
 	}
 
 	.ccform .am-list-item .am-list-line:after {
