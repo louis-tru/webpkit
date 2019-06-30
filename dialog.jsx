@@ -71,11 +71,13 @@ export class Dialog extends Component {
 			<div ref="root" className="dialog" style={{opacity: this.state.opacity}}>
 				<div className="core">
 					<div className="a">{props.title/*||'温馨提示'*/}</div>
-					<div className="b">{
-						props.prompt ? [
-							<div key={1}>{props.text}</div>,
-							<input key={2} 
+					{
+						props.prompt ?
+						<div className="b">
+							<div>{props.text}</div>
+							<input 
 								ref="prompt" 
+								type="number"
 								style={{
 									border: 'solid 0.015rem #ccc',
 									width: '90%',
@@ -84,8 +86,9 @@ export class Dialog extends Component {
 								}}
 								onChange={this.m_handleChange_1}
 							/>
-						] : props.text
-					}</div>
+						</div>:
+						<div className="b">{props.text}</div>
+					}
 					<div className="btns">
 					{
 						(e=>{
@@ -139,10 +142,10 @@ export function confirm(text, cb) {
 
 export function prompt(text, cb) {
 	cb = cb || function() {}
-	var o = typeof text == 'string' ? { text: text, title: '' }: text;
-	var { text, title } = o;
+	var o = typeof text == 'string' ? { text: text, title: '', value: '' }: text;
+	var { text, title, value } = o;
 	return Dialog.show(title, text, {
 		'取消': e=> cb(e.refs.prompt.value, false),
 		'@确定': e=> cb(e.refs.prompt.value, true),
-	}, true);
+	}, {value});
 }
