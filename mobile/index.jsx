@@ -67,7 +67,6 @@ export class Root extends GlobalState {
 		});
 
 		this.setState({ isLoaded: true });
-
 		// setTimeout(e=>window.history.replaceState({}, this.props.title||'', '#/'), 10);
 
 		window.addEventListener('hashchange', (e)=>{
