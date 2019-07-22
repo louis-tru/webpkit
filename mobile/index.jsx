@@ -64,8 +64,8 @@ export class Root extends GlobalState {
 			}
 			this.m_path = path;
 		} catch(err) {
-			if (err.code != errno.ERR_LOGIN_FORWARD) {
-				dialog.alert(err.message + ', ' + err.stack);
+			if (err.code != errno.ERR_LOGIN_FORWARD[0]) {
+				dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
 			}
 			throw err;
 		}
