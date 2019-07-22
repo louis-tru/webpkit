@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Distributed under the BSD license:
  *
- * Copyright (c) 2019, hardchain
+ * Copyright (c) 2015, hardchain
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,44 +28,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import langoukit from 'langoukit';
-import { React, Component, sdk } from '.';
-// import { Toast, Icon } from './antd';
-import ReactDom from 'react-dom';
+var errno = require('langoukit/errno');
 
-import './utils.css';
-
-export default class Loading extends Component {
-
-	state = { text: 'Loading..' };
-
-	componentDidMount() {
-		if (this.props.text) {
-			this.setState({ text: this.props.text });
-		}
-	}
-
-	// componentWillUnmount() {
-	// 	document.body.removeChild(this.refs.root.parentNode);
-	// }
-
-	render() {
-		return (
-			<div ref="root" className="g_loading">
-				{/* <Icon type="loading" size="lg" /> */}
-				<div className="text">{this.state.text}</div>
-			</div>
-		);
-	}
-
-	static show(text = 'Loading..', id = langoukit.iid) {
-		var div = document.createElement('div');
-		document.body.appendChild(div);
-		div.id = id || langoukit.iid;
-		return ReactDom.render(<Loading text={text ||'Loading..'} />, div);
-	}
-
-	static close(id) {
-		document.body.removeChild(document.querySelector(`#${id}`));
-	}
-}
+module.exports = {
+	...errno,
+	ERR_METHOD_CALL_TIMEOUT: [-30006, '连接超时', '方法调用超时'],
+	ERR_LOGIN_FORWARD: [300001, '登录跳转', 'login forward'],
+};

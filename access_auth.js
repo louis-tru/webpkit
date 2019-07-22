@@ -31,8 +31,8 @@
 import crypto from 'crypto-tx';
 import hash_js from 'hash.js';
 import { Buffer } from 'buffer';
-import { Signer } from 'qkit/request';
-import storage from 'qkit/storage';
+import { Signer } from 'langoukit/request';
+import storage from 'langoukit/storage';
 
 var privateKeyBytes;
 var publicKeyBytes;

@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import qkit from 'qkit';
+import langoukit from 'langoukit';
 import CMSPage from './page';
 import { Root, React, sdk } from '..';
 import {alert} from '../dialog'
@@ -120,13 +120,13 @@ export default class Login extends CMSPage {
 
 	getCheckPhone() {
 		var iphone = this.refs.uname.value;
-		qkit.assert(this.checkPhone(iphone), new Error('手机输入不正确'));
+		langoukit.assert(this.checkPhone(iphone), new Error('手机输入不正确'));
 		return iphone;
 	}
 
 	getCheckVcode() {
 		var vcode = this.refs.upwd.value;
-		qkit.assert(/^\d{6}$/.test(vcode), new Error('手机验证码输入不正确'));
+		langoukit.assert(/^\d{6}$/.test(vcode), new Error('手机验证码输入不正确'));
 		return vcode;
 	}
 

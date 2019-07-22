@@ -15,6 +15,23 @@ body {
 	font-family:sans-serif,STHeiti,Microsoft YaHei,Helvetica,Arial;
 }
 
+.main {
+	/* width: 100vw; */
+	/* height: 100vh; */
+	/* position: relative; */
+	/* z-index: 1; */
+	background-size: 100%;
+	background-repeat: no-repeat;
+	background-position-x: center;
+	line-height: initial;
+	/* overflow: auto; */
+}
+
+.test {
+	background-repeat: repeat;
+	min-height: 100vh;
+}
+
 view {
 	display: block;
 }

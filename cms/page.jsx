@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import qkit from 'qkit';
+import langoukit from 'langoukit';
 import { React, Page } from '..';
 import { DataPage } from '../page';
 
@@ -51,4 +51,4 @@ export default class CMSPage extends Page {
 
 export class CMSDataPage extends CMSPage { };
 
-qkit.extendClass(CMSDataPage, DataPage);
+langoukit.extendClass(CMSDataPage, DataPage);

@@ -30,12 +30,12 @@ select {
 
 .main {
 	width: 100vw;
+	height: 100vh;
 	position: relative;
 	z-index: 1;
-	background-size: 100%;
+	/*background-size: 100%;
 	background-repeat: no-repeat;
-	line-height: initial;
-	height: 100vh;
+	line-height: initial; */
 	overflow: auto;
 }
 

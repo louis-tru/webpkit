@@ -31,9 +31,9 @@
 import 'normalize.css';
 import './utils.css';
 import './_fix';
-import qkit from 'qkit';
+import langoukit from 'langoukit';
 import sdk from 'dphoto-magic-sdk';
-import path from 'qkit/path';
+import path from 'langoukit/path';
 import error from './error';
 import { Router } from './router';
 import Page, { DataPage } from './page';
@@ -99,7 +99,7 @@ export class Root extends GlobalState {
 
 export async function initializeSdk(config = {}) {
 	if (sdk.isLoaded) return;
-	var url = new path.URL(config.serviceAPI || qkit.config.serviceAPI);
+	var url = new path.URL(config.serviceAPI || langoukit.config.serviceAPI);
 	await sdk.initialize(
 		path.getParam('D_SDK_HOST') || url.hostname,
 		path.getParam('D_SDK_PORT') || url.port,

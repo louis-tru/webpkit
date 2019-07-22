@@ -32,9 +32,9 @@ import 'normalize.css';
 import '../utils.css';
 import './utils.css';
 import rem from './rem';
-import qkit from 'qkit';
+import langoukit from 'langoukit';
 import sdk from 'dphoto-magic-sdk';
-import path from 'qkit/path';
+import path from 'langoukit/path';
 import '../_fix';
 import error from '../error';
 import * as dialog from '../dialog';
@@ -44,6 +44,7 @@ import React, { Component } from 'react';
 import _404 from './404';
 import GlobalState from '../global-state';
 import NavDataPage from './page';
+import errno from '../errno';
 
 /**
  * @class Root
@@ -55,12 +56,19 @@ export class Root extends GlobalState {
 	async componentDidMount() {
 		rem.initialize(this.props.scale);
 
-		var path = await this.onLoad();
+		try {
+			var path = await this.onLoad();
 
-		if ( typeof this.props.onLoad == 'function') {
-			path = (await this.props.onLoad(this)) || path;
+			if ( typeof this.props.onLoad == 'function') {
+				path = (await this.props.onLoad(this)) || path;
+			}
+			this.m_path = path;
+		} catch(err) {
+			if (err.code != errno.ERR_LOGIN_FORWARD) {
+				dialog.alert(err.message + ', ' + err.stack);
+			}
+			throw err;
 		}
-		this.m_path = path;
 
 		sdk.addEventListener('uncaughtException', function(err) {
 			error.defaultErrorHandle(err.data);
@@ -113,7 +121,7 @@ export class Root extends GlobalState {
 
 export async function initializeSdk(config = {}) {
 	if (sdk.isLoaded) return;
-	var url = new path.URL(config.serviceAPI || qkit.config.serviceAPI);
+	var url = new path.URL(config.serviceAPI || langoukit.config.serviceAPI);
 
 	await sdk.initialize(
 		path.getParam('D_SDK_HOST') || url.hostname,
