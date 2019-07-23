@@ -55,35 +55,52 @@ export class AForm extends GlobalState {
 	isFieldValidating = (...args)=>this.props.form.isFieldValidating(...args);
 	getFieldValue = (...args)=>this.props.form.getFieldValue(...args);
 
+	_check(name) {
+		var {rules} = this.props.form.getFieldInstance(name).props;
+		var value = this.props.form.getFieldValue(name);
+		if (rules) {
+			return rules.every(rule=>{
+				if (rule.validator) {
+					var err;
+					rule.validator(rule, value, e=>err=e, {}, {});
+					if (err) return false;
+				} else if (rule.required && !value) {
+					return false;
+				} else if (rule.pattern) {
+					if (!rule.pattern.exec(value)) {
+						return false;
+					}
+				}
+				return true;
+			});
+		}
+
+		return true;
+	}
+
 	get canSubmit() {
 		return this.isCanSubmit();
 	}
 
-	isCanSubmit(is_force = false) {
-		// if (is_force || this.isFieldsTouched()) {
-
+	isCanSubmit() {
 		var errors = this.getFieldsError();
 		for (var i in errors) {
 			if (errors[i]) {
 				return false;
 			} else {
 				if (!this.isFieldValidating(i)) {
-					var val = this.getFieldValue(i);
-					if ((!val && val+1!==1) || (Array.isArray(val) && 
-							!val.every(e=>(e||e+1===1)&&e!=='undefined'))
-					) {
+					if (!this._check(i)) {
 						return false;
 					}
 				}
 			}
 		}
 		return true;
-		// }
-		// return false;
 	}
 
-	componentDidMount() {
-		this.onLoad();
+	async componentDidMount() {
+		await this.onLoad();
+		this.setState(this.state);
 	}
 
 	componentWillUnmount() {
