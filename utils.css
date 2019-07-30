@@ -91,3 +91,7 @@ view {
 	bottom: -0.04rem;
 	pointer-events:none;
 }
+
+.g_upload > input {
+	cursor: pointer;
+}

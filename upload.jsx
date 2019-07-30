@@ -94,7 +94,7 @@ export async function uploadQiniu(file, params = {}) {
 
 	var url = await new Promise((resolve, reject)=>{
 		var mat = file.name.match(/\.[a-z]+$/i);
-		var key = `${langoukit.random()}${langoukit.random()}${mat[0]}`;
+		var key = `${new Date().toString('yyyyMMdd')}/${langoukit.random()}${langoukit.random()}${mat[0]}`;
 		var subscription = qiniu.upload(file, key, uptoken.token, {
 			fname: '',
 			params: params,
@@ -155,12 +155,12 @@ export default class Upload extends Component {
 	}
 
 	get value() {
-		return this.state.src||this.props.src;
+		return this.state.src || this.props.src || this.props.value || '';
 	}
 
 	componentDidMount() {
 		this.m_id = `upload_${langoukit.iid}`;
-		this.setState({ src: this.props.src || '' });
+		this.setState({ src: this.props.src || this.props.value || '' });
 	}
 
 	render() {
