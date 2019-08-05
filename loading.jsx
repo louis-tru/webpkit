@@ -58,14 +58,16 @@ export default class Loading extends Component {
 		);
 	}
 
-	static show(text = 'Loading..', id = langoukit.iid) {
+	static show(text = 'Loading..', id = langoukit.id) {
 		var div = document.createElement('div');
 		document.body.appendChild(div);
-		div.id = id || langoukit.iid;
+		div.id = id || langoukit.id;
 		return ReactDom.render(<Loading text={text ||'Loading..'} />, div);
 	}
 
 	static close(id) {
-		document.body.removeChild(document.querySelector(`#${id}`));
+		var dom = document.getElementById(id);
+		if (dom)
+			document.body.removeChild(dom);
 	}
 }
