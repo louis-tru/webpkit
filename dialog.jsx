@@ -37,7 +37,7 @@ export class Dialog extends Component {
 
 	constructor(props) {
 		super(props);
-		this.state = { opacity: 0 };
+		this.state = { opacity: 0, nomask: props.nomask };
 	}
 
 	componentDidMount() {
@@ -63,14 +63,19 @@ export class Dialog extends Component {
 	}
 
 	render() {
-
 		var props = this.props;
 		var buttons = props.buttons || {};
+		var {nomask,opacity} = this.state
+		var style = { opacity };
+
+		if (nomask) {
+			style.background = 'none';
+		}
 
 		return (
-			<div ref="root" className="dialog" style={{opacity: this.state.opacity}}>
+			<div ref="root" className="dialog" style={style}>
 				<div className="core">
-					<div className="a">{props.title/*||'温馨提示'*/}</div>
+					<div className="a" dangerouslySetInnerHTML={{ __html: props.title/*||'温馨提示'*/ }}></div>
 					{
 						props.prompt ?
 						<div className="b">
@@ -87,7 +92,7 @@ export class Dialog extends Component {
 								onChange={this.m_handleChange_1}
 							/>
 						</div>:
-						<div className="b">{props.text}</div>
+						<div className="b" dangerouslySetInnerHTML={{ __html: props.text}}></div>
 					}
 					<div className="btns">
 					{
@@ -108,7 +113,7 @@ export class Dialog extends Component {
 		);
 	}
 
-	static show(title, text, buttons, prompt) {
+	static show({title, text, buttons, prompt, nomask }) {
 		var div = document.createElement('div');
 		document.body.appendChild(div);
 		return ReactDom.render(
@@ -117,35 +122,41 @@ export class Dialog extends Component {
 				buttons={buttons}
 				text={text}
 				prompt={prompt}
+				nomask={nomask}
 			/>, div);
 	}
+}
+
+export function show(...args) {
+	return Dialog.show(...args);
 }
 
 export function alert(text, cb) {
 	cb = cb || function() {}
 	var o = typeof text == 'string' ? { text: text, title: '' }: text;
 	var { text, title } = o;
-	return Dialog.show(title, text, {
+	return Dialog.show({
+		title, text, buttons: {
 		'确定': e=>{ cb() },
-	});
+	}});
 }
 
 export function confirm(text, cb) {
 	cb = cb || function() {};
 	var o = typeof text == 'string' ? { text: text, title: '' } : text;
 	var { text, title } = o;
-	return Dialog.show(title, text, {
+	return Dialog.show({title, text, buttons: {
 		'取消': e=>cb(false),
 		'@确定': e=>cb(true),
-	});
+	}});
 }
 
 export function prompt(text, cb) {
 	cb = cb || function() {}
 	var o = typeof text == 'string' ? { text: text, title: '', value: '' }: text;
 	var { text, title, value } = o;
-	return Dialog.show(title, text, {
+	return Dialog.show({title, text, buttons: {
 		'取消': e=> cb(e.refs.prompt.value, false),
 		'@确定': e=> cb(e.refs.prompt.value, true),
-	}, {value});
+	}, prompt: {value}});
 }
