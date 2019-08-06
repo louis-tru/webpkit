@@ -121,19 +121,19 @@ export default class Upload extends Component {
 		var file = e.target.files[0];
 		if (!file) return;
 		var name = file.name;
-		if (/\.(jpeg|jpg|png|gif)$/i.test(file.name)) {
-			this.m_onStartUpload(file);
-			Loading.show('上传中..', this.m_id);
-			try {
-				var src = await uploadQiniu(file);
-			} finally {
-				Loading.close(this.m_id);
-			}
-			this.m_onChange(src, this.value);
-			this.setState({ src });
-		} else {
-			// Toast.info('请选择正确图片格式！');
+		// if (/\.(jpeg|jpg|png|gif)$/i.test(file.name)) {
+		this.m_onStartUpload(file);
+		Loading.show('上传中..', this.m_id);
+		try {
+			var src = await uploadQiniu(file);
+		} finally {
+			Loading.close(this.m_id);
 		}
+		this.m_onChange(src, this.value);
+		this.setState({ src });
+		// } else {
+			// Toast.info('请选择正确图片格式！');
+		// }
 	}
 
 	m_onChange(src, raw) {
@@ -166,6 +166,7 @@ export default class Upload extends Component {
 	render() {
 		var cls = this.props.className || this.props.class;
 		var src = this.value;
+		var accept = this.props.accept || 'image/*';
 
 		var style = {};
 
@@ -182,7 +183,7 @@ export default class Upload extends Component {
 
 		return (
 			<div className={`g_upload ${cls}`} style={style}>
-				<input accept="image/*" type="file" onChange={this.m_handle_change} style={{
+				<input accept={accept} type="file" onChange={this.m_handle_change} style={{
 					width: '100%',
 					height: '100%',
 					opacity: 0.01,
