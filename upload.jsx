@@ -167,8 +167,13 @@ export default class Upload extends Component {
 		var cls = this.props.className || this.props.class;
 		var src = this.value;
 		var accept = this.props.accept || 'image/*';
-
 		var style = {};
+		var defaultImage = ''
+
+		if (src && !/\.(jpeg|jpg|png|gif)$/i.test(src)) {
+			src = '';
+			defaultImage = 'defaultImage';
+		}
 
 		if (!this.props.noShow) {
 			var size = this.props.size ? 
@@ -182,7 +187,7 @@ export default class Upload extends Component {
 		}
 
 		return (
-			<div className={`g_upload ${cls}`} style={style}>
+			<div className={`g_upload ${cls} ${defaultImage}`} style={style}>
 				<input accept={accept} type="file" onChange={this.m_handle_change} style={{
 					width: '100%',
 					height: '100%',
