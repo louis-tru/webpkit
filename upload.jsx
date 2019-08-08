@@ -29,6 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import langoukit from 'langoukit';
+import path from 'langoukit/path';
 import React, { Component } from 'react';
 import sdk from 'dphoto-magic-sdk';
 // import { Toast } from './antd';
@@ -93,8 +94,9 @@ export async function uploadQiniu(file, params = {}) {
 	var uptoken = await qiniuUptoken(); //sdk.utils.qiniuUptoken();
 
 	var url = await new Promise((resolve, reject)=>{
-		var mat = file.name.match(/\.[a-z]+$/i);
-		var key = `${new Date().toString('yyyyMMdd')}/${langoukit.random()}${langoukit.random()}${mat[0]}`;
+		// var mat = file.name.match(/\.[a-z0-9]+$/i);
+		var extname = path.extname(file.name);
+		var key = `${new Date().toString('yyyyMMdd')}/${langoukit.random()}${langoukit.random()}${extname}`;
 		var subscription = qiniu.upload(file, key, uptoken.token, {
 			fname: '',
 			params: params,
