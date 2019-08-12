@@ -28,71 +28,42 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import crypto from 'crypto-tx';
-import hash_js from 'hash.js';
-import { Buffer } from 'buffer';
-import { Signer } from 'qkit/request';
-import storage from 'qkit/storage';
+import qkit from 'qkit';
+import { React, sdk, Component } from '.';
+import { Toast, Icon } from './antd';
+import ReactDom from 'react-dom';
 
-var privateKeyBytes;
-var publicKeyBytes;
-var publicKey;
+export default class Loading extends Component {
+	state = { text: 'Loading..' };
 
-var hex = storage.get('access_auth_key');
-if (hex) { // use priv 
-	genAccessKey_0(Buffer.from(hex, 'hex'));
-} else {
-	genAccessKey();
-}
-
-function genAccessKey_0(privatekey) {
-	privateKeyBytes = privatekey;
-	publicKeyBytes = crypto.getPublic(privatekey, true);
-	publicKey = '0x' + publicKeyBytes.toString('hex');
-}
-
-function genAccessKey() {
-	genAccessKey_0(crypto.genPrivateKey());
-	storage.set('access_auth_key', privateKeyBytes.toString('hex'));
-}
-
-/**
- * @class H5Signer
- */
-class H5Signer extends Signer {
-
-	setExtra(extra) {
-		this.m_extra = extra;
-	}
-
-	sign(url, data_str = null) {
-		var st = Date.now();
-		var fuzz_key = '0a37eb70c1737777bc111d03af4fcd091bc6d913baa2f90316511c61943dbce2';
-		var sha256 = hash_js.sha256();
-		if (data_str) {
-			sha256.update(data_str);
+	componentDidMount() {
+		if (this.props.text) {
+			this.setState({ text: this.props.text });
 		}
-		url = url.replace(/^.+\/service-api\//, '/service-api/');
-		sha256.update(st + fuzz_key + url);
+	}
 
-		var message = Buffer.from(sha256.digest());
-		var { signature, recovery } = crypto.sign(message, privateKeyBytes);
-		var sign = new Buffer(65);
+	// componentWillUnmount() {
+	// 	document.body.removeChild(this.refs.root.parentNode);
+	// }
 
-		signature.copy(sign);
-		sign[64] = recovery;
+	render() {
 
-		return Object.assign({
-			st, sign: sign.toString('base64'),
-		}, this.m_extra);
+		return (
+			<div ref="root" class="g_loading">
+				<Icon type="loading" size="lg" />
+				<div class="text">{this.state.text}</div>
+			</div>
+		);
+	}
+
+	static show(text = 'Loading..', id = qkit.iid) {
+		var div = document.createElement('div');
+		document.body.appendChild(div);
+		div.id = id || qkit.iid;
+		return ReactDom.render(<Loading text={text ||'Loading..'} />, div);
+	}
+
+	static close(id) {
+		document.body.removeChild(document.querySelector(`#${id}`));
 	}
 }
-
-var signer = new H5Signer();
-
-export default {
-	genAccessKey,
-	signer,
-	get publicKeyBytes() { return publicKeyBytes },
-	get publicKey() { return publicKey },
-};

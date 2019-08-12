@@ -49,6 +49,7 @@ class PrivPage extends Component {
 		this.m_index = props.index;
 		this.m_panel = props.panel;
 		this.state = { component: null, };
+		this._count = 0;
 	}
 
 	async loader() {
@@ -57,8 +58,12 @@ class PrivPage extends Component {
 				this.setState({ component: this.props.component });
 			} else {
 				var route = this.props.route;
+				this._count++;
 				var com = (await route.page()).default;
-				this.setState({ component: com });
+				if (this.state.component === com) {
+					this.setState({ component: null });
+				}
+				this.setState({ component: com, load_count: this._count });
 			}
 		} catch (e) {
 			error.defaultErrorHandle(e);
@@ -107,15 +112,22 @@ class PrivPage extends Component {
 	}
 
 	replace(props) {
-		this.props = 
 		this.m_props = { ...props, index: this.m_index, panel: this.m_panel };
+		this.props = this.m_props;
 		this.loader();
 	}
 
 	render() {
-		var component = this.state.component;
-		if (component) {
-			return React.createElement(component, { ...this.m_props, ref: 'self', priv: this });
+		var Com = this.state.component;
+		if (Com) {
+			var props = {
+				...this.m_props,
+				ref: 'self',
+				priv: this,
+			};
+			return (
+				<Com {...props} />
+			);
 		} else {
 			return (
 				<div className="init-loading">
@@ -487,8 +499,8 @@ export class Nav extends Component {
 }
 
 export class NavPage extends GlobalState {
-
-	platform = 'iphone';
+	state = {};
+	platform = '';
 
 	getMainClass(cls = '') {
 		var cls_1 = 'main ';
@@ -498,7 +510,9 @@ export class NavPage extends GlobalState {
 		if (this.platform == 'android') {
 			cls_1 += 'android ';
 		} else if (this.platform == 'iphonex') {
-			cls_1 += 'iphonex '; 
+			cls_1 += 'iphonex ';
+		} else if (this.platform == 'iphone') {
+			cls_1 += 'iphone ';
 		}
 		return cls_1 + cls;
 	}
@@ -527,15 +541,31 @@ export class NavPage extends GlobalState {
 		return this.props.params;
 	}
 
-	componentDidMount() {
+	get loading() {
+		return !this.state.loading_complete;
+	}
+
+	updateState(data) {
+		var state = {};
+		for (var i in data) {
+			var o = data[i];
+			if (typeof o == 'object' && !Array.isArray(o)) {
+				state[i] = Object.assign(this.state[i] || {}, data[i]);
+			}
+		}
+		this.setState(state);
+	}
+
+	async componentDidMount() {
 		super.componentDidMount();
-		this.onLoad();
+		await this.onLoad();
+		this.setState({ loading_complete: true });
 		if (this.props.priv.status == 0) {
 			this.onShow({ active: 'init' });
 		}
 	}
 
-	componentWillUnmount() {
+	async componentWillUnmount() {
 		super.componentWillUnmount();
 		if (this.props.priv.status == -1) {
 			this.onHide();

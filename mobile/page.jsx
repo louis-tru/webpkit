@@ -28,71 +28,59 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import crypto from 'crypto-tx';
-import hash_js from 'hash.js';
-import { Buffer } from 'buffer';
-import { Signer } from 'qkit/request';
-import storage from 'qkit/storage';
+import { NavPage, Nav } from './nav';
+import React, { Component } from 'react';
+import GlobalState from '../global-state';
 
-var privateKeyBytes;
-var publicKeyBytes;
-var publicKey;
+export default class NavDataPage extends NavPage {
 
-var hex = storage.get('access_auth_key');
-if (hex) { // use priv 
-	genAccessKey_0(Buffer.from(hex, 'hex'));
-} else {
-	genAccessKey();
-}
+	name = '';
+	dataPage = 30;
 
-function genAccessKey_0(privatekey) {
-	privateKeyBytes = privatekey;
-	publicKeyBytes = crypto.getPublic(privatekey, true);
-	publicKey = '0x' + publicKeyBytes.toString('hex');
-}
-
-function genAccessKey() {
-	genAccessKey_0(crypto.genPrivateKey());
-	storage.set('access_auth_key', privateKeyBytes.toString('hex'));
-}
-
-/**
- * @class H5Signer
- */
-class H5Signer extends Signer {
-
-	setExtra(extra) {
-		this.m_extra = extra;
+	get data() {
+		var name = `${this.name}_data`;
+		return this.state[name] || GlobalState.getGlobalState()[name] || [];
 	}
 
-	sign(url, data_str = null) {
-		var st = Date.now();
-		var fuzz_key = '0a37eb70c1737777bc111d03af4fcd091bc6d913baa2f90316511c61943dbce2';
-		var sha256 = hash_js.sha256();
-		if (data_str) {
-			sha256.update(data_str);
+	set data(value) {
+		this.setState({ [`${this.name}_data`]: value || [] });
+	}
+
+	get hasMore() {
+		var data = this.state[`${this.name}_data`];
+		if (data && data.length) {
+			if (data.length % this.dataPage === 0) {
+				return true;
+			}
 		}
-		url = url.replace(/^.+\/service-api\//, '/service-api/');
-		sha256.update(st + fuzz_key + url);
-
-		var message = Buffer.from(sha256.digest());
-		var { signature, recovery } = crypto.sign(message, privateKeyBytes);
-		var sign = new Buffer(65);
-
-		signature.copy(sign);
-		sign[64] = recovery;
-
-		return Object.assign({
-			st, sign: sign.toString('base64'),
-		}, this.m_extra);
+		return false;
 	}
+
+	loadMore = async ()=>{
+		var rawData = this.data;
+		this.m_load_data_params = {
+			...this.m_load_data_params,
+			limit: [rawData.length, rawData.length + this.dataPage],
+		};
+		var data = await this.loadData(this.m_load_data_params);
+		this.data = rawData.concat(data);
+	}
+
+	constructor(props) {
+		super(props);
+	}
+
+	async reload(params) {
+		this.m_load_data_params = {
+			...this.m_load_data_params,
+			limit: [0, this.dataPage || 30],
+			...params,
+		};
+		this.data = await this.loadData(this.m_load_data_params);
+	}
+
+	async loadData(params) {
+		return [];
+	}
+
 }
-
-var signer = new H5Signer();
-
-export default {
-	genAccessKey,
-	signer,
-	get publicKeyBytes() { return publicKeyBytes },
-	get publicKey() { return publicKey },
-};

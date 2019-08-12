@@ -29,7 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import qkit from 'qkit';
-import { List, InputItem, Picker, Toast } from 'antd-mobile';
+import { List, InputItem, Picker, Toast, Icon } from 'antd-mobile';
 import { createForm } from 'rc-form';
 import React, { Component } from 'react';
 import GlobalState from '../global-state';
@@ -60,24 +60,26 @@ export class AForm extends GlobalState {
 	}
 
 	isCanSubmit(is_force = false) {
-		if (is_force || this.isFieldsTouched()) {
+		// if (is_force || this.isFieldsTouched()) {
 
-			var errors = this.getFieldsError();
-			for (var i in errors) {
-				if (errors[i]) {
-					return false;
-				} else {
-					if (!this.isFieldValidating(i)) {
-						var val = this.getFieldValue(i);
-						if (!val || (Array.isArray(val) && !val.every(e=>e))) {
-							return false;
-						}
+		var errors = this.getFieldsError();
+		for (var i in errors) {
+			if (errors[i]) {
+				return false;
+			} else {
+				if (!this.isFieldValidating(i)) {
+					var val = this.getFieldValue(i);
+					if ((!val && val+1!==1) || (Array.isArray(val) && 
+							!val.every(e=>(e||e+1===1)&&e!=='undefined'))
+					) {
+						return false;
 					}
 				}
 			}
-			return true;
 		}
-		return false;
+		return true;
+		// }
+		// return false;
 	}
 
 	componentDidMount() {
@@ -99,9 +101,9 @@ export class AForm extends GlobalState {
 	rulesRequired(message) {
 		return {
 			validator: (rule, value, callback, source, options)=>{
-				if (value && value !== 'undefined') {
+				if ((value || value+1===1) && value !== 'undefined') {
 					if (Array.isArray(value)) {
-						if ( value.length && value.every(e=>e&&e!=='undefined') ) {
+						if ( value.length && value.every(e=>(e||e+1===1)&&e!=='undefined') ) {
 							callback();
 						} else {
 							callback(rule.message);
