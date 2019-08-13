@@ -29,7 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import React, { Component } from 'react';
-import CMSPage from './page';
+import CMSPage, {CMSDataPage} from './page';
 
 export * from '..';
 
@@ -40,6 +40,7 @@ require('./_ext');
 require('nifty/plugins/sparkline/jquery.sparkline.js');
 require('nifty/css/bootstrap.css');
 require('nifty/js/bootstrap.js');
+require('nifty/plugins/font-awesome/css/font-awesome.min.css');
 require('nifty/css/nifty.css');
 require('nifty/plugins/magic-check/css/magic-check.css');
 require('nifty/plugins/pace/pace.css');
@@ -47,18 +48,16 @@ require('nifty/plugins/pace/pace.js');
 require('nifty/plugins/morris-js/morris.css');
 require('nifty/plugins/morris-js/morris.js');
 
-import { initialize, error, Router, Root } from '..';
-import {HashRouter, Route, Switch} from 'react-router-dom';
+import { initialize, error, Router as MyRouter, Root } from '..';
+import {Router, Route, Switch} from 'react-router-dom';
 import Login from './login';
 import Menu from './menu';
 import Header from './header';
 import Footer from './footer';
 import ExamplesMenu from '../test/cms-menu';
 import NotFound from './404';
-import { createHashHistory } from 'history';
-const history = createHashHistory();
 
-export { CMSPage, Header, Footer, Menu, Login };
+export { CMSPage, CMSDataPage, Header, Footer, Menu, Login };
 
 /**
  * @class CMSRoot
@@ -68,8 +67,7 @@ export class CMSRoot extends Root {
 	constructor(props) {
 		super(props);
 		this.state.is_404 = false;
-
-		window.addEventListener('hashchange', e=>{
+		this.history.listen( (location, action) => {
 			if (this.state.is_404) {
 				this._no404();
 			}
@@ -82,23 +80,26 @@ export class CMSRoot extends Root {
 		return (
 			this.state.isLoaded ?
 			this.state.is_404 ? <_NotFound />:
-			<HashRouter history={history}>
+			<Router history={this.history}>
 				<Switch>
-					<Route path="/login">
 
+					<Route path="/login">
 						{this.login()}
 					</Route>
+
 					<Route path="/404">
 						<_NotFound />
 					</Route>
+
 					<Route path="/">
 						<div id="container" className="effect aside-float aside-bright mainnav-lg">
 
 							{this.header()}
 							{this.menu()}
-
+							
 							{/* -- Content -- */}
-							<Router ref="router"
+							<MyRouter ref="router"
+								history={this.history}
 								notFound={_NotFound} routes={this.props.routes}
 							/>
 
@@ -110,8 +111,9 @@ export class CMSRoot extends Root {
 
 						</div>
 					</Route>
+
 				</Switch>
-			</HashRouter>
+			</Router>
 			:
 			<div className="init-loading">Loading..</div>
 		);
@@ -126,7 +128,7 @@ export class CMSRoot extends Root {
 	}
 
 	login() {
-		return this.props.login || <Login {...props} />;
+		return this.props.login || <Login />;
 	}
 
 	menu() {

@@ -31,19 +31,22 @@
 import 'normalize.css';
 import './utils.css';
 import './_fix';
-import qkit from 'qkit';
+import langoukit from 'langoukit';
 import sdk from 'dphoto-magic-sdk';
-import path from 'qkit/path';
+import path from 'langoukit/path';
 import error from './error';
-import { Router, Page } from './router';
+import { Router } from './router';
+import Page, { DataPage } from './page';
 import ReactDom from 'react-dom';
 import React, { Component } from 'react';
 import {Link} from 'react-router-dom';
 import GlobalState from './global-state';
-
-export * from './dialog';
+import * as History from 'history';
+import * as dialog from './dialog'
 
 var current = null;
+
+const history = History.createBrowserHistory(); // History.createHashHistory();
 
 /**
  * @class Root
@@ -52,22 +55,26 @@ export class Root extends GlobalState {
 
 	state = { isLoaded: false };
 
+	constructor(props) {
+		super(props);
+		this.history = history;
+	}
+
 	async componentDidMount() {
 		current = this;
-
-		try {
-			// debugger
-			if (!this.props.noInit) {
-				await this.onLoad();
-			}
-			// 
-			if ( typeof this.props.onLoad == 'function') {
-				await this.props.onLoad(this);
-			}
-
-		} catch(e) {
-			error.defaultErrorHandle(e); return;
+		
+		if (!this.props.noInit) {
+			await this.onLoad();
 		}
+		
+		if ( typeof this.props.onLoad == 'function') {
+			await this.props.onLoad(this);
+		}
+
+		sdk.addEventListener('uncaughtException', function(err) {
+			error.defaultErrorHandle(err.data);
+		});
+
 		this.setState({ isLoaded: true });
 	}
 
@@ -79,7 +86,9 @@ export class Root extends GlobalState {
 		return (
 			this.state.isLoaded ?
 			<Router ref="router" 
-				notFound={this.props.notFound} routes={this.props.routes}
+				history={this.history}
+				notFound={this.props.notFound}
+				routes={this.props.routes}
 			/>:
 			<div className="init-loading">Loading..</div>
 		);
@@ -92,7 +101,7 @@ export class Root extends GlobalState {
 
 export async function initializeSdk(config = {}) {
 	if (sdk.isLoaded) return;
-	var url = new path.URL(config.serviceAPI || qkit.config.serviceAPI);
+	var url = new path.URL(config.serviceAPI || langoukit.config.serviceAPI);
 	await sdk.initialize(
 		path.getParam('D_SDK_HOST') || url.hostname,
 		path.getParam('D_SDK_PORT') || url.port,
@@ -100,17 +109,16 @@ export async function initializeSdk(config = {}) {
 		path.getParam('D_SDK_VIRTUAL') || url.filename
 	);
 
-	sdk.addEventListener('Error', function(err) {
-		error.defaultErrorHandle(err.data);
-	});
 };
 
 export {
 	React,
 	ReactDom,
 	Component,
-	Router, Page,
+	Router,
+	Page, DataPage,
 	sdk,
 	Link,
 	error,
+	dialog,
 };

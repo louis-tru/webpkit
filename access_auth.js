@@ -31,8 +31,8 @@
 import crypto from 'crypto-tx';
 import hash_js from 'hash.js';
 import { Buffer } from 'buffer';
-import { Signer } from 'qkit/request';
-import storage from 'qkit/storage';
+import { Signer } from 'langoukit/request';
+import storage from 'langoukit/storage';
 
 var privateKeyBytes;
 var publicKeyBytes;
@@ -40,19 +40,19 @@ var publicKey;
 
 var hex = storage.get('access_auth_key');
 if (hex) { // use priv 
-	genAccessKey_0(Buffer.from(hex, 'hex'));
+	$gen_access_key(Buffer.from(hex, 'hex'));
 } else {
 	genAccessKey();
 }
 
-function genAccessKey_0(privatekey) {
+function $gen_access_key(privatekey) {
 	privateKeyBytes = privatekey;
 	publicKeyBytes = crypto.getPublic(privatekey, true);
 	publicKey = '0x' + publicKeyBytes.toString('hex');
 }
 
 function genAccessKey() {
-	genAccessKey_0(crypto.genPrivateKey());
+	$gen_access_key(crypto.genPrivateKey());
 	storage.set('access_auth_key', privateKeyBytes.toString('hex'));
 }
 

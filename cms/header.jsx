@@ -463,7 +463,9 @@ export default class extends Component {
 
 					{/*--Brand logo & name--*/}
 					{/*--================================--*/}
+					
 					{this.renderLogo()}
+
 					{/*--================================--*/}
 					{/*--End brand logo & name--*/}
 					

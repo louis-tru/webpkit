@@ -28,8 +28,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+import langoukit from 'langoukit';
 import CMSPage from './page';
-import { Root, React } from '..';
+import { Root, React, sdk } from '..';
 import {alert} from '../dialog'
 import 'nifty/css/demo/nifty-demo-icons.css';
 import 'nifty/css/demo/nifty-demo.css';
@@ -40,8 +41,8 @@ import 'nifty/css/demo/nifty-demo.css';
 export default class Login extends CMSPage {
 
 	state = { $$url: '', verificationtext: '获取验证码', disabledbtn: false};
-	
-	componentDidMount() {
+
+	onLoad() {
 		var $imgHolder 	= $('#demo-bg-list');
 		var $bgBtn 		= $imgHolder.find('.demo-chg-bg');
 		var $target 	= $('#bg-overlay');
@@ -82,23 +83,60 @@ export default class Login extends CMSPage {
 		});
 
 	}
+
+	onUnload() {
+		clearTimeout(this.m_vcode_delay_id);
+	}
+
 	signin() {
 		// 点击登录
 	}
-	getVerificationCode() {
-		// 获取验证码
-	}
+
 	changeVerificationText(text) {
 
 	}
+
+	set_vcode_delay(vcode_delay) {
+		vcode_delay--;
+		if (vcode_delay) {
+			this.setState({ verificationtext: vcode_delay + '秒', disabledbtn: true });
+			this.m_vcode_delay_id = 
+				setTimeout(e=>this.set_vcode_delay(vcode_delay),1000);
+		} else {
+			this.setState({ verificationtext: '获取验证码', disabledbtn: false });
+		}
+	}
+
+	async getVerificationCode() {
+		if (this.state.disabledbtn) return;
+		var iphone = this.getCheckPhone().replace(/\s+/g, '');
+		await this.getVerificationCodeImpl(iphone);
+		this.set_vcode_delay(61);
+	}
+
 	checkPhone(phone) {
 		return (/^1[34578]\d{9}$/.test(phone))
 	}
-	showErrordialog(text) {
-		alert(text)
+
+	getCheckPhone() {
+		var iphone = this.refs.uname.value;
+		langoukit.assert(this.checkPhone(iphone), new Error('手机输入不正确'));
+		return iphone;
 	}
+
+	getCheckVcode() {
+		var vcode = this.refs.upwd.value;
+		langoukit.assert(/^\d{6}$/.test(vcode), new Error('手机验证码输入不正确'));
+		return vcode;
+	}
+
+	showErrordialog(text) {
+		alert(text);
+	}
+
 	render() {
 		return (
+			this.loading ? null:
 			<div id="container" className="cls-container">
 				{/* {this.renderContent()} */}
 				{/*-- BACKGROUND IMAGE --*/}
@@ -106,7 +144,7 @@ export default class Login extends CMSPage {
 				<div id="bg-overlay" className={this.state.$$url ? 'bg-img': ''} 
 					style={{backgroundImage: this.state.$$url?`url(${this.state.$$url})`:'none'}}></div>
 				
-								{/*-- LOGIN FORM --*/}
+				{/*-- LOGIN FORM --*/}
 				{/*--===================================================--*/}
 				<div className="cls-content">
 					<div className="cls-content-sm panel">
@@ -120,17 +158,22 @@ export default class Login extends CMSPage {
 									<input type="text" className="form-control" placeholder="手机号：" ref="uname" autoFocus />
 								</div>
 								<div className="form-group" style={{position: 'relative'}}>
-									<input type="password" className="form-control" placeholder="输入验证码" ref="upwd"/>
-									<button className="btn btn-default" style={{position: 'absolute', top: 0,right: '1px', padding: '4px 12px'}} onClick={()=>{this.getVerificationCode()}} disabled={this.state.disabledbtn ? 'disabled' : ''}>{this.state.verificationtext}</button>
+									<input type="number" maxLength="6" className="form-control" placeholder="输入验证码" ref="upwd"/>
+									<button className="btn btn-default" 
+										style={{position: 'absolute', top: '1px',right: '1px', padding: '4px 12px',border: 'none'}} 
+										onClick={()=>{this.getVerificationCode()}} disabled={this.state.disabledbtn ? 'disabled' : ''}>
+										{this.state.verificationtext}</button>
 								</div>
-								<div className="checkbox pad-btm text-left">
+								
+								<div className="checkbox pad-btm text-left">{/*
 									<input id="demo-form-checkbox" className="magic-checkbox" type="checkbox" />
-									<label htmlFor="demo-form-checkbox">Remember me</label>
+									<label htmlFor="demo-form-checkbox">Remember me</label>*/}
 								</div>
 								<button className="btn btn-primary btn-lg btn-block" type="submit" onClick={()=>{this.signin()}}>Sign In</button>
 							{/* </form> */}
 						</div>
 				
+						{this.props.padAll == 'none'?null:
 						<div className="pad-all">
 							<a href="pages-password-reminder.html" className="btn-link mar-rgt">Forgot password ?</a>
 							<a href="pages-register.html" className="btn-link mar-lft">Create a new account</a>
@@ -146,6 +189,8 @@ export default class Login extends CMSPage {
 								</div>
 							</div>
 						</div>
+						}
+
 					</div>
 				</div>
 				{/*--===================================================--*/}

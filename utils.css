@@ -15,6 +15,23 @@ body {
 	font-family:sans-serif,STHeiti,Microsoft YaHei,Helvetica,Arial;
 }
 
+.main {
+	/* width: 100vw; */
+	/* height: 100vh; */
+	/* position: relative; */
+	/* z-index: 1; */
+	background-size: 100%;
+	background-repeat: no-repeat;
+	background-position-x: center;
+	line-height: initial;
+	/* overflow: auto; */
+}
+
+.test {
+	background-repeat: repeat;
+	min-height: 100vh;
+}
+
 view {
 	display: block;
 }
@@ -37,6 +54,26 @@ view {
 	margin: auto !important;
 }
 
+.g_loading {
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0,0,0,0.1);
+	flex-direction: column;
+}
+
+.g_loading .text {
+	padding: 0.1rem;
+	font-size: 0.24rem;
+	color: #444;
+}
+
 .g_upload {
 	position: relative;
 	background-repeat: no-repeat;
@@ -53,4 +90,8 @@ view {
 	right: 0;
 	bottom: -0.04rem;
 	pointer-events:none;
+}
+
+.g_upload > input {
+	cursor: pointer;
 }

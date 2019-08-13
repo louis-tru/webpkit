@@ -29,14 +29,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 import 'normalize.css';
-import 'antd-mobile';
-import 'antd-mobile/dist/antd-mobile.css';
 import '../utils.css';
 import './utils.css';
 import rem from './rem';
-import qkit from 'qkit';
+import langoukit from 'langoukit';
 import sdk from 'dphoto-magic-sdk';
-import path from 'qkit/path';
+import path from 'langoukit/path';
 import '../_fix';
 import error from '../error';
 import * as dialog from '../dialog';
@@ -46,6 +44,7 @@ import React, { Component } from 'react';
 import _404 from './404';
 import GlobalState from '../global-state';
 import NavDataPage from './page';
+import errno from '../errno';
 
 /**
  * @class Root
@@ -55,23 +54,29 @@ export class Root extends GlobalState {
 	state = { isLoaded: false };
 
 	async componentDidMount() {
-		rem.initialize();
+		rem.initialize(this.props.scale);
 
 		try {
-			var initurl = await this.onLoad();
+			var path = await this.onLoad();
 
 			if ( typeof this.props.onLoad == 'function') {
-				initurl = (await this.props.onLoad(this)) || initurl;
+				path = (await this.props.onLoad(this)) || path;
 			}
-			this.m_initurl = initurl;
-		} catch(e) {
-			// error.defaultErrorHandle(e); 
-			return;
+			this.m_path = path;
+		} catch(err) {
+			if (err.code != errno.ERR_LOGIN_FORWARD[0]) {
+				dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
+			}
+			throw err;
 		}
 
-		this.setState({ isLoaded: true });
+		sdk.addEventListener('uncaughtException', function(err) {
+			error.defaultErrorHandle(err.data);
+		});
 
+		this.setState({ isLoaded: true });
 		// setTimeout(e=>window.history.replaceState({}, this.props.title||'', '#/'), 10);
+
 		window.addEventListener('hashchange', (e)=>{
 			this.refs.nav.current.popPage(true); // 不管前进或后退都当成后退处理
 		});
@@ -96,7 +101,7 @@ export class Root extends GlobalState {
 	}
 
 	render() {
-		var url = this.m_initurl || (location.hash ? location.hash.replace(/^#/, '') : '/');
+		var url = this.m_path || (location.hash ? location.hash.replace(/^#/, '') : '/');
 		return (
 			this.state.isLoaded ?
 			<Nav 
@@ -116,17 +121,14 @@ export class Root extends GlobalState {
 
 export async function initializeSdk(config = {}) {
 	if (sdk.isLoaded) return;
-	var url = new path.URL(config.serviceAPI || qkit.config.serviceAPI);
+	var url = new path.URL(config.serviceAPI || langoukit.config.serviceAPI);
+
 	await sdk.initialize(
 		path.getParam('D_SDK_HOST') || url.hostname,
 		path.getParam('D_SDK_PORT') || url.port,
 		path.getParam('D_SDK_SSL') || /^(http|ws)s/.test(url.protocol),
 		path.getParam('D_SDK_VIRTUAL') || url.filename
 	);
-
-	sdk.addEventListener('Error', function(err) {
-		error.defaultErrorHandle(err.data);
-	});
 };
 
 export {

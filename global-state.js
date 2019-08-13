@@ -29,7 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import { Component } from 'react';
-import storage from 'qkit/storage';
+import storage from 'langoukit/storage';
 
 var __id = 0;
 var global_state_components = {};
@@ -49,7 +49,7 @@ function fill_global_state_value(self, trigger) {
 	for (var name in self.state) {
 		if (name[0] == '$') {
 			if ( !(name in global_states) && name[1] == '$' ) {
-				global_states[name] = storage.get('global_state' + name);
+				global_states[name] = storage.get('global_state_' + name);
 			}
 			if (name in global_states) {
 				var fill_value = global_states[name];

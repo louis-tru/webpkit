@@ -36,6 +36,8 @@ import GlobalState from '../global-state';
  */
 export default class Menu extends GlobalState {
 
+	state = { pathname: location.pathname };
+
 	reloadNifty() {
 		jQuery.niftyNav('bind');
 	}
@@ -45,7 +47,23 @@ export default class Menu extends GlobalState {
 		setTimeout(e=>this.reloadNifty(), 200);
 	}
 
-	_renderMenuList(list, level) {
+	get pathname () {
+		return this.state.pathname;
+	}
+
+	componentDidMount() {
+		this.m_interval_id = setInterval(e=>{
+			if (this.pathname != location.pathname) {
+				super.setState({ pathname: location.pathname });
+			}
+		}, 500);
+	}
+
+	componentWillUnmount() {
+		clearInterval(this.m_interval_id);
+	}
+
+	_renderMenuList(list, level, out) {
 		return list.map((e,j)=>{
 			var key= `key_${level}_${j}`;
 			if (typeof e == 'string') {
@@ -56,8 +74,14 @@ export default class Menu extends GlobalState {
 				}
 			} else {
 				var children = e.children || [];
+				var In = { selected: false };
+				var ch = this._renderMenuList(children, level+1, In);
+				var selected = In.selected || (e.go && e.go == this.state.pathname);
+				if (selected) out.selected = 1;
+				var expanded = e.expanded;// || selected;
+
 				return (
-					<li className={(e.selected?'active-link ': '') + (e.expanded?'active':'')} key={key}>
+					<li className={(selected?'active-link ': '') + (expanded?'active':'')} key={key}>
 						<Link to={children.length ? '#': e.go || '#'}>
 							<i className={e.icon||''}></i>
 							<span className="menu-title">
@@ -75,9 +99,7 @@ export default class Menu extends GlobalState {
 						</Link>
 						{
 							children.length ? 
-							<ul className={'collapse ' + (e.expanded?'in':'')}>
-								{this._renderMenuList(children, level+1)}
-							</ul>: null
+							<ul className={'collapse ' + (expanded?'in':'')}>{ch}</ul>: null
 						}
 					</li>
 				);
@@ -96,7 +118,7 @@ export default class Menu extends GlobalState {
 								{ this.renderProfile() }
 								{ this.renderShortcut() }
 								<ul id="mainnav-menu" className="list-group">
-									{ this._renderMenuList(this.renderMain(), 0) }
+									{ this._renderMenuList(this.renderMain(), 0, { selected: 0 }) }
 								</ul>
 								{ this.renderWidget() }
 							</div>

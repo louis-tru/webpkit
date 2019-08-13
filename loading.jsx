@@ -29,26 +29,45 @@
  * ***** END LICENSE BLOCK ***** */
 
 import langoukit from 'langoukit';
-import { React, Page } from '..';
-import { DataPage } from '../page';
+import { React, Component, sdk } from '.';
+// import { Toast, Icon } from './antd';
+import ReactDom from 'react-dom';
 
-/**
- * @class CMSPage
- */
-export default class CMSPage extends Page {
+import './utils.css';
 
-	reloadNifty() {
-		require('nifty/js/nifty.js').initialize();
+export default class Loading extends Component {
+
+	state = { text: 'Loading..' };
+
+	componentDidMount() {
+		if (this.props.text) {
+			this.setState({ text: this.props.text });
+		}
 	}
 
-	async componentDidMount() {
-		this.reloadNifty();
-		await super.componentDidMount();
-		
+	// componentWillUnmount() {
+	// 	document.body.removeChild(this.refs.root.parentNode);
+	// }
+
+	render() {
+		return (
+			<div ref="root" className="g_loading">
+				{/* <Icon type="loading" size="lg" /> */}
+				<div className="text">{this.state.text}</div>
+			</div>
+		);
 	}
 
+	static show(text = 'Loading..', id = langoukit.id) {
+		var div = document.createElement('div');
+		document.body.appendChild(div);
+		div.id = id || langoukit.id;
+		return ReactDom.render(<Loading text={text ||'Loading..'} />, div);
+	}
+
+	static close(id) {
+		var dom = document.getElementById(id);
+		if (dom)
+			document.body.removeChild(dom);
+	}
 }
-
-export class CMSDataPage extends CMSPage { };
-
-langoukit.extendClass(CMSDataPage, DataPage);

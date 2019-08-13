@@ -28,8 +28,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-global.__resourceQuery = '?https://52block.net/test_wx'
+//global.__resourceQuery = '?https://52block.net/test_wx'
 
+const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
 const config = require('./config');
@@ -52,6 +53,16 @@ const HOST = config.dev.host;
 const PORT = config.dev.port;
 const ENV = { NODE_ENV: isProd ? '"production"': '"development"' };
 const name = config.productName;
+const views = 
+	fs.existsSync(`${config.source}/views`) && 
+	fs.statSync(`${config.source}/views`).isDirectory() ?
+	fs.readdirSync('./views').filter(e=>path.extname(e)=='.jsx').map(e=>{
+		var name = e.substr(0, e.length - 4);
+		return { name, path: `./views/${name}` };
+	}): 
+	[{ name: name=='app'?'index': name, path: `./${name}/index` }];
+
+// console.log('views', views);
 
 // develop plugins
 const develop_plugins = [
@@ -117,7 +128,7 @@ const prod_plugins = [
 	// in a separate chunk, similar to the vendor chunk
 	// see: https://webpack.js.org/plugins/commons-chunk-plugin/#extra-async-commons-chunk
 	new webpack.optimize.CommonsChunkPlugin({
-		name: 'app',
+		name: name,
 		async: 'vendor-async',
 		children: true,
 		minChunks: 3,
@@ -152,11 +163,15 @@ const plugins = [
 	// generate dist index.html with correct asset hash for caching.
 	// you can customize output by editing /index.html
 	// see https://github.com/ampedandwired/html-webpack-plugin
-	new HtmlWebpackPlugin({
-		filename: name == 'app' ? 'index.html': name + '.html',
-		template: name + '/index.html',
-		inject: true,
-	}),
+	
+	...views.map(({name,path})=>
+		new HtmlWebpackPlugin({
+			filename: name + '.html',
+			template: path + '.html',
+			inject: true,
+			chunks: ['vendor','manifest', name],
+		})
+	),
 	...(isProd ? prod_plugins: develop_plugins),
 ];
 
@@ -174,9 +189,7 @@ if (!isProd && config.dev.inline === false) {
 module.exports = {
 	externals: require('./externals'),
 	context: utils.resolve('.'),
-	entry:{
-		[name]: [ ...devClient, `./${name}/index` ],
-	},
+	entry: {/**/},
 	output: {
 		path: config.output, // build output dir
 		filename: isProd ? utils.assetsPath('[name].min.js?[chunkhash]'): '[name].js',
@@ -269,12 +282,12 @@ module.exports = {
 	devServer: {
 		inline: config.dev.inline,
 		clientLogLevel: 'warning',
-		// historyApiFallback: {
-		// 	rewrites: [
-		// 		{ from: /.*/, to: path.posix.join(config.assetsPublicPath, 'index.html') },
-		// 	],
-		// },
-		// contentBase: fasle, // since we use CopyWebpackPlugin.
+		historyApiFallback: {
+			rewrites: [
+				{ from: /.*?\.html(\?.*)?$/, to: '/' },
+			],
+		},
+		// contentBase: false, // since we use CopyWebpackPlugin.
 		disableHostCheck: true, // Invalid Host header
 		hotOnly: config.dev.hotOnly,
 		hot: config.dev.hot,
@@ -289,3 +302,7 @@ module.exports = {
 		watchOptions: { poll: config.dev.poll, },
 	},
 };
+
+views.map(({name,path})=>{
+	module.exports.entry[name] = [...devClient, path ];
+});

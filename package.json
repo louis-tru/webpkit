@@ -30,7 +30,7 @@
     "copy-webpack-plugin": "^4.6.0",
     "crypto-tx": "~0.1.17",
     "css-loader": "^0.28.0",
-    "dphoto-magic-sdk": "~0.6.25",
+    "dphoto-magic-sdk": "~0.6.29",
     "extract-text-webpack-plugin": "^3.0.2",
     "fastclick": "^1.0.6",
     "file-loader": "^1.1.4",
@@ -46,7 +46,7 @@
     "postcss-import": "^11.0.0",
     "postcss-loader": "^2.0.8",
     "postcss-url": "^7.2.1",
-    "qkit": "~0.8.44",
+    "langoukit": "~0.8.49",
     "raphael": "^2.2.8",
     "rc-form": "^2.4.4",
     "react": "^16.8.6",
@@ -76,7 +76,8 @@
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-dev-server": "^2.9.1",
     "whatwg-fetch": "^3.0.0",
-    "qiniu-js": "^2.4.0"
+    "qiniu-js": "^2.4.0",
+    "qrcode.react": "^0.9.3"
   },
   "engines": {
     "node": ">= 6.0.0",

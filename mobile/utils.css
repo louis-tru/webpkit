@@ -30,12 +30,12 @@ select {
 
 .main {
 	width: 100vw;
+	height: 100vh;
 	position: relative;
 	z-index: 1;
-	background-size: 100%;
+	/*background-size: 100%;
 	background-repeat: no-repeat;
-	line-height: initial;
-	height: 100vh;
+	line-height: initial; */
 	overflow: auto;
 }
 
@@ -125,14 +125,14 @@ body {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	height: 0.5px;
+	height: 1px;
 	transform-origin: 50% 100%;
 	transform: scaleY(0.5) translateZ(1px);
 }
 
 .main .title .b > div:first-child {
 	position: absolute;
-	 padding-left: 0.1rem; 
+	padding-left: 0.1rem; 
 	padding-right: 0.2rem;
 	height: 100%;
 	font-weight: initial;
@@ -179,6 +179,7 @@ body {
 	width: 100%;
 	background: rgba(255,255,255,0.98);
 	z-index: 1;
+	transform: translateZ(1px);
 }
 
 @media only screen and (min-aspect-ratio: 4/5) {
@@ -311,6 +312,7 @@ body {
 	background: #fff;
 	position: relative;
 	margin-bottom: 0.02rem;
+	/* justify-content: space-between; */
 }
 
 .form_item_tip {
@@ -426,6 +428,7 @@ body {
 	color: #000;
 	background: none;
 	padding: 0.15rem 0;
+	margin-right: 0.3rem;
 }
 
 .form_item img.value {
@@ -554,10 +557,10 @@ body {
 
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
 
-	.main .title .b {
-		border-bottom-width: 0.005rem;
+	.main .title .b:after {
+		transform: scaleY(0.5) translateZ(1px);
 	}
-
+	
 	.ccform .am-list-item .am-list-line:after {
 		content: '';
 		position: absolute;
@@ -588,8 +591,8 @@ body {
 (-webkit-min-device-pixel-ratio: 3), (min-resolution: 2dppx) and 
 (min-resolution: 3dppx) {
 
-	.main .title .b {
-		border-bottom-width: 0.0033rem;
+	.main .title .b:after {
+		transform: scaleY(0.33) translateZ(1px);
 	}
 
 	.ccform .am-list-item .am-list-line:after {
@@ -659,26 +662,6 @@ body {
 .ccform .am-textarea-item .am-textarea-count {
 	right: 0.3rem;
 	bottom: 0.34rem;
-}
-
-.g_loading {
-	width: 100vw;
-	height: 100vh;
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: 10;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: rgba(0,0,0,0.1);
-	flex-direction: column;
-}
-
-.g_loading .text {
-	padding: 0.1rem;
-	font-size: 0.24rem;
-	color: #444;
 }
 
 .g_load_btn {

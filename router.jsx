@@ -29,10 +29,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 import React, { Component } from 'react';
-import {hashHistory} from 'react-router-dom';
-import {HashRouter, Router as RouterRaw, Route, Switch, Redirect} from 'react-router-dom';
+import { Router as RouterRaw, Route, Switch, Redirect } from 'react-router-dom';
 import error from './error';
-import qkit from 'qkit';
+import langoukit from 'langoukit';
 import Page from './page';
 import NotFound from './404';
 
@@ -55,7 +54,7 @@ function route(router, { path, page, ...args }) {
 			if (!this.state.isLoaded) {
 				try {
 					var com = (await page()).default;
-					qkit.assert(qkit.equalsClass(Page, com), 'TypeError');
+					langoukit.assert(langoukit.equalsClass(Page, com), 'TypeError');
 					this.setState({ com, isLoaded: true });
 				} catch(err) {
 					error.defaultErrorHandle(err);
@@ -64,11 +63,11 @@ function route(router, { path, page, ...args }) {
 		}
 
 		render() {
-			var _Com = this.state.com;
+			var Com = this.state.com;
 			return (
-				<_Com
+				<Com
 					router={router}
-					history={this.props.history}
+					history={router.history}
 					location={this.props.location}
 					match={this.props.match}
 				/>
@@ -84,12 +83,10 @@ function route(router, { path, page, ...args }) {
  */
 export class Router extends Component {
 
-	type = 'hash';
+	type = '';
 
 	constructor(props) {
 		super(props);
-		this.type = this.props.type || 'hash';
-		this._Router = this.type == 'hash' ? HashRouter: RouterRaw
 		this._notFound = this.props.notFound || NotFound;
 		this._routes = {};
 		
@@ -106,18 +103,18 @@ export class Router extends Component {
 		});
 	}
 
+	get history() {
+		return this.props.history;
+	}
+
 	render() {
-		var _Router = this._Router;
-		// if (true) {
-		// 	return <Redirect to="/login" />
-		// }
 		return (
-			<_Router history={hashHistory}>
+			<RouterRaw history={this.history}>
 				<Switch>
 					{Object.values(this._routes).map(e=>route(this, e))}
-					{route(this, { page: e=>({ default:this._notFound }) })}
+					{route(this, { page: e=>({ default: this._notFound }) })}
 				</Switch>
-			</_Router>
+			</RouterRaw>
 		);
 	}
 

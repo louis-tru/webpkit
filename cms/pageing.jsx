@@ -28,27 +28,51 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import langoukit from 'langoukit';
-import { React, Page } from '..';
-import { DataPage } from '../page';
+import React, { Component } from 'react';
 
-/**
- * @class CMSPage
- */
-export default class CMSPage extends Page {
+export default class Pageing extends Component {
 
-	reloadNifty() {
-		require('nifty/js/nifty.js').initialize();
+	get page() {
+		return this.props.page;
 	}
 
-	async componentDidMount() {
-		this.reloadNifty();
-		await super.componentDidMount();
-		
+	render() {
+		if (!this.page) return null;
+		var {dataPageCount, indexPage} = this.page;
+		if (dataPageCount <= 1) return null;
+
+		// var offset = Math.max(0, indexPage - 10);
+		var offset = 5;
+
+		return (
+			<div class="text-right">
+				<ul class="pagination">
+					<li class={`footable-page-arrow ${indexPage?'':'disabled'}`}>
+						<a data-page="first" href="#first" onClick={e=>indexPage&&this.page.reload(0, 0)}>«</a>
+					</li>
+					<li class={`footable-page-arrow ${indexPage?'':'disabled'}`}>
+						<a data-page="prev" href="#prev" onClick={e=>indexPage&&this.page.reload(0, indexPage-1)}>‹</a>
+					</li>
+					{
+						Array.from({length:10}).map((e,i)=>{
+							var j = indexPage + i - offset;
+							if (j < 0 || j >= dataPageCount) return null;
+							return (
+								<li class={`footable-page ${indexPage==j?'active':''}`}>
+									<a data-page="0" href="#" onClick={e=>indexPage!=j&&this.page.reload(0, j)}>{j+1}</a>
+								</li>
+							);
+						}).filter(e=>e)
+					}
+					<li class={`footable-page-arrow ${indexPage+1<dataPageCount?'':'disabled'}`}>
+						<a data-page="next" href="#next" onClick={e=>indexPage+1<dataPageCount&&this.page.reload(0, indexPage+1)}>›</a>
+					</li>
+					<li class={`footable-page-arrow ${indexPage+1<dataPageCount?'':'disabled'}`}>
+						<a data-page="last" href="#last" onClick={e=>indexPage+1<dataPageCount&&this.page.reload(0, dataPageCount-1)}>»</a>
+					</li>
+				</ul>
+			</div>
+		);
 	}
 
 }
-
-export class CMSDataPage extends CMSPage { };
-
-langoukit.extendClass(CMSDataPage, DataPage);
