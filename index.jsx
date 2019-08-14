@@ -62,7 +62,6 @@ export class Root extends GlobalState {
 
 	async componentDidMount() {
 		current = this;
-		
 		if (!this.props.noInit) {
 			await this.onLoad();
 		}
@@ -81,7 +80,7 @@ export class Root extends GlobalState {
 	async onLoad() {
 		await initializeSdk(this.props.config || {});
 	}
-
+	
 	render() {
 		return (
 			this.state.isLoaded ?

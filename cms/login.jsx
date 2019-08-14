@@ -47,7 +47,7 @@ export default class Login extends CMSPage {
 		var $bgBtn 		= $imgHolder.find('.demo-chg-bg');
 		var $target 	= $('#bg-overlay');
 		var self = this;
-
+		// debugger
 		$bgBtn.on('click', function(e){
 			e.preventDefault();
 			e.stopPropagation();

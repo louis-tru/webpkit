@@ -47,6 +47,12 @@ export default class extends CMSPage {
       })
     }
   }
+  shouldComponentUpdate(a, b) {
+
+    if (b.loading_complete) {
+      return false
+    }
+  }
   renderHeader() {
     let { operating, header } = this.props
 
