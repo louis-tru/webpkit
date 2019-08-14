@@ -82,14 +82,16 @@ export class Dialog extends Component {
 							<div>{props.text}</div>
 							<input 
 								ref="prompt" 
-								type="number"
+								type={props.prompt.type}
 								style={{
 									border: 'solid 0.015rem #ccc',
 									width: '90%',
 									marginTop: '0.1rem',
 									height: '0.5rem',
+									padding: '0 2px',
 								}}
 								onChange={this.m_handleChange_1}
+								initialValue={props.prompt.value}
 							/>
 						</div>:
 						<div className="b" dangerouslySetInnerHTML={{ __html: props.text}}></div>
@@ -151,12 +153,12 @@ export function confirm(text, cb) {
 	}});
 }
 
-export function prompt(text, cb) {
+export function prompt(text, cb, type = 'text') {
 	cb = cb || function() {}
 	var o = typeof text == 'string' ? { text: text, title: '', value: '' }: text;
 	var { text, title, value } = o;
 	return Dialog.show({title, text, buttons: {
 		'取消': e=> cb(e.refs.prompt.value, false),
 		'@确定': e=> cb(e.refs.prompt.value, true),
-	}, prompt: {value}});
+	}, prompt: {value, type}});
 }
