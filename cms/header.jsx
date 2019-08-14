@@ -446,7 +446,16 @@ export default class extends Component {
 			</ul>
 		);
 	}
-
+	renderLogo () {
+		<div className="navbar-header">
+			<a href="/" className="navbar-brand">
+				<img src="nifty/img/logo.png" alt="Nifty Logo" className="brand-icon" />
+				<div className="brand-title">
+					<span className="brand-text">{this.title}</span>
+				</div>
+			</a>
+		</div>
+	}
 	render() {
 		return (
 			<header id="navbar">
@@ -454,17 +463,12 @@ export default class extends Component {
 
 					{/*--Brand logo & name--*/}
 					{/*--================================--*/}
-					<div className="navbar-header">
-						<a href="./" className="navbar-brand">
-							<img src="nifty/img/logo.png" alt="Nifty Logo" className="brand-icon" />
-							<div className="brand-title">
-								<span className="brand-text">{this.title}</span>
-							</div>
-						</a>
-					</div>
+					
+					{this.renderLogo()}
+
 					{/*--================================--*/}
 					{/*--End brand logo & name--*/}
-
+					
 					{/*--Navbar Dropdown--*/}
 					{/*--================================--*/}
 					<div className="navbar-content clearfix">

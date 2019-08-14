@@ -114,7 +114,7 @@ export default class Menu extends GlobalState {
 				<div id="mainnav">
 					<div id="mainnav-menu-wrap">
 						<div className="nano">
-							<div className="nano-content">
+							<div className="nano-content" style={{paddingTop: 0}}>
 								{ this.renderProfile() }
 								{ this.renderShortcut() }
 								<ul id="mainnav-menu" className="list-group">

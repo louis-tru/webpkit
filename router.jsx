@@ -108,9 +108,6 @@ export class Router extends Component {
 	}
 
 	render() {
-		// if (true) {
-		// 	return <Redirect to="/login" />
-		// }
 		return (
 			<RouterRaw history={this.history}>
 				<Switch>
