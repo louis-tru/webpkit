@@ -36,7 +36,7 @@ import GlobalState from '../global-state';
  */
 export default class Menu extends GlobalState {
 
-	state = { pathname: location.pathname };
+	state = { pathname: location.pathname, current: 1 };
 
 	reloadNifty() {
 		jQuery.niftyNav('bind');
@@ -79,10 +79,11 @@ export default class Menu extends GlobalState {
 				var selected = In.selected || (e.go && e.go == this.state.pathname);
 				if (selected) out.selected = 1;
 				var expanded = e.expanded;// || selected;
-
+				var activeLinkClass = j === this.state.current ? 'hover' : ''
+				
 				return (
-					<li className={(selected?'active-link ': '') + (expanded?'active':'')} key={key}>
-						<Link to={children.length ? '#': e.go || '#'}>
+					<li className={(selected?'active-link ': '') + (expanded?'active':'')} key={key} onClick={() => { this.setState({current: j})} }>
+						<Link to={children.length ? '#': e.go || '#'} className={activeLinkClass}>
 							<i className={e.icon||''}></i>
 							<span className="menu-title">
 								{
