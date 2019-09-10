@@ -46,7 +46,7 @@
     "postcss-import": "^11.0.0",
     "postcss-loader": "^2.0.8",
     "postcss-url": "^7.2.1",
-    "langoukit": "~0.8.52",
+    "lkit": "~0.8.52",
     "raphael": "^2.2.8",
     "rc-form": "^2.4.4",
     "react": "^16.8.6",

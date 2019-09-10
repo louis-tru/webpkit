@@ -32,9 +32,9 @@ import 'normalize.css';
 import '../utils.css';
 import './utils.css';
 import rem from './rem';
-import langoukit from 'langoukit';
+import lkit from 'lkit';
 import sdk from 'dphoto-magic-sdk';
-import path from 'langoukit/path';
+import path from 'lkit/path';
 import '../_fix';
 import error from '../error';
 import * as dialog from '../dialog';
@@ -121,7 +121,7 @@ export class Root extends GlobalState {
 
 export async function initializeSdk(config = {}) {
 	if (sdk.isLoaded) return;
-	var url = new path.URL(config.serviceAPI || langoukit.config.serviceAPI);
+	var url = new path.URL(config.serviceAPI || lkit.config.serviceAPI);
 
 	await sdk.initialize(
 		path.getParam('D_SDK_HOST') || url.hostname,
