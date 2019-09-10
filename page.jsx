@@ -65,7 +65,7 @@ export default class Page extends GlobalState {
 	get pathname() {
 		return this.location && this.location.pathname;
 	}
-
+	
 	get history() {
 		return this.props.history;
 	}

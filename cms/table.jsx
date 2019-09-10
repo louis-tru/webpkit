@@ -47,16 +47,16 @@ export default class extends CMSPage {
       })
     }
   }
-  shouldComponentUpdate(a, b) {
-
-    if (b.loading_complete) {
-      return false
-    }
-  }
+  // shouldComponentUpdate(a, b) {
+  //   debugger
+  //   // if (b.loading_complete) {
+  //   //   return false
+  //   // }
+  // }
   renderHeader() {
     let { operating, header } = this.props
-
-    if (operating) {
+    
+    if (operating && header.last(0) !== '操作' ) {
       header.push('操作')
     }
 
@@ -70,7 +70,7 @@ export default class extends CMSPage {
   }
   renderLists() {
     let { lists, header, operating, renderLists } = this.props
-    
+    // debugger
     return renderLists(header, lists, operating)
   }
   render() {

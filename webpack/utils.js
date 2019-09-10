@@ -37,6 +37,10 @@ exports.assetsPath = function (_path) {
 	return path.posix.join(config.productName, _path)
 }
 
+exports.assetsFontPath = function (_path) {
+	return path.posix.join('/' + _path)
+}
+
 exports.resolve = function(dir) {
 	return path.join(config.source, dir)
 }

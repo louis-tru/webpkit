@@ -30,7 +30,7 @@
 
 require('./check-versions')();
 
-process.env.NODE_ENV = 'production';
+// process.env.NODE_ENV = 'production';
 
 const ora = require('ora');
 const rm = require('rimraf');
@@ -55,7 +55,7 @@ rm(path.join(config.output, config.productName), err => {
 			chunks: false,
 			chunkModules: false
 		}) + '\n\n')
-
+		
 		if (stats.hasErrors()) {
 			console.log(chalk.red('  Build failed with errors.\n'))
 			process.exit(1)

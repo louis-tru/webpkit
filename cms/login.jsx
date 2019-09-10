@@ -31,9 +31,7 @@
 import lkit from 'lkit';
 import CMSPage from './page';
 import { Root, React, sdk } from '..';
-import {alert} from '../dialog'
-import 'nifty/css/demo/nifty-demo-icons.css';
-import 'nifty/css/demo/nifty-demo.css';
+import {alert} from '../dialog';
 
 /**
  * @class Login
@@ -47,7 +45,7 @@ export default class Login extends CMSPage {
 		var $bgBtn 		= $imgHolder.find('.demo-chg-bg');
 		var $target 	= $('#bg-overlay');
 		var self = this;
-		// debugger
+
 		$bgBtn.on('click', function(e){
 			e.preventDefault();
 			e.stopPropagation();
@@ -199,14 +197,14 @@ export default class Login extends CMSPage {
 				<div className="demo-bg">
 					<div id="demo-bg-list">
 						<div className="demo-loading"><i className="psi-repeat-2"></i></div>
-						<img className="demo-chg-bg bg-trans active" src="nifty/img/bg-img/thumbs/bg-trns.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="nifty/img/bg-img/thumbs/bg-img-1.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="nifty/img/bg-img/thumbs/bg-img-2.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="nifty/img/bg-img/thumbs/bg-img-3.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="nifty/img/bg-img/thumbs/bg-img-4.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="nifty/img/bg-img/thumbs/bg-img-5.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="nifty/img/bg-img/thumbs/bg-img-6.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="nifty/img/bg-img/thumbs/bg-img-7.jpg" alt="Background Image" />
+						<img className="demo-chg-bg bg-trans active" src={require("nifty/img/bg-img/thumbs/bg-trns.jpg")} alt="Background Image" />
+						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-1.jpg")} alt="Background Image" />
+						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-2.jpg")} alt="Background Image" />
+						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-3.jpg")} alt="Background Image" />
+						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-4.jpg")} alt="Background Image" />
+						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-5.jpg")} alt="Background Image" />
+						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-6.jpg")} alt="Background Image" />
+						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-7.jpg")} alt="Background Image" />
 					</div>
 				</div>
 				{/*--===================================================--*/}
