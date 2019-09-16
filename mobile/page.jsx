@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import lkit from 'lkit';
+import nxkit from 'nxkit';
 import { NavPage, Nav } from './nav';
 import React, { Component } from 'react';
 import GlobalState from '../global-state';
@@ -36,6 +36,6 @@ import { DataPage } from '../page';
 
 export default class NavDataPage extends NavPage {}
 
-lkit.extendClass(NavDataPage, DataPage);
+nxkit.extendClass(NavDataPage, DataPage);
 
 // export default NavDataPage;

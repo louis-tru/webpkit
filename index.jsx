@@ -31,9 +31,9 @@
 import 'normalize.css';
 import './utils.css';
 import './_fix';
-import lkit from 'lkit';
+import nxkit from 'nxkit';
 import sdk from 'dphoto-magic-sdk';
-import path from 'lkit/path';
+import path from 'nxkit/path';
 import error from './error';
 import { Router } from './router';
 import Page, { DataPage } from './page';
@@ -100,7 +100,7 @@ export class Root extends GlobalState {
 
 export async function initializeSdk(config = {}) {
 	if (sdk.isLoaded) return;
-	var url = new path.URL(config.serviceAPI || lkit.config.serviceAPI);
+	var url = new path.URL(config.serviceAPI || nxkit.config.serviceAPI);
 	await sdk.initialize(
 		path.getParam('D_SDK_HOST') || url.hostname,
 		path.getParam('D_SDK_PORT') || url.port,

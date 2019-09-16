@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import lkit from 'lkit';
+import nxkit from 'nxkit';
 import { React, Page } from '..';
 import { DataPage } from '../page';
 
@@ -51,4 +51,4 @@ export default class CMSPage extends Page {
 
 export class CMSDataPage extends CMSPage { };
 
-lkit.extendClass(CMSDataPage, DataPage);
+nxkit.extendClass(CMSDataPage, DataPage);

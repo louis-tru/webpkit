@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import lkit from 'lkit';
+import nxkit from 'nxkit';
 import React, { Component } from 'react';
 import ReactDom from 'react-dom';
 import GlobalState from '../global-state';
@@ -458,7 +458,7 @@ export class Nav extends Component {
 			var cur = this.m_current;
 			if (!cur) return false;
 
-			lkit.assert(this.length > 0);
+			nxkit.assert(this.length > 0);
 
 			return this.m_push(url, animate, this.length - 1, page=>{
 				setTimeout(e=>{
@@ -504,7 +504,7 @@ export class NavPage extends GlobalState {
 
 	getMainClass(cls = '') {
 		var cls_1 = 'main ';
-		if (lkit.dev) {
+		if (nxkit.dev) {
 			cls_1 += 'test ';
 		}
 		if (this.platform == 'android') {

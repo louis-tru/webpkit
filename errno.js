@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var errno = require('lkit/errno');
+var errno = require('nxkit/errno');
 
 module.exports = {
 	...errno,

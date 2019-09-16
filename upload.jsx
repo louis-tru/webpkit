@@ -28,8 +28,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import lkit from 'lkit';
-import path from 'lkit/path';
+import nxkit from 'nxkit';
+import path from 'nxkit/path';
 import React, { Component } from 'react';
 import sdk from 'dphoto-magic-sdk';
 // import { Toast } from './antd';
@@ -96,7 +96,7 @@ export async function uploadQiniu(file, params = {}) {
 	var url = await new Promise((resolve, reject)=>{
 		// var mat = file.name.match(/\.[a-z0-9]+$/i);
 		var extname = path.extname(file.name);
-		var key = `${new Date().toString('yyyyMMdd')}/${lkit.random()}${lkit.random()}${extname}`;
+		var key = `${new Date().toString('yyyyMMdd')}/${nxkit.random()}${nxkit.random()}${extname}`;
 		var subscription = qiniu.upload(file, key, uptoken.token, {
 			fname: '',
 			params: params,
@@ -161,7 +161,7 @@ export default class Upload extends Component {
 	}
 
 	componentDidMount() {
-		this.m_id = `upload_${lkit.iid}`;
+		this.m_id = `upload_${nxkit.iid}`;
 		this.setState({ src: this.props.src || this.props.value || '' });
 	}
 

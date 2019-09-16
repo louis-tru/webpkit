@@ -31,8 +31,8 @@
 import crypto from 'crypto-tx';
 import hash_js from 'hash.js';
 import { Buffer } from 'buffer';
-import { Signer } from 'lkit/request';
-import storage from 'lkit/storage';
+import { Signer } from 'nxkit/request';
+import storage from 'nxkit/storage';
 
 var privateKeyBytes;
 var publicKeyBytes;
