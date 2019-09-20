@@ -31,7 +31,7 @@
 import React, { Component } from 'react';
 import { Router as RouterRaw, Route, Switch, Redirect } from 'react-router-dom';
 import error from './error';
-import langoukit from 'langoukit';
+import nxkit from 'nxkit';
 import Page from './page';
 import NotFound from './404';
 
@@ -54,7 +54,7 @@ function route(router, { path, page, ...args }) {
 			if (!this.state.isLoaded) {
 				try {
 					var com = (await page()).default;
-					langoukit.assert(langoukit.equalsClass(Page, com), 'TypeError');
+					nxkit.assert(nxkit.equalsClass(Page, com), 'TypeError');
 					this.setState({ com, isLoaded: true });
 				} catch(err) {
 					error.defaultErrorHandle(err);

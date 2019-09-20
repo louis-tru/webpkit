@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import langoukit from 'langoukit';
+import nxkit from 'nxkit';
 import CMSPage from './page';
 import { Root, React, sdk } from '..';
 import {alert} from '../dialog';
@@ -118,13 +118,13 @@ export default class Login extends CMSPage {
 
 	getCheckPhone() {
 		var iphone = this.refs.uname.value;
-		langoukit.assert(this.checkPhone(iphone), new Error('手机输入不正确'));
+		nxkit.assert(this.checkPhone(iphone), new Error('手机输入不正确'));
 		return iphone;
 	}
 
 	getCheckVcode() {
 		var vcode = this.refs.upwd.value;
-		langoukit.assert(/^\d{6}$/.test(vcode), new Error('手机验证码输入不正确'));
+		nxkit.assert(/^\d{6}$/.test(vcode), new Error('手机验证码输入不正确'));
 		return vcode;
 	}
 

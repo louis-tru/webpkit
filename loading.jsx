@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import langoukit from 'langoukit';
+import nxkit from 'nxkit';
 import { React, Component, sdk } from '.';
 // import { Toast, Icon } from './antd';
 import ReactDom from 'react-dom';
@@ -58,10 +58,10 @@ export default class Loading extends Component {
 		);
 	}
 
-	static show(text = 'Loading..', id = langoukit.id) {
+	static show(text = 'Loading..', id = nxkit.id) {
 		var div = document.createElement('div');
 		document.body.appendChild(div);
-		div.id = id || langoukit.id;
+		div.id = id || nxkit.id;
 		return ReactDom.render(<Loading text={text ||'Loading..'} />, div);
 	}
 

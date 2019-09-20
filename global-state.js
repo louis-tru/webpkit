@@ -29,7 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import { Component } from 'react';
-import storage from 'langoukit/storage';
+import storage from 'nxkit/storage';
 
 var __id = 0;
 var global_state_components = {};
