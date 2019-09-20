@@ -120,7 +120,7 @@ export class CMSRoot extends Root {
 			<div className="init-loading">Loading..</div>
 		);
 	}
-
+	
 	_404() {
 		this.setState({ is_404: true });
 	}
@@ -132,13 +132,14 @@ export class CMSRoot extends Root {
 	login() {
 		return this.props.login || <Login />;
 	}
-
+	
 	menu() {
 		return this.props.menu || <ExamplesMenu />;
 	}
 
 	header() {
-		return this.props.header || <Header />;
+
+		return this.props.header || <Header history={this.history}/>;
 	}
 
 	footer() {

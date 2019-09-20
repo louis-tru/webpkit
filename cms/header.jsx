@@ -29,9 +29,15 @@
  * ***** END LICENSE BLOCK ***** */
 
 import { React, Page, Link, Component } from '..';
+import * as History from 'history';
+
+const history = History.createBrowserHistory(); // History.createHashHistory();
 
 export default class extends Component {
-
+	constructor() {
+		super()
+		this.history = history
+	}
 	get title() {
 		return 'Nifty';
 	}
@@ -463,7 +469,7 @@ export default class extends Component {
 
 					{/*--Brand logo & name--*/}
 					{/*--================================--*/}
-					
+
 					{this.renderLogo()}
 
 					{/*--================================--*/}
