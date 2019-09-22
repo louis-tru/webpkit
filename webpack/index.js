@@ -49,6 +49,8 @@ const sourceMapEnabled = isProd
 	? config.build.productionSourceMap
 	: config.dev.cssSourceMap;
 
+// console.log('--------------', process.env.NODE_ENV)
+
 const HOST = config.dev.host;
 const PORT = config.dev.port;
 const ENV = { NODE_ENV: isProd ? '"production"': '"development"' };
@@ -62,7 +64,7 @@ const views =
 	}): 
 	[{ name: name=='app'?'index': name, path: `./${name}/index` }];
 
-// console.log('views', views);
+// console.log('views', isProd);
 
 // develop plugins
 const develop_plugins = [
