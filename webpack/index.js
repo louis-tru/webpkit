@@ -135,8 +135,8 @@ const plugins = [
 			filename: name + '.html',
 			template: path + '.html',
 			inject: true,
-			chunks: ['vendor','manifest', name],
-		})
+			chunks: ['vendors', 'common', name],
+		}),
 	),
 	...(isProd ? prod_plugins: develop_plugins),
 ];
@@ -266,18 +266,34 @@ module.exports = {
 			}),
 		],
 		splitChunks: {
-			chunks: 'all', //同时分割同步和异步代码,推荐。
-			// minSize: 30000, // 模块超过30k自动被抽离成公共模块
-			// minChunks: 1, // 模块被引用>=1次，便分割
+			// chunks: 'all', //同时分割同步和异步代码,推荐。
 			// maxAsyncRequests: 5,  // 异步加载chunk的并发请求数量<=5
 			// maxInitialRequests: 3, // 一个入口并发加载的chunk数量<=3
-			cacheGroups: { // 默认的规则不会打包,需要单独定义
+			// minSize: 30000, // 模块超过30k自动被抽离成公共模块
+			// minChunks: 1, // 模块被引用>=1次，便分割
+			cacheGroups: {
+				vendors: {
+					test: /node_modules/,
+					name: "vendors",
+					chunks: "initial",
+					priority: 2,
+					enforce: true,
+					minChunks: 2,
+				},
+				common: {
+					name: "common",
+					chunks: "initial",
+					priority: 1,
+					enforce: true,
+					minChunks: 2,
+				},
 				nxkit_bigint: {
 					test: /nxkit\/_bigint/,
-					chunks: "all",
 					name: "nxkit_bigint",
+					chunks: "all",
 					enforce: true,
-				}
+					priority: 3,
+				},
 			}
 	 }
 	},
