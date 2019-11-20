@@ -30,7 +30,7 @@
 
 var errno = require('nxkit/errno');
 
-module.exports = {
+export default {
 	...errno,
 	ERR_METHOD_CALL_TIMEOUT: [-30006, '连接超时', '方法调用超时'],
 	ERR_LOGIN_FORWARD: [300001, '登录跳转', 'login forward'],

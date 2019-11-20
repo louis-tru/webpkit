@@ -41,7 +41,7 @@ class PrivPage extends Component {
 	m_status = -1;
 	m_panel = null;
 	m_timeout = 0;
-	m_index: 0;
+	m_index = 0;
 
 	constructor(props) {
 		super(props);

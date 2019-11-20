@@ -162,7 +162,7 @@ export class AFItem extends Component {
 			rules,
 			children,
 			form,
-			...propss,
+			...propss
 		} = this.props;
 
 		if (Tag == 'none') {

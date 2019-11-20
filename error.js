@@ -45,4 +45,6 @@ function defaultErrorHandle(err) {
 	}
 }
 
-exports.defaultErrorHandle = defaultErrorHandle;
+export default {
+	defaultErrorHandle,
+}
