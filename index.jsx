@@ -42,7 +42,8 @@ import React, { Component } from 'react';
 import {Link} from 'react-router-dom';
 import GlobalState from './global-state';
 import * as History from 'history';
-import * as dialog from './dialog'
+import * as dialog from './dialog';
+import errno from './errno';
 
 var current = null;
 
@@ -62,12 +63,17 @@ export class Root extends GlobalState {
 
 	async componentDidMount() {
 		current = this;
-		if (!this.props.noInit) {
+
+		try {
 			await this.onLoad();
-		}
-		
-		if ( typeof this.props.onLoad == 'function') {
-			await this.props.onLoad(this);
+			if ( typeof this.props.onLoad == 'function') {
+				await this.props.onLoad(this);
+			}
+		} catch(err) {
+			if (err.code != errno.ERR_LOGIN_FORWARD[0]) {
+				dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
+			}
+			throw err;
 		}
 
 		sdk.addEventListener('uncaughtException', function(err) {
@@ -78,7 +84,8 @@ export class Root extends GlobalState {
 	}
 
 	async onLoad() {
-		await initializeSdk(this.props.config || {});
+		if (this.props.initSDK!==false)
+			await initializeSDK(this.props.config || {});
 	}
 	
 	render() {
@@ -98,7 +105,7 @@ export class Root extends GlobalState {
 	}
 }
 
-export async function initializeSdk(config = {}) {
+export async function initializeSDK(config = {}) {
 	if (sdk.isLoaded) return;
 	var url = new path.URL(config.serviceAPI || nxkit.config.serviceAPI);
 	await sdk.initialize(

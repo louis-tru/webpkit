@@ -28,13 +28,17 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { Root,ReactDom,React } from 'cport-h5';
-import router from './router';
+const routes = [
+	{
+		path: [ '/', '/index' ],
+		exact: true,
+		page: () => import('./pages/index.jsx'),
+	},
+	{
+		path: [ '/test' ],
+		exact: true,
+		page: () => import('./pages/test.jsx'),
+	},
+];
 
-ReactDom.render(
-	<Root 
-		initSDK={false} 
-		routes={router}
-	/>,
-	document.querySelector('#app')
-);
+export default routes;

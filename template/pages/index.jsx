@@ -28,13 +28,13 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { Root,ReactDom,React } from 'cport-h5';
-import router from './router';
+import {Page,React,Link} from 'cport-h5';
 
-ReactDom.render(
-	<Root 
-		initSDK={false} 
-		routes={router}
-	/>,
-	document.querySelector('#app')
-);
+export default class extends Page {
+
+	render() {
+		return (
+			<div>Hello World <Link to="/test">Test</Link></div>
+		);
+	}
+}

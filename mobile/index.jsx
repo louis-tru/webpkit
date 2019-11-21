@@ -57,12 +57,10 @@ export class Root extends GlobalState {
 		rem.initialize(this.props.scale);
 
 		try {
-			var path = await this.onLoad();
-
+			this.m_path = await this.onLoad();
 			if ( typeof this.props.onLoad == 'function') {
-				path = (await this.props.onLoad(this)) || path;
+				this.m_path = (await this.props.onLoad(this)) || this.m_path;
 			}
-			this.m_path = path;
 		} catch(err) {
 			if (err.code != errno.ERR_LOGIN_FORWARD[0]) {
 				dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
@@ -83,7 +81,8 @@ export class Root extends GlobalState {
 	}
 
 	async onLoad() {
-		await initializeSdk(this.props.config || {});
+		if (this.props.initSDK!==false)
+			await initializeSDK(this.props.config || {});
 	}
 
 	onNav(e){
@@ -119,17 +118,16 @@ export class Root extends GlobalState {
 	}
 }
 
-export async function initializeSdk(config = {}) {
+export async function initializeSDK(config = {}) {
 	if (sdk.isLoaded) return;
 	var url = new path.URL(config.serviceAPI || nxkit.config.serviceAPI);
-
 	await sdk.initialize(
 		path.getParam('D_SDK_HOST') || url.hostname,
 		path.getParam('D_SDK_PORT') || url.port,
 		path.getParam('D_SDK_SSL') || /^(http|ws)s/.test(url.protocol),
 		path.getParam('D_SDK_VIRTUAL') || url.filename
 	);
-};
+}
 
 export {
 	React,
