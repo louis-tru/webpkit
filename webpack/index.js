@@ -167,7 +167,7 @@ var defaultBabelOptions = {
 		["@babel/plugin-proposal-object-rest-spread", { "loose": true, "useBuiltIns": true }]
 	]
 };
-var babelrc = require.resolve(__dirname + '/../.babelrc');
+var babelrc = path.join(__dirname + '/../.babelrc');
 
 if (fs.existsSync(babelrc)) {
 	try {
