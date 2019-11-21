@@ -275,15 +275,14 @@ module.exports = {
 				vendors: {
 					test: /node_modules/,
 					name: "vendors",
-					chunks: "initial",
-					priority: 2,
+					chunks: "all",
+					priority: 3,
 					enforce: true,
-					minChunks: 2,
 				},
 				common: {
 					name: "common",
-					chunks: "initial",
-					priority: 1,
+					chunks: "all",
+					priority: 2,
 					enforce: true,
 					minChunks: 2,
 				},
@@ -292,7 +291,7 @@ module.exports = {
 					name: "nxkit_bigint",
 					chunks: "all",
 					enforce: true,
-					priority: 3,
+					priority: 4,
 				},
 			}
 	 }
