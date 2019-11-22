@@ -164,8 +164,7 @@ for (var src of babelrc) {
 	}
 }
 
-utils.assert(defaultBabelOption, '.babelrc undefined');
-
+// utils.assert(defaultBabelOption, '.babelrc undefined');
 // console.log(defaultBabelOptions.presets[1]);
 
 module.exports = {
