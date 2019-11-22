@@ -152,22 +152,7 @@ if (!isProd && config.dev.inline === false) {
 	}
 }
 
-var defaultBabelOptions = {
-	"presets": [
-		"@babel/preset-react",
-		["@babel/preset-env", {
-			"targets": { 
-				"node": "current"
-				// "browsers": ["> 1%", "last 2 versions", "not ie <= 8"]
-			}
-		}]
-	],
-	"plugins": [
-		["@babel/plugin-proposal-class-properties"],
-		["@babel/plugin-proposal-object-rest-spread", { "loose": true, "useBuiltIns": true }]
-	]
-};
-
+var defaultBabelOption;
 var babelrc = [utils.resolve('.babelrc'), path.join(__dirname + '/../.babelrc')];
 
 for (var src of babelrc) {
@@ -178,6 +163,10 @@ for (var src of babelrc) {
 		console.warn(err);
 	}
 }
+
+utils.assert(defaultBabelOption, '.babelrc undefined');
+
+// console.log(defaultBabelOptions.presets[1]);
 
 module.exports = {
 	mode: isProd ? 'production': 'development',
