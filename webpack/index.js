@@ -167,12 +167,13 @@ var defaultBabelOptions = {
 		["@babel/plugin-proposal-object-rest-spread", { "loose": true, "useBuiltIns": true }]
 	]
 };
-var babelrc = path.join(__dirname + '/../.babelrc');
 
-if (fs.existsSync(babelrc)) {
+var babelrc = [utils.resolve('.babelrc'), path.join(__dirname + '/../.babelrc')];
+
+for (var src of babelrc) {
 	try {
-		defaultBabelOptions = eval('(' + fs.readFileSync(babelrc, 'utf-8') + ')');
-		// console.log(babelOptions);
+		defaultBabelOptions = eval('(' + fs.readFileSync(src, 'utf-8') + ')');
+		break;
 	} catch(err) {
 		console.warn(err);
 	}
