@@ -38,9 +38,11 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin") ;
+const os = require('os');
 
 const isProd =
 	process.env.NODE_ENV === 'production' ||
@@ -80,21 +82,10 @@ const develop_plugins = [
 ];
 
 const prod_plugins = [
-	new UglifyJsPlugin({
-		uglifyOptions: {
-			compress: { warnings: false },
-		},
-		sourceMap: config.build.productionSourceMap,
-		parallel: true,
-	}),
 	// extract css into its own file
-	new ExtractTextPlugin({
-		filename: utils.assetsPath('[name].[contenthash].css'),
-		// Setting the following option to `false` will not extract CSS from codesplit chunks.
-		// Their CSS will instead be inserted dynamically with style-loader when the codesplit chunk has been loaded by webpack.
-		// It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`, 
-		// increasing file size: https://github.com/vuejs-templates/webpack/issues/1110
-		allChunks: true,
+	new MiniCssExtractPlugin({
+		filename: utils.assetsPath('css/[name].min.css?[chunkhash]'), // [contenthash]
+		chunkFilename: utils.assetsPath("css/[name].min.css?[chunkhash]"),
 	}),
 	// Compress extracted CSS. We are using this plugin so that possible
 	// duplicated CSS from different components can be deduped.
@@ -107,45 +98,6 @@ const prod_plugins = [
 	new webpack.HashedModuleIdsPlugin(),
 	// enable scope hoisting
 	new webpack.optimize.ModuleConcatenationPlugin(),
-	
-	// split vendor js into its own file
-	new webpack.optimize.CommonsChunkPlugin({
-		name: 'vendor',
-		minChunks (module) {
-			// any required modules inside node_modules are extracted to vendor
-			return (
-				module.resource &&
-				/\.js$/.test(module.resource) &&
-				module.resource.indexOf( utils.resolve('node_modules') ) === 0
-			)
-		}
-	}),
-	// extract webpack runtime and module manifest to its own file in order to
-	// prevent vendor hash from being updated whenever app bundle is updated
-	new webpack.optimize.CommonsChunkPlugin({
-		name: 'manifest',
-		minChunks: Infinity
-	}),
-	// This instance extracts shared chunks from code splitted chunks and bundles them
-	// in a separate chunk, similar to the vendor chunk
-	// see: https://webpack.js.org/plugins/commons-chunk-plugin/#extra-async-commons-chunk
-	new webpack.optimize.CommonsChunkPlugin({
-		name: name,
-		async: 'vendor-async',
-		children: true,
-		minChunks: 3,
-	}),
-	// new webpack.optimize.CommonsChunkPlugin({
-	// 	name: 'nxkit_bigint',
-	// 	minChunks (module) {
-	// 		return (
-	// 			module.resource &&
-	// 			/\.js$/.test(module.resource) &&
-	// 			module.resource.indexOf( 'nxkit/_bigint' ) != -1
-	// 		);
-	// 	}
-	// }),
-
 	...(config.build.productionGzip ? [
 		new (require('compression-webpack-plugin'))({
 			asset: '[path].gz[query]',
@@ -165,6 +117,7 @@ const prod_plugins = [
 ];
 
 const plugins = [
+	new VueLoaderPlugin(),
 	// http://vuejs.github.io/vue-loader/en/workflow/production.html
 	new webpack.DefinePlugin({ 'process.env': ENV }),
 	// copy custom static assets
@@ -182,8 +135,8 @@ const plugins = [
 			filename: name + '.html',
 			template: path + '.html',
 			inject: true,
-			chunks: ['vendor','manifest', name],
-		})
+			chunks: ['vendors', 'common', name],
+		}),
 	),
 	...(isProd ? prod_plugins: develop_plugins),
 ];
@@ -199,15 +152,33 @@ if (!isProd && config.dev.inline === false) {
 	}
 }
 
+var defaultBabelOption;
+var babelrc = [utils.resolve('.babelrc'), path.join(__dirname + '/../.babelrc')];
+
+for (var src of babelrc) {
+	try {
+		defaultBabelOptions = eval('(' + fs.readFileSync(src, 'utf-8') + ')');
+		break;
+	} catch(err) {
+		console.warn(err);
+	}
+}
+
+// console.log(defaultBabelOptions);
+
+// utils.assert(defaultBabelOption, '.babelrc undefined');
+// console.log(defaultBabelOptions.presets[1]);
+
 module.exports = {
+	mode: isProd ? 'production': 'development',
 	externals: require('./externals'),
 	context: utils.resolve('.'),
 	entry: {/**/},
 	output: {
 		path: config.output, // build output dir
-		filename: isProd ? utils.assetsPath('[name].min.js?[chunkhash]'): '[name].js',
+		filename: isProd ? utils.assetsPath('js/[name].min.js?[chunkhash]'): '[name].js',
 			...(isProd ? {
-		chunkFilename: utils.assetsPath('[chunkhash].js') }: {}),
+		chunkFilename: utils.assetsPath('js/[name].min.js?[chunkhash]') }: {}),
 		publicPath: config.publicPath,
 	},
 	resolve: {
@@ -240,12 +211,17 @@ module.exports = {
 			},
 			{
 				test: /\.(js|jsx)$/,
-				loader: 'babel-loader',
-				include: [utils.resolve('.'), path.join(__dirname, '..')],
-				exclude: /node_modules/,
-				options: {
-					babelrc: __dirname + '/../.babelrc',
-				},
+				include: [
+					utils.resolve('.'),
+					path.join(__dirname, '..'),
+				],
+				exclude: /(typeof|_bigint)\.js/,
+				// loader: 'babel-loader',
+				// options: defaultBabelOptions,
+				use: [{
+					loader: 'babel-loader',
+					options: defaultBabelOptions,
+				}]
 			},
 			{
 				test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -275,6 +251,56 @@ module.exports = {
 		],
 	},
 	plugins: plugins,
+	optimization: {
+		minimizer: [
+			new TerserPlugin({
+				cache: true,
+				parallel: os.cpus().length - 1,
+				sourceMap: false, // Must be set to true if using source-maps in production
+				terserOptions: {
+					// https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+				},
+				exclude: /nxkit_bigint/,
+			}),
+		],
+		splitChunks: {
+			// chunks: 'all', //同时分割同步和异步代码,推荐。
+			// maxAsyncRequests: 5,  // 异步加载chunk的并发请求数量<=5
+			// maxInitialRequests: 3, // 一个入口并发加载的chunk数量<=3
+			// minSize: 30000, // 模块超过30k自动被抽离成公共模块
+			// minChunks: 1, // 模块被引用>=1次，便分割
+			cacheGroups: {
+				vendors: {
+					test: /node_modules/,
+					name: "vendors",
+					chunks: "all",
+					priority: 3,
+					enforce: true,
+				},
+				vendors: {
+					test: /nxkit/,
+					name: "nxkit",
+					chunks: "all",
+					priority: 4,
+					enforce: true,
+				},
+				common: {
+					name: "common",
+					chunks: "all",
+					priority: 2,
+					enforce: true,
+					minChunks: 2,
+				},
+				nxkit_bigint: {
+					test: /nxkit\/_bigint/,
+					name: "nxkit_bigint",
+					chunks: "all",
+					enforce: true,
+					priority: 5,
+				},
+			}
+	 }
+	},
 	// cheap-module-eval-source-map is faster for development
 	devtool: isProd 
 		? (config.build.productionSourceMap ? config.build.devtool : false)
@@ -316,6 +342,6 @@ module.exports = {
 	},
 };
 
-views.map(({name,path})=>{
+views.forEach(({name,path})=>{
 	module.exports.entry[name] = [...devClient, path ];
 });
