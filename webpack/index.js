@@ -277,13 +277,6 @@ module.exports = {
 					priority: 3,
 					enforce: true,
 				},
-				vendors: {
-					test: /nxkit/,
-					name: "nxkit",
-					chunks: "all",
-					priority: 4,
-					enforce: true,
-				},
 				common: {
 					name: "common",
 					chunks: "all",
