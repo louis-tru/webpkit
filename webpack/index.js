@@ -135,7 +135,7 @@ const plugins = [
 			filename: name + '.html',
 			template: path + '.html',
 			inject: true,
-			chunks: ['vendors', 'common', name],
+			chunks: ['low', 'vendors', 'common', name],
 		}),
 	),
 	...(isProd ? prod_plugins: develop_plugins),
@@ -291,6 +291,13 @@ module.exports = {
 					enforce: true,
 					priority: 5,
 				},
+				low: {
+					test: /webpack\/low/,
+					name: "low",
+					chunks: "all",
+					enforce: true,
+					priority: 6,
+				},
 			}
 	 }
 	},
@@ -336,5 +343,5 @@ module.exports = {
 };
 
 views.forEach(({name,path})=>{
-	module.exports.entry[name] = [...devClient, path ];
+	module.exports.entry[name] = ['cport-h5/webpack/low', ...devClient, path ];
 });
