@@ -1,4 +1,4 @@
-import 'whatwg-fetch'
+import './node_modules/whatwg-fetch'
 
 class Xhr {
   request(url) {

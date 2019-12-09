@@ -40,7 +40,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const VueLoaderPlugin = require('../node_modules/vue-loader/lib/plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin") ;
 const os = require('os');
 
