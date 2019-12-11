@@ -77,7 +77,7 @@ export default class extends CMSPage {
     return (
       <table id="demo-dt-basic" className="table table-striped table-bordered" cellSpacing="0" width="100%" style={{textAlign: 'center'}}>
         <thead>
-          <tr>
+          <tr> 
             {this.renderHeader()}
           </tr>
         </thead>

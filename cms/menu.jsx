@@ -80,7 +80,7 @@ export default class Menu extends GlobalState {
 				if (selected) out.selected = 1;
 				var expanded = e.expanded;// || selected;
 				var activeLinkClass = j === this.state.current ? 'hover' : ''
-				
+
 				return (
 					<li className={(selected?'active-link ': '') + (expanded?'active':'')} key={key} onClick={() => { this.setState({current: j})} }>
 						<Link to={children.length ? '#': e.go || '#'} className={activeLinkClass}>
@@ -105,7 +105,6 @@ export default class Menu extends GlobalState {
 					</li>
 				);
 			}
-			
 		});
 	}
 
@@ -141,7 +140,7 @@ export default class Menu extends GlobalState {
 	renderShortcut() {
 		return null;
 	}
-
+	
 	renderWidget() {
 		return null;
 	}

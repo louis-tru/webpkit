@@ -28,11 +28,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import 'normalize.css';
+import './node_modules/normalize.css';
 import './utils.css';
 import './_fix';
 import nxkit from 'nxkit';
-import sdk from 'dphoto-magic-sdk';
+import sdk from './node_modules/dphoto-magic-sdk';
 import path from 'nxkit/path';
 import error from './error';
 import { Router } from './router';

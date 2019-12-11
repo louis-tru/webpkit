@@ -188,16 +188,16 @@
 * Made by Osman Nuri Okumuş <onokumus@gmail.com> (https://github.com/onokumus)
 * Under MIT License
 */
-! function (n, i) {
+!function (n, i) {
 	if ("function" == typeof define && define.amd) define(["jquery"], i);
 	else if ("undefined" != typeof exports) i(require("jquery"));
 	else {
 		var e = {
 			exports: {}
 		};
-		i(n.jquery), n.metisMenu = e.exports
+		i(n.jQuery), n.metisMenu = e.exports
 	}
-}(this, function (n) {
+}(window, function (n) {
 	"use strict";
 
 	function i(n) {

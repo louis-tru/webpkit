@@ -91,7 +91,7 @@ export default class Login extends CMSPage {
 	}
 
 	changeVerificationText(text) {
-
+		
 	}
 
 	set_vcode_delay(vcode_delay) {
