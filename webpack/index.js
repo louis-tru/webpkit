@@ -214,6 +214,9 @@ module.exports = {
 				include: [
 					utils.resolve('.'),
 					path.join(__dirname, '..'),
+					// path.join(__dirname, '../../dphoto-magic-sdk'),
+					// path.join(__dirname, '../../crypto-tx'),
+					// path.join(process.env.NGUI, 'libs/nxkit'),
 				],
 				exclude: /(typeof|_bigint)\.js/,
 				// loader: 'babel-loader',
