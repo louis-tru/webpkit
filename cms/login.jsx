@@ -133,6 +133,7 @@ export default class Login extends CMSPage {
 	}
 
 	render() {
+		const { admin}  = this.props
 		return (
 			this.loading ? null:
 			<div id="container" className="cls-container">
@@ -149,16 +150,16 @@ export default class Login extends CMSPage {
 						<div className="panel-body">
 							<div className="mar-ver pad-btm">
 								<h3 className="h4 mar-no">Account Login</h3>
-								<p className="text-muted">Sign In to your account</p>
+								<p className="text-muted">Hashii后台管理系统</p>
 							</div>
 							{/* <form> */}
 								<div className="form-group">
-									<input type="text" className="form-control" placeholder="手机号：" ref="uname" autoFocus />
+									<input type="text" className="form-control" placeholder="请输入手机号" ref="uname" autoFocus />
 								</div>
 								<div className="form-group" style={{position: 'relative'}}>
-									<input type="number" maxLength="6" className="form-control" placeholder="输入验证码" ref="upwd"/>
+									<input type={admin ? 'password' : 'text'} maxLength="6" className="form-control" placeholder={admin ? '请输入密码' : '请输入验证码'} ref="upwd"/>
 									<button className="btn btn-default" 
-										style={{position: 'absolute', top: '1px',right: '1px', padding: '4px 12px',border: 'none'}} 
+										style={{position: 'absolute', top: '1px',right: '1px', padding: '4px 12px',border: 'none', display: admin ? 'none' : 'block'}} 
 										onClick={()=>{this.getVerificationCode()}} disabled={this.state.disabledbtn ? 'disabled' : ''}>
 										{this.state.verificationtext}</button>
 								</div>
@@ -167,7 +168,7 @@ export default class Login extends CMSPage {
 									<input id="demo-form-checkbox" className="magic-checkbox" type="checkbox" />
 									<label htmlFor="demo-form-checkbox">Remember me</label>*/}
 								</div>
-								<button className="btn btn-primary btn-lg btn-block" type="submit" onClick={()=>{this.signin()}}>Sign In</button>
+								<button className="btn btn-primary btn-lg btn-block" type="submit" onClick={()=>{this.signin()}}>登录</button>
 							{/* </form> */}
 						</div>
 				

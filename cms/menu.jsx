@@ -46,11 +46,9 @@ export default class Menu extends GlobalState {
 		super.setState(state);
 		setTimeout(e=>this.reloadNifty(), 200);
 	}
-
 	get pathname () {
 		return this.state.pathname;
 	}
-
 	componentDidMount() {
 		this.m_interval_id = setInterval(e=>{
 			if (this.pathname != location.pathname) {
@@ -76,11 +74,12 @@ export default class Menu extends GlobalState {
 				var children = e.children || [];
 				var In = { selected: false };
 				var ch = this._renderMenuList(children, level+1, In);
+
 				var selected = In.selected || (e.go && e.go == this.state.pathname);
 				if (selected) out.selected = 1;
-				var expanded = e.expanded;// || selected;
+				var expanded = e.expanded; // || selected;
 				var activeLinkClass = j === this.state.current ? 'hover' : ''
-
+				
 				return (
 					<li className={(selected?'active-link ': '') + (expanded?'active':'')} key={key} onClick={() => { this.setState({current: j})} }>
 						<Link to={children.length ? '#': e.go || '#'} className={activeLinkClass}>
