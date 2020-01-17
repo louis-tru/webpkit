@@ -38,6 +38,7 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const VueLoaderPlugin = require('../node_modules/vue-loader/lib/plugin');
@@ -70,6 +71,8 @@ const views =
 
 // develop plugins
 const develop_plugins = [
+	// new BundleAnalyzerPlugin(),
+	new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/),
 	new webpack.HotModuleReplacementPlugin(),
 	new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
 	new webpack.NoEmitOnErrorsPlugin(),
@@ -82,6 +85,7 @@ const develop_plugins = [
 ];
 
 const prod_plugins = [
+	new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/),
 	// extract css into its own file
 	new MiniCssExtractPlugin({
 		filename: utils.assetsPath('css/[name].min.css?[chunkhash]'), // [contenthash]
@@ -184,6 +188,7 @@ module.exports = {
 	resolve: {
 		extensions: ['.js', '.vue', '.json', '.jsx', '.css'],
 		alias: {
+			// '@ant-design/icons/lib/dist$': path.resolve(__dirname, '/../icons.ts'),
 			'vue$': 'vue/dist/vue.esm.js',
 			'static': utils.resolve('static'),
 			'nifty': path.join(__dirname, '../nifty'),

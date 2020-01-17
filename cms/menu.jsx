@@ -60,7 +60,6 @@ export default class Menu extends GlobalState {
 	componentWillUnmount() {
 		clearInterval(this.m_interval_id);
 	}
-
 	_renderMenuList(list, level, out) {
 		return list.map((e,j)=>{
 			var key= `key_${level}_${j}`;
@@ -79,7 +78,7 @@ export default class Menu extends GlobalState {
 				var selected = In.selected || current;
 				if (selected) out.selected = 1;
 				var expanded = e.expanded || selected;
-
+				
 				return (
 					<li className={(selected?'active-link ': '') + (expanded?'active':'')} key={key} 
 						onClick={()=>e.go&&this.setState({ pathname: e.go }) }>
