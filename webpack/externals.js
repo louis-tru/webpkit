@@ -57,7 +57,8 @@ var externals = [
 	'http',
 	'https',
 	'crypto',
-	'dev-client'
+	'dev-client',
+	'antd'
 ];
 
 module.exports = function(context, request, callback) {
