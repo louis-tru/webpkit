@@ -38,7 +38,7 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const VueLoaderPlugin = require('../node_modules/vue-loader/lib/plugin');
@@ -71,7 +71,7 @@ const views =
 
 // develop plugins
 const develop_plugins = [
-	new BundleAnalyzerPlugin(),
+	// new BundleAnalyzerPlugin(),
 	new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/),
 	new webpack.HotModuleReplacementPlugin(),
 	new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
