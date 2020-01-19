@@ -30,8 +30,8 @@
 
 import CMSPage from './page';
 import { Root, React } from '..';
-import 'nifty/plugins/datatables/media/js/jquery.dataTables.js';
-import 'nifty/plugins/datatables/media/css/dataTables.bootstrap.css';
+import 'nifty/plugins/datatables/media/js/jquery.dataTables.min.js';
+import 'nifty/plugins/datatables/media/css/jquery.dataTables.min.css';
 import 'nifty/plugins/datatables/extensions/Responsive/css/dataTables.responsive.css';
 
 export default class extends CMSPage {
