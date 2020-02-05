@@ -30,7 +30,7 @@
 
 import './node_modules/normalize.css';
 import './utils.css';
-import './_fix';
+// import './_fix';
 import nxkit from 'nxkit';
 import sdk from './node_modules/dphoto-magic-sdk';
 import path from 'nxkit/path';
