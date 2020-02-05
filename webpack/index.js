@@ -188,7 +188,7 @@ module.exports = {
 	resolve: {
 		extensions: ['.js', '.vue', '.json', '.jsx', '.css'],
 		alias: {
-			// '@ant-design/icons/lib/dist$': path.resolve(__dirname, '/../icons.ts'),
+			'@ant-design/icons/lib/dist$': path.resolve('./icons.js'),
 			'vue$': 'vue/dist/vue.esm.js',
 			'static': utils.resolve('static'),
 			'nifty': path.join(__dirname, '../nifty'),
@@ -279,7 +279,8 @@ module.exports = {
 			// minChunks: 1, // 模块被引用>=1次，便分割
 			cacheGroups: {
 				vendors: {
-					test: /node_modules/,
+					// test: /node_modules/,
+					test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
 					name: "vendors",
 					chunks: "all",
 					priority: 3,

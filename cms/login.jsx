@@ -39,49 +39,7 @@ import {alert} from '../dialog';
 export default class Login extends CMSPage {
 
 	state = { $$url: '', verificationtext: '获取验证码', disabledbtn: false};
-
-	onLoad() {
-		var $imgHolder 	= $('#demo-bg-list');
-		var $bgBtn 		= $imgHolder.find('.demo-chg-bg');
-		var $target 	= $('#bg-overlay');
-		var self = this;
-
-		$bgBtn.on('click', function(e){
-			e.preventDefault();
-			e.stopPropagation();
-			
-			var $el = $(this);
-			if ($el.hasClass('active') || $imgHolder.hasClass('disabled')) return;
-			if ($el.hasClass('bg-trans')) {
-				self.setState({ $$url: '' });
-				
-				$target.css('background-image','none').removeClass('bg-img');
-				$imgHolder.removeClass('disabled');
-				$bgBtn.removeClass('active');
-				$el.addClass('active');
-
-				return;
-			}
-
-			$imgHolder.addClass('disabled');
-			var url = $el.attr('src').replace('/thumbs','');
-			
-			$('<img/>').load(url, function(){
-
-				self.setState({ $$url: url });
-				
-				$target.css('background-image', 'url("' + url + '")').addClass('bg-img');
-				$imgHolder.removeClass('disabled');
-				$bgBtn.removeClass('active');
-				$el.addClass('active');
-
-				$(this).remove();
-			})
-
-		});
-
-	}
-
+	
 	onUnload() {
 		clearTimeout(this.m_vcode_delay_id);
 	}
@@ -189,23 +147,6 @@ export default class Login extends CMSPage {
 							</div>
 						</div>
 						}
-
-					</div>
-				</div>
-				{/*--===================================================--*/}
-				{/*-- DEMO PURPOSE ONLY --*/}
-				{/*--===================================================--*/}
-				<div className="demo-bg">
-					<div id="demo-bg-list">
-						<div className="demo-loading"><i className="psi-repeat-2"></i></div>
-						<img className="demo-chg-bg bg-trans active" src={require("nifty/img/bg-img/thumbs/bg-trns.jpg")} alt="Background Image" />
-						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-1.jpg")} alt="Background Image" />
-						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-2.jpg")} alt="Background Image" />
-						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-3.jpg")} alt="Background Image" />
-						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-4.jpg")} alt="Background Image" />
-						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-5.jpg")} alt="Background Image" />
-						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-6.jpg")} alt="Background Image" />
-						<img className="demo-chg-bg" src={require("nifty/img/bg-img/thumbs/bg-img-7.jpg")} alt="Background Image" />
 					</div>
 				</div>
 				{/*--===================================================--*/}
