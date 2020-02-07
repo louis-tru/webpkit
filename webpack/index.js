@@ -56,7 +56,8 @@ const sourceMapEnabled = isProd
 
 const HOST = config.dev.host;
 const PORT = config.dev.port;
-const ENV = { NODE_ENV: isProd ? '"production"': '"development"' };
+// const ENV = { NODE_ENV: isProd ? '"production"': '"development"' };
+const ENV = { NODE_ENV: `"${process.env.NODE_ENV}"` || '"development"' };
 const name = config.productName;
 const views = 
 	fs.existsSync(`${config.source}/views`) && 

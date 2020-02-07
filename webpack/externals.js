@@ -58,7 +58,7 @@ var externals = [
 	'https',
 	'crypto',
 	'dev-client',
-	'antd'
+	'/^(jquery|\$)$/i'
 ];
 
 module.exports = function(context, request, callback) {
