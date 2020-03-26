@@ -28,11 +28,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import './node_modules/normalize.css';
+import 'normalize.css';
 import './utils.css';
-// import './_fix';
 import nxkit from 'nxkit';
-import sdk from './node_modules/dphoto-magic-sdk';
+import sdk from 'dphoto-magic-sdk';
 import path from 'nxkit/path';
 import error from './error';
 import { Router } from './router';
@@ -40,7 +39,7 @@ import Page, { DataPage } from './page';
 import ReactDom from 'react-dom';
 import React, { Component } from 'react';
 import {Link} from 'react-router-dom';
-import GlobalState from './global-state';
+import GlobalState from './state';
 import * as History from 'history';
 import * as dialog from './dialog';
 import errno from './errno';

@@ -31,7 +31,7 @@
 import { List, InputItem, Picker, Toast, Icon } from 'antd-mobile';
 import { createForm } from 'rc-form';
 import React, { Component } from 'react';
-import GlobalState from '../global-state';
+import GlobalState from '../state';
 export * from 'antd-mobile';
 import 'antd-mobile/dist/antd-mobile.css';
 export * from 'rc-form';

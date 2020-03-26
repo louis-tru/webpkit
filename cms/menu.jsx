@@ -29,7 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import { React, Page, Link, Component } from '..';
-import GlobalState from '../global-state';
+import GlobalState from '../state';
 
 /**
  * @class Menu

@@ -28,10 +28,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var errno = require('nxkit/errno');
+export class ErrnoList {
+	ERR_UNKNOWN_ERROR: ErrnoCode = [-30000, 'UNKNOWN_ERROR'];
+	ERR_METHOD_CALL_TIMEOUT: [-50006, '连接超时', '方法调用超时'];
+	ERR_LOGIN_FORWARD: [500001, '登录跳转', 'login forward'];
+}
 
-export default {
-	...errno,
-	ERR_METHOD_CALL_TIMEOUT: [-30006, '连接超时', '方法调用超时'],
-	ERR_LOGIN_FORWARD: [300001, '登录跳转', 'login forward'],
-};
+export default new ErrnoList();

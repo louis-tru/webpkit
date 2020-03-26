@@ -117,3 +117,5 @@ jQuery.fn.extend({
 		return on( this, types, selector, data, fn );
 	}
 });
+
+export {}

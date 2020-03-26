@@ -28,31 +28,31 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import crypto from 'crypto-tx';
-import hash_js from 'hash.js';
-import { Buffer } from 'buffer';
+const crypto = require('crypto-tx');
+const hash_js = require('hash.js');
+import buffer, { IBuffer, Zero } from 'nxkit/buffer';
 import { Signer } from 'nxkit/request';
 import storage from 'nxkit/storage';
 
-var privateKeyBytes;
-var publicKeyBytes;
-var publicKey;
+var privateKeyBytes: IBuffer = Zero;
+var publicKeyBytes: IBuffer = Zero;
+var publicKey: string = '';
 
 var hex = storage.get('access_auth_key');
 if (hex) { // use priv 
-	$gen_access_key(Buffer.from(hex, 'hex'));
+	gen_access_key(buffer.from(hex, 'hex'));
 } else {
 	genAccessKey();
 }
 
-function $gen_access_key(privatekey) {
+function gen_access_key(privatekey: IBuffer) {
 	privateKeyBytes = privatekey;
 	publicKeyBytes = crypto.getPublic(privatekey, true);
 	publicKey = '0x' + publicKeyBytes.toString('hex');
 }
 
 function genAccessKey() {
-	$gen_access_key(crypto.genPrivateKey());
+	gen_access_key(crypto.genPrivateKey());
 	storage.set('access_auth_key', privateKeyBytes.toString('hex'));
 }
 
@@ -61,16 +61,16 @@ function genAccessKey() {
  */
 class H5Signer extends Signer {
 
-	setExtra(extra) {
-		this.m_extra = extra;
+	setExtra(extra: any) {
+		this.options = extra;
 	}
 
-	sign(url, data_str = null) {
+	sign(url: string, data?: any) {
 		var st = Date.now();
 		var fuzz_key = '0a37eb70c1737777bc111d03af4fcd091bc6d913baa2f90316511c61943dbce2';
 		var sha256 = hash_js.sha256();
-		if (data_str) {
-			sha256.update(data_str);
+		if (data) {
+			sha256.update(data);
 		}
 		url = url.replace(/^.+\/service-api\//, '/service-api/');
 		sha256.update(st + fuzz_key + url);
@@ -84,11 +84,11 @@ class H5Signer extends Signer {
 
 		return Object.assign({
 			st, sign: sign.toString('base64'),
-		}, this.m_extra);
+		}, this.options);
 	}
 }
 
-var signer = new H5Signer();
+const signer = new H5Signer();
 
 export default {
 	genAccessKey,

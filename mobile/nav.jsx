@@ -31,7 +31,7 @@
 import nxkit from 'nxkit';
 import React, { Component } from 'react';
 import ReactDom from 'react-dom';
-import GlobalState from '../global-state';
+import GlobalState from '../state';
 import error from '../error';
 
 class PrivPage extends Component {

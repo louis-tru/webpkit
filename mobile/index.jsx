@@ -42,7 +42,7 @@ import { NavPage, Nav } from './nav';
 import ReactDom from 'react-dom';
 import React, { Component } from 'react';
 import _404 from './404';
-import GlobalState from '../global-state';
+import GlobalState from '../state';
 import NavDataPage from './page';
 import errno from '../errno';
 

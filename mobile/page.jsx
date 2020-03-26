@@ -31,7 +31,7 @@
 import nxkit from 'nxkit';
 import { NavPage, Nav } from './nav';
 import React, { Component } from 'react';
-import GlobalState from '../global-state';
+import GlobalState from '../state';
 import { DataPage } from '../page';
 
 export default class NavDataPage extends NavPage {}
