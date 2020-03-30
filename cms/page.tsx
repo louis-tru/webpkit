@@ -28,23 +28,26 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import * as dialog from './dialog';
+import nxkit from 'nxkit';
+import { Page } from '../pc';
+import { DataPage } from '../pc/page';
 
-var dialog_handles = {};
+/**
+ * @class CMSPage
+ */
+export default class CMSPage extends Page {
 
-function defaultErrorHandle(err) {
-	if (err.code) {
-		if ( !dialog_handles[err.code] ) {
-			var dag = dialog.alert((err && err.message) || 'An unknown exception', ()=>{
-				delete dialog_handles[err.code];
-			});
-			dialog_handles[err.code] = dag;
-		}
-	} else {
-		throw err;
+	reloadNifty() {
+		require('nifty/js/nifty.js').initialize();
 	}
+
+	async componentDidMount() {
+		this.reloadNifty();
+		await super.componentDidMount();
+	}
+
 }
 
-export default {
-	defaultErrorHandle,
-}
+export class CMSDataPage extends CMSPage { };
+
+nxkit.extendClass(CMSDataPage, DataPage);

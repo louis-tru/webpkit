@@ -30,21 +30,20 @@
 
 import 'normalize.css';
 import './utils.css';
-import nxkit from 'nxkit';
-import sdk from 'dphoto-magic-sdk';
-import path from 'nxkit/path';
-import error from './error';
+import {store,initialize as initStore} from '../utils/store';
+import handles from './handles';
 import { Router } from './router';
 import Page, { DataPage } from './page';
-import ReactDom from 'react-dom';
-import React, { Component } from 'react';
+import * as ReactDom from 'react-dom';
+import * as React from 'react';
+import {Component} from 'react';
 import {Link} from 'react-router-dom';
-import GlobalState from './state';
+import GlobalState from '../utils/state';
 import * as History from 'history';
 import * as dialog from './dialog';
-import errno from './errno';
+import errno from '../utils/errno';
 
-var current = null;
+var current: any | null = null;
 
 const history = History.createBrowserHistory(); // History.createHashHistory();
 
@@ -75,8 +74,8 @@ export class Root extends GlobalState {
 			throw err;
 		}
 
-		sdk.addEventListener('uncaughtException', function(err) {
-			error.defaultErrorHandle(err.data);
+		store.addEventListener('uncaughtException', function(err) {
+			handles(err.data);
 		});
 
 		this.setState({ isLoaded: true });
@@ -84,7 +83,7 @@ export class Root extends GlobalState {
 
 	async onLoad() {
 		if (this.props.initSDK!==false)
-			await initializeSDK(this.props.config || {});
+			await initStore(this.props.config || {});
 	}
 	
 	render() {
@@ -104,26 +103,11 @@ export class Root extends GlobalState {
 	}
 }
 
-export async function initializeSDK(config = {}) {
-	if (sdk.isLoaded) return;
-	var url = new path.URL(config.serviceAPI || nxkit.config.serviceAPI);
-	await sdk.initialize(
-		path.getParam('D_SDK_HOST') || url.hostname,
-		path.getParam('D_SDK_PORT') || url.port,
-		path.getParam('D_SDK_SSL') || /^(http|ws)s/.test(url.protocol),
-		path.getParam('D_SDK_VIRTUAL') || url.filename
-	);
-
-};
-
 export {
 	React,
 	ReactDom,
 	Component,
 	Router,
 	Page, DataPage,
-	sdk,
 	Link,
-	error,
-	dialog,
 };

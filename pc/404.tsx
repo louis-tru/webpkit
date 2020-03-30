@@ -29,7 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import Page from './page';
-import { Root, React, page } from '.';
+import { React } from '.';
 
 export default class extends Page {
 

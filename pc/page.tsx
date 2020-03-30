@@ -28,16 +28,16 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import React, { Component } from 'react';
-import GlobalState from './state';
+import GlobalState from '../utils/state';
 
 /**
  * @class Page
  */
 export default class Page extends GlobalState {
 	state = {};
+	_url = '';
 
-	constructor(props) {
+	constructor(props: Readonly<{}>) {
 		super(props);
 		if (!this.props.router) return;
 		this._url = this.props.location.pathname + this.props.location.search;

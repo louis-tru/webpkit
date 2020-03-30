@@ -29,13 +29,13 @@
  * ***** END LICENSE BLOCK ***** */
 
 import nxkit from 'nxkit';
-import { React, Component, sdk } from '.';
+import { React, Component } from '.';
+import * as ReactDom from 'react-dom';
 // import { Toast, Icon } from './antd';
-import ReactDom from 'react-dom';
 
 import './utils.css';
 
-export default class Loading extends Component {
+export default class Loading extends Component<{text?: string}> {
 
 	state = { text: 'Loading..' };
 
@@ -45,9 +45,10 @@ export default class Loading extends Component {
 		}
 	}
 
-	// componentWillUnmount() {
-	// 	document.body.removeChild(this.refs.root.parentNode);
-	// }
+	componentWillUnmount() {
+		var div = (this.refs.root as HTMLDivElement).parentNode;
+		document.body.removeChild(div as HTMLDivElement);
+	}
 
 	render() {
 		return (
@@ -58,16 +59,20 @@ export default class Loading extends Component {
 		);
 	}
 
-	static show(text = 'Loading..', id = nxkit.id) {
+	static show(text = 'Loading..', id: string = String(nxkit.id)) {
 		var div = document.createElement('div');
+		div.setAttribute('__', 'Loading');
 		document.body.appendChild(div);
-		div.id = id || nxkit.id;
-		return ReactDom.render(<Loading text={text ||'Loading..'} />, div);
+		div.id = String(id || nxkit.id);
+		ReactDom.render<{}, Loading>(<Loading text={text ||'Loading..'} />, div);
+		return String(id);
 	}
 
-	static close(id) {
-		var dom = document.getElementById(id);
-		if (dom)
-			document.body.removeChild(dom);
+	static close(id: string) {
+		var div = document.getElementById(id);
+		if (div && div.getAttribute('__') == 'Loading') {
+			ReactDom.unmountComponentAtNode(div);
+			document.body.removeChild(div);
+		}
 	}
 }

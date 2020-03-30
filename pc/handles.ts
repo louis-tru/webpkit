@@ -28,21 +28,20 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import CMSPage from './page';
-import { Root, React } from '../pc';
+import {Dialog,alert} from './dialog';
 
-export default class extends CMSPage {
+var dialog_handles: Dict<Dialog> = {};
 
-	componentDidMount() {
-		if (Root.current) {
-			Root.current._404();
+export default function defaultErrorHandles(e: any) {
+	var err = Error.new(e);
+	if (err.code) {
+		if ( !dialog_handles[err.code] ) {
+			var dag = alert(err.message || 'An unknown exception', ()=>{
+				delete dialog_handles[err.code];
+			});
+			dialog_handles[err.code] = dag;
 		}
-		return super.componentDidMount();
-	}
-
-	render() {
-		return (
-			<h1>Not Found 404</h1>
-		);
+	} else {
+		alert(err.message || 'An unknown exception');
 	}
 }

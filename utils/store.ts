@@ -29,26 +29,20 @@
  * ***** END LICENSE BLOCK ***** */
 
 import nxkit from 'nxkit';
-import { React, Page } from '..';
-import { DataPage } from '../page';
+import Store from 'nxkit/store';
+import path from 'nxkit/path';
 
-/**
- * @class CMSPage
- */
-export default class CMSPage extends Page {
+export const store = new Store();
 
-	reloadNifty() {
-		require('nifty/js/nifty.js').initialize();
-	}
+export async function initialize(config: Dict = {}) {
+	if (store.isLoaded) return;
+	var url = new path.URL(config.serviceAPI || nxkit.config.serviceAPI);
+	await store.initialize(
+		path.getParam('D_SDK_HOST') || url.hostname,
+		path.getParam('D_SDK_PORT') || url.port,
+		!!path.getParam('D_SDK_SSL') || /^(http|ws)s/.test(url.protocol),
+		path.getParam('D_SDK_VIRTUAL') || url.filename
+	);
+};
 
-	async componentDidMount() {
-		this.reloadNifty();
-		await super.componentDidMount();
-		
-	}
-
-}
-
-export class CMSDataPage extends CMSPage { };
-
-nxkit.extendClass(CMSDataPage, DataPage);
+export default store.core;

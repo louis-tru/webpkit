@@ -128,9 +128,9 @@ function setGlobalState(self, state) {
 /**
  * @class GlobalState
  */
-export default class GlobalState extends Component {
+export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
 
-	setState(state) {
+	setState(state: S) {
 		return setGlobalState(this, state);
 	}
 
@@ -146,7 +146,7 @@ export default class GlobalState extends Component {
 		return Object.create(global_states);
 	}
 
-	static setGlobalState(state) {
+	static setGlobalState(state: any) {
 		setGlobalState(null, state);
 	}
 

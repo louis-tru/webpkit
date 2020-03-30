@@ -30,12 +30,27 @@
 
 import './utils.css';
 import './dialog.css';
-import React, { Component } from 'react';
-import ReactDom from 'react-dom';
+import { Component } from 'react';
+import * as React from 'react';
+import * as ReactDom from 'react-dom';
 
-export class Dialog extends Component {
+export interface Options {
+	title?: string,
+	text?: string,
+	buttons?: Dict<(e:any)=>void>,
+	prompt?: {
+		type?: string;
+		value?: string;
+	},
+	nomask?: boolean,
+}
 
-	constructor(props) {
+export class Dialog extends Component<Options, {
+	opacity: number;
+	nomask: boolean
+}> {
+
+	constructor(props: any) {
 		super(props);
 		this.state = { opacity: 0, nomask: props.nomask };
 	}
@@ -45,37 +60,41 @@ export class Dialog extends Component {
 			this.setState({ opacity: 1 });
 			if (this.refs.prompt) {
 				var props = this.props;
-				this.refs.prompt.value = typeof props.prompt=='string'? props.prompt : '';
+				var input = this.refs.prompt as HTMLInputElement;
+				input.value = typeof props.prompt=='string'? props.prompt : '';
 			}
 		}, 50);
 	}
 
-	m_handleClick_1(cb, e) {
+	m_handleClick_1(cb: (s:any)=>void) {
 		this.setState({ opacity: 0 });
-		setTimeout(e=>{
+		setTimeout(()=>{
 			cb(this);
-			document.body.removeChild(this.refs.root.parentNode);
+			var div = (this.refs.root as HTMLDivElement).parentNode as HTMLDivElement;
+			ReactDom.unmountComponentAtNode(div);
+			document.body.removeChild(div);
 		}, 500);
 	}
 
-	m_handleChange_1 = e=>{
-
+	m_handleChange_1 = ()=>{
 	}
 
 	render() {
 		var props = this.props;
 		var buttons = props.buttons || {};
 		var {nomask,opacity} = this.state
-		var style = { opacity };
+		var style: Dict = { opacity };
 
 		if (nomask) {
 			style.background = 'none';
 		}
 
+		// TODO initialValue
+
 		return (
 			<div ref="root" className="dialog" style={style}>
 				<div className="core">
-					<div className="a" dangerouslySetInnerHTML={{ __html: props.title/*||'温馨提示'*/ }}></div>
+					<div className="a" dangerouslySetInnerHTML={{ __html: props.title || ''/*||'温馨提示'*/ }}></div>
 					{
 						props.prompt ?
 						<div className="b">
@@ -91,10 +110,10 @@ export class Dialog extends Component {
 									padding: '0 2px',
 								}}
 								onChange={this.m_handleChange_1}
-								initialValue={props.prompt.value}
+								value={props.prompt.value}
 							/>
 						</div>:
-						<div className="b" dangerouslySetInnerHTML={{ __html: props.text}}></div>
+						<div className="b" dangerouslySetInnerHTML={{ __html: props.text || ''}}></div>
 					}
 					<div className="btns">
 					{
@@ -115,10 +134,10 @@ export class Dialog extends Component {
 		);
 	}
 
-	static show({title, text, buttons, prompt, nomask }) {
+	static show({title, text, buttons, prompt, nomask }: Options) {
 		var div = document.createElement('div');
 		document.body.appendChild(div);
-		return ReactDom.render(
+		return ReactDom.render<Options, Dialog>(
 			<Dialog 
 				title={title} 
 				buttons={buttons}
@@ -129,36 +148,36 @@ export class Dialog extends Component {
 	}
 }
 
-export function show(...args) {
-	return Dialog.show(...args);
+export function show(opts: Options) {
+	return Dialog.show(opts);
 }
 
-export function alert(text, cb) {
-	cb = cb || function() {}
+export function alert(text: string, cb?: ()=>void) {
+	var _cb = cb || function() {}
 	var o = typeof text == 'string' ? { text: text, title: '' }: text;
 	var { text, title } = o;
 	return Dialog.show({
 		title, text, buttons: {
-		'确定': e=>{ cb() },
+		'确定': e=>{ _cb() },
 	}});
 }
 
-export function confirm(text, cb) {
-	cb = cb || function() {};
+export function confirm(text: string, cb?: (ok: boolean)=>void) {
+	var _cb = cb || function() {};
 	var o = typeof text == 'string' ? { text: text, title: '' } : text;
 	var { text, title } = o;
 	return Dialog.show({title, text, buttons: {
-		'取消': e=>cb(false),
-		'@确定': e=>cb(true),
+		'取消': e=>_cb(false),
+		'@确定': e=>_cb(true),
 	}});
 }
 
-export function prompt(text, cb, type = 'text') {
-	cb = cb || function() {}
+export function prompt(text: string, cb?: (value: string, ok: boolean)=>void, type = 'text') {
+	var _cb = cb || function() {}
 	var o = typeof text == 'string' ? { text: text, title: '', value: '' }: text;
 	var { text, title, value } = o;
 	return Dialog.show({title, text, buttons: {
-		'取消': e=> cb(e.refs.prompt.value, false),
-		'@确定': e=> cb(e.refs.prompt.value, true),
+		'取消': e=> _cb(e.refs.prompt.value, false),
+		'@确定': e=> _cb(e.refs.prompt.value, true),
 	}, prompt: {value, type}});
 }
