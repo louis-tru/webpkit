@@ -28,78 +28,43 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-(function(){
+import { React } from '../pc';
+import GlobalState from '../utils/state';
 
-	var win = window;
-	var document = win.document;
-	var docEl = document.documentElement;
-	var dpr = window.devicePixelRatio || 1;
-	var is_initialize = 0;
-	var atomPixel = 1;
-	var rootFontSize = 12;
-	var scale = 7.5
-
-	document.addEventListener("touchstart", function(){}, true);
-
-	function refreshRem() {
-		var width = docEl.getBoundingClientRect().width;
-		if (width / dpr > 980) {
-			width = 980 * dpr;
+export default class extends GlobalState<{text?: string}> {
+	
+	renderText() {
+		if (this.props.text) {
+			return (<div style={{textAlign: 'center'}}>{this.props.text}</div>)
 		}
-		var rem = width / scale;
-		
-		docEl.style.fontSize = rem + 'px';
+		return (
+			<div>
+				{/*-- Visible when footer positions are fixed --*/}
+				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}
+				<div className="show-fixed pull-right">
+					You have <a href="#" className="text-bold text-main"><span className="label label-danger">3</span> pending action.</a>
+				</div>
 
-		rootFontSize = rem;
-		
-		atomPixel = width / (scale*100);
-
-		// if (doc.body && window.orientation == 0) {
-		// 	var _rem = rem;
-		// 	var html_width = width;
-		// 	var body_width = doc.body.getBoundingClientRect().width;
-
-		// 	if (html_width != body_width) { // 系统字体放大
-		// 		_rem = rem * (html_width / body_width);
-		// 		docEl.style.fontSize = _rem + 'px';
-		// 	}
-		// }
+				{/*-- Visible when footer positions are static --*/}
+				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}
+				<div className="hide-fixed pull-right pad-rgt">
+					14GB of <strong>512GB</strong> Free.
+				</div>
+				
+				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}
+				{/*-- Remove the class "show-fixed" and "hide-fixed" to make the content always appears. --*/}
+				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}
+				
+				<p className="pad-lft">&#0169; 2016 Your Company</p>
+			</div>
+		)
 	}
 
-	function initialize(_scale) {
-
-		if (is_initialize) return;
-		is_initialize = 1;
-
-		scale = _scale || scale;
-
-		var tid;
-		win.addEventListener('resize', function() {
-			clearTimeout(tid);
-			tid = setTimeout(refreshRem, 300);
-		}, false);
-
-		win.addEventListener('pageshow', function(e) {
-			if (e.persisted) {
-				clearTimeout(tid);
-				tid = setTimeout(refreshRem, 300);
-			}
-		}, false);
-
-		document.addEventListener('DOMContentLoaded', refreshRem, false);
-
-		refreshRem();
+	render() {
+		return (
+			<footer id="footer">
+				{this.renderText()}
+			</footer>
+		);
 	}
-
-	if (typeof module == 'object') {
-		module.exports = {
-			get atomPixel() { return atomPixel },
-			get rootFontSize() { return rootFontSize },
-			refreshRem,
-			initialize,
-		};
-	} else {
-		initialize();
-	}
-
-})();
+}

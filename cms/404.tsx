@@ -35,7 +35,7 @@ export default class extends CMSPage {
 
 	componentDidMount() {
 		if (Root.current) {
-			Root.current._404();
+			(Root.current as any)._404();
 		}
 		return super.componentDidMount();
 	}

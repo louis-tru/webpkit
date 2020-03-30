@@ -29,7 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import 'normalize.css';
-import '../utils.css';
+import '../pc/utils.css';
 import './utils.css';
 import rem from './rem';
 import nxkit from 'nxkit';

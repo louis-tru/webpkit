@@ -28,43 +28,53 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { React, Page, Link, Component } from '..';
+import * as React from 'react';
+import {Component} from 'react';
+import {DataPage} from '../pc';
 
+export default class Pageing extends Component<{page: DataPage}> {
 
-export default class extends Component {
-	
-	renderText() {
-		if (this.props.text) {
-			return (<div style={{textAlign: 'center'}}>{this.props.text}</div>)
-		}
-		return (
-			<div>
-				{/*-- Visible when footer positions are fixed --*/}
-				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}
-				<div className="show-fixed pull-right">
-					You have <a href="#" className="text-bold text-main"><span className="label label-danger">3</span> pending action.</a>
-				</div>
-
-				{/*-- Visible when footer positions are static --*/}
-				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}
-				<div className="hide-fixed pull-right pad-rgt">
-					14GB of <strong>512GB</strong> Free.
-				</div>
-				
-				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}
-				{/*-- Remove the class "show-fixed" and "hide-fixed" to make the content always appears. --*/}
-				{/*-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --*/}
-				
-				<p className="pad-lft">&#0169; 2016 Your Company</p>
-			</div>
-		)
+	get page() {
+		return this.props.page;
 	}
 
 	render() {
+		if (!this.page) return null;
+		var {dataPageCount, indexPage} = this.page;
+		if (dataPageCount <= 1) return null;
+
+		// var offset = Math.max(0, indexPage - 10);
+		var offset = 5;
+
 		return (
-			<footer id="footer">
-				{this.renderText()}
-			</footer>
+			<div className="text-right">
+				<ul className="pagination">
+					<li className={`footable-page-arrow ${indexPage?'':'disabled'}`}>
+						<a data-page="first" href="#first" onClick={e=>indexPage&&this.page.reload({}, 0)}>«</a>
+					</li>
+					<li className={`footable-page-arrow ${indexPage?'':'disabled'}`}>
+						<a data-page="prev" href="#prev" onClick={e=>indexPage&&this.page.reload({}, indexPage-1)}>‹</a>
+					</li>
+					{
+						Array.from({length:10}).map((e,i)=>{
+							var j = indexPage + i - offset;
+							if (j < 0 || j >= dataPageCount) return null;
+							return (
+								<li className={`footable-page ${indexPage==j?'active':''}`}>
+									<a data-page="0" href="#" onClick={e=>indexPage!=j&&this.page.reload(0, j)}>{j+1}</a>
+								</li>
+							);
+						}).filter(e=>e)
+					}
+					<li className={`footable-page-arrow ${indexPage+1<dataPageCount?'':'disabled'}`}>
+						<a data-page="next" href="#next" onClick={e=>indexPage+1<dataPageCount&&this.page.reload({}, indexPage+1)}>›</a>
+					</li>
+					<li className={`footable-page-arrow ${indexPage+1<dataPageCount?'':'disabled'}`}>
+						<a data-page="last" href="#last" onClick={e=>indexPage+1<dataPageCount&&this.page.reload({}, dataPageCount-1)}>»</a>
+					</li>
+				</ul>
+			</div>
 		);
 	}
+
 }

@@ -28,31 +28,45 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+import utils from 'nxkit';
+import * as React from 'react';
 import GlobalState from '../utils/state';
+import * as _history from 'history';
+import {Location} from 'history';
+import {Router} from './router';
+import { match } from 'react-router';
 
-/**
- * @class Page
- */
-export default class Page extends GlobalState {
-	state = {};
-	_url = '';
+export type History = _history.History<_history.History.PoorMansUnknown>;
 
-	constructor(props: Readonly<{}>) {
+export interface PageProps {
+	router: Router;
+	history: History;
+	location: Location;
+	match: match;
+}
+
+export default class Page<P = {}, S = {}> extends GlobalState<P & PageProps, S & Dict> {
+	state = {} as S & Dict;
+	private _url = '';
+	private _params: Dict;
+	private _router: Router;
+
+	constructor(props: P) {
 		super(props);
-		if (!this.props.router) return;
+		utils.assert(this.props.router, 'no router');
 		this._url = this.props.location.pathname + this.props.location.search;
-		var search = this.props.location.search.substr(1);
-		var params = this.props.location.params || {};
-		this._params = this.props.match ? { ...params, ...this.props.match.params }: params;
+		this._params = Object.assign({}, this.props.match && this.props.match.params);
 		this._router = this.props.router;
+		var search = this.props.location.search.substr(1);
 		if (search) {
 			search.split('&').forEach(e=>{
 				var [key,...value] = e.split('=');
 				if (value.length) {
+					var val = '';
 					if (value.length > 1) {
-						value = value.join('=');
+						val = value.join('=');
 					}
-					this._params[key] = decodeURIComponent(value);
+					this._params[key] = decodeURIComponent(val);
 				}
 			});
 		}
@@ -67,27 +81,27 @@ export default class Page extends GlobalState {
 	}
 	
 	get history() {
-		return this.props.history;
+		return this.props.history as History;
 	}
 
 	get location() {
-		return this.props.location;
+		return this.props.location as Location;
 	}
 
 	get match() {
-		return this.props.match;
+		return this.props.match as match;
 	}
 
 	get params() {
 		return this._params;
 	}
 
-	get loading() {
-		return !this.state.loading_complete;
+	get loaded() {
+		return !!this.state.loadingComplete;
 	}
 
-	updateState(data) {
-		var state = {};
+	updateState(data: S) {
+		var state: S = {} as S;
 		for (var i in data) {
 			var o = data[i];
 			if (typeof o == 'object' && !Array.isArray(o)) {
@@ -99,24 +113,24 @@ export default class Page extends GlobalState {
 
 	async componentDidMount() {
 		super.componentDidMount();
-		this._router && (this._router._current = this);
+		this._router && ((this._router as any)._current = this);
 		await this.onLoad();
-		this.setState({ loading_complete: true });
+		this.setState({ loadingComplete: true } as any);
 	}
 
 	componentWillUnmount() {
 		super.componentWillUnmount();
 		this.onUnload();
-		if (this._router && this._router._current === this) {
-			this._router._current = null;
+		if (this._router && (this._router as any)._current === this) {
+			(this._router as any)._current = null;
 		}
 	}
 
-	onLoad() {
+	protected onLoad() {
 		// overwrite
 	}
 
-	onUnload() {
+	protected onUnload() {
 		// overwrite
 	}
 
@@ -128,7 +142,7 @@ export default class Page extends GlobalState {
 		this.history && this.history.goForward()
 	}
 
-	goto(args) {
+	goto(args: string | { url: string, params?: Dict}) {
 		var history = this.history;
 		if (history) {
 			if (typeof args == 'string') {
@@ -142,20 +156,46 @@ export default class Page extends GlobalState {
 				pathname = url.substr(0, index);
 				search = url.substring(index);
 			}
-			history.push({ pathname, search, params });
+			for (var i in params) {
+				search += '&' + i + '=' + encodeURIComponent(params[i]);
+			}
+			history.push({ pathname, search });
 		}
 	}
 
 }
 
+export class Loading extends Page<{content?:string}> {
+	render() {
+		return <div> {this.props.content||''} </div>
+	}
+}
+
 var default_data_page = 10;
 
-/**
- * @class DataPage
- */
-export class DataPage {
+export interface IDataPage<Data> {
+	name: string;
+	dataPage: number;
+	readonly dataPageCount: number
+	data: Data[];
+	readonly indexPage: number;
+	index: number
+	total: number;
+	readonly length: number;
+	readonly hasMore: boolean;
+	loadMore(): Promise<void>;
+	reload(params: Dict, page?: number): Promise<void>;
+	loadData(params: Dict): Promise<{ value: Data[]; total?: number; index?: number }>;
+}
 
-	static setDefaultDataPage(page) {
+export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements IDataPage<Data> {
+	private m_name?: string;
+	private m_dataPage?: number;
+	private m_index?: number;
+	private m_total?: number;
+	private m_load_data_params?: Dict;
+
+	static setDefaultDataPage(page: number) {
 		default_data_page = Number(page) || default_data_page;
 	}
 
@@ -163,7 +203,7 @@ export class DataPage {
 		return this.m_name || '';
 	}
 
-	set name(value) {
+	set name(value: string) {
 		this.m_name = value || '';
 	}
 
@@ -179,13 +219,13 @@ export class DataPage {
 		return Math.ceil(this.total / this.dataPage);
 	}
 
-	get data() {
+	get data(): Data[] {
 		var name = `${this.name}_data`;
 		return this.state[name] || GlobalState.getGlobalState()[name] || [];
 	}
 
-	set data(value) {
-		this.setState({ [`${this.name}_data`]: value || [] });
+	set data(value: Data[]) {
+		this.setState({ [`${this.name}_data`]: value || [] } as any);
 	}
 
 	get indexPage() {
@@ -229,11 +269,11 @@ export class DataPage {
 			limit: [rawData.length, this.dataPage],
 		};
 		var { value, total } = await this.loadData(this.m_load_data_params);
-		this.total = total;
+		this.total = total || value.length;
 		this.data = rawData.concat(value);
 	}
 
-	async reload(params, page = 0) {
+	async reload(params?: Dict, page = 0) {
 		var dataPage = this.dataPage;
 		this.m_load_data_params = {
 			...this.m_load_data_params,
@@ -242,13 +282,13 @@ export class DataPage {
 			...params,
 		};
 		var { value, total, index } = await this.loadData(this.m_load_data_params);
-		this.index = index;
-		this.total = total;
+		this.index = index || 0;
+		this.total = total || value.length;
 		this.data = value;
 	}
 
-	async loadData(params) {
-		return [];
+	async loadData(params: Dict): Promise<{ value: Data[]; total?: number; index?: number }> {
+		return { value: [] };
 	}
 
 }

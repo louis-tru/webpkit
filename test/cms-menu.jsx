@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { React, Link } from '..';
+import { React } from '..';
 import Menu from '../cms/menu';
 
 export default class TestMenu extends Menu {

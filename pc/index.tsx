@@ -30,34 +30,33 @@
 
 import 'normalize.css';
 import './utils.css';
+import utils from 'nxkit';
 import {store,initialize as initStore} from '../utils/store';
 import handles from './handles';
-import { Router } from './router';
+import { Router, Route, history } from './router';
 import Page, { DataPage } from './page';
 import * as ReactDom from 'react-dom';
 import * as React from 'react';
 import {Component} from 'react';
 import {Link} from 'react-router-dom';
 import GlobalState from '../utils/state';
-import * as History from 'history';
+import * as _history from 'history';
 import * as dialog from './dialog';
 import errno from '../utils/errno';
 
-var current: any | null = null;
+var current: Root | null = null;
 
-const history = History.createBrowserHistory(); // History.createHashHistory();
+export interface RootProps {
+	onLoad?: (root:Root)=>void;
+	initSDK?: boolean;
+	config?: Dict;
+	notFound?: typeof Page;
+	routes?: Route[]
+}
 
-/**
- * @class Root
- */
-export class Root extends GlobalState {
+export class Root<P extends RootProps = RootProps> extends GlobalState<P, Dict> {
 
-	state = { isLoaded: false };
-
-	constructor(props) {
-		super(props);
-		this.history = history;
-	}
+	state = { isLoaded: false } as Dict;
 
 	async componentDidMount() {
 		current = this;
@@ -85,12 +84,15 @@ export class Root extends GlobalState {
 		if (this.props.initSDK!==false)
 			await initStore(this.props.config || {});
 	}
+
+	get history() {
+		return history;
+	}
 	
 	render() {
 		return (
 			this.state.isLoaded ?
 			<Router ref="router" 
-				history={this.history}
 				notFound={this.props.notFound}
 				routes={this.props.routes}
 			/>:
@@ -99,7 +101,8 @@ export class Root extends GlobalState {
 	}
 
 	static get current() {
-		return current;
+		utils.assert(current);
+		return current as Root;
 	}
 }
 

@@ -28,63 +28,80 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import CMSPage from './page';
-import { Root, React } from '..';
-import 'nifty/plugins/datatables/media/js/jquery.dataTables.min.js';
-import 'nifty/plugins/datatables/media/css/jquery.dataTables.min.css';
-import 'nifty/plugins/datatables/extensions/Responsive/css/dataTables.responsive.css';
+(function(){
 
-export default class extends CMSPage {
-  onLoad() {
-    const flag = this.props.initial === undefined ? true : this.props.initial
+	var win = window;
+	var document = win.document;
+	var docEl = document.documentElement;
+	var dpr = window.devicePixelRatio || 1;
+	var is_initialize = 0;
+	var atomPixel = 1;
+	var rootFontSize = 12;
+	var scale = 7.5
 
-    if (flag) {
-      $('#demo-dt-basic').dataTable({
-        "paging": false,
-        "info": false,
-        "search": false,
-        "searching": false
-      })
-    }
-  }
-  // shouldComponentUpdate(a, b) {
-  //   debugger
-  //   // if (b.loading_complete) {
-  //   //   return false
-  //   // }
-  // }
-  renderHeader() {
-    let { operating, header } = this.props
-    
-    if (operating && header.last(0) !== '操作' ) {
-      header.push('操作')
-    }
+	document.addEventListener("touchstart", function(){}, true);
 
-    let headArr = []
+	function refreshRem() {
+		var width = docEl.getBoundingClientRect().width;
+		if (width / dpr > 980) {
+			width = 980 * dpr;
+		}
+		var rem = width / scale;
+		
+		docEl.style.fontSize = rem + 'px';
 
-    for (let i = 0; i < header.length; i++) {
-      let item = (<th className="min-tablet" key={i}>{header[i]}</th>)
-      headArr.push(item)
-    }
-    return headArr
-  }
-  renderLists() {
-    let { lists, header, operating, renderLists } = this.props
-    // debugger
-    return renderLists(header, lists, operating)
-  }
-  render() {
-    return (
-      <table id="demo-dt-basic" className="table table-striped table-bordered" cellSpacing="0" width="100%" style={{textAlign: 'center'}}>
-        <thead>
-          <tr> 
-            {this.renderHeader()}
-          </tr>
-        </thead>
-        <tbody>
-          {this.renderLists()}
-        </tbody>
-      </table>
-    );
-  }
-}
+		rootFontSize = rem;
+		
+		atomPixel = width / (scale*100);
+
+		// if (doc.body && window.orientation == 0) {
+		// 	var _rem = rem;
+		// 	var html_width = width;
+		// 	var body_width = doc.body.getBoundingClientRect().width;
+
+		// 	if (html_width != body_width) { // 系统字体放大
+		// 		_rem = rem * (html_width / body_width);
+		// 		docEl.style.fontSize = _rem + 'px';
+		// 	}
+		// }
+	}
+
+	function initialize(_scale) {
+
+		if (is_initialize) return;
+		is_initialize = 1;
+
+		scale = _scale || scale;
+
+		var tid;
+		win.addEventListener('resize', function() {
+			clearTimeout(tid);
+			tid = setTimeout(refreshRem, 300);
+		}, false);
+
+		win.addEventListener('pageshow', function(e) {
+			if (e.persisted) {
+				clearTimeout(tid);
+				tid = setTimeout(refreshRem, 300);
+			}
+		}, false);
+
+		document.addEventListener('DOMContentLoaded', refreshRem, false);
+
+		refreshRem();
+	}
+
+	if (typeof module == 'object') {
+		module.exports = {
+			get atomPixel() { return atomPixel },
+			get rootFontSize() { return rootFontSize },
+			refreshRem,
+			initialize,
+		};
+	} else {
+		initialize();
+	}
+
+})();
+
+export {};

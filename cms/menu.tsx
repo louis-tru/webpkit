@@ -28,27 +28,38 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { React, Page, Link, Component } from '..';
-import GlobalState from '../state';
+import { React, Link } from '../pc';
+import GlobalState from '../utils/state';
 
-/**
- * @class Menu
- */
+export interface Main {
+	icon?: string;
+	title: string;
+	go?: string;
+	bold?: boolean;
+	selected?: boolean;
+	expanded?: boolean;
+	num?: number;
+	children?: (Menu|string)[];
+}
+
 export default class Menu extends GlobalState {
 
+	private m_interval_id: any;
 	state = { pathname: location.pathname };
 
 	reloadNifty() {
-		jQuery.niftyNav('bind');
+		(jQuery as any).niftyNav('bind');
 	}
 
-	setState(state) {
+	setState(state: any) {
 		super.setState(state);
 		setTimeout(e=>this.reloadNifty(), 200);
 	}
+
 	get pathname () {
 		return this.state.pathname;
 	}
+
 	componentDidMount() {
 		this.m_interval_id = setInterval(e=>{
 			if (this.pathname != location.pathname) {
@@ -60,7 +71,8 @@ export default class Menu extends GlobalState {
 	componentWillUnmount() {
 		clearInterval(this.m_interval_id);
 	}
-	_renderMenuList(list, level, out) {
+
+	private _renderMenuList(list: any[], level: number, out: any) {
 		return list.map((e,j)=>{
 			var key= `key_${level}_${j}`;
 			if (typeof e == 'string') {
@@ -128,19 +140,19 @@ export default class Menu extends GlobalState {
 		)
 	}
 
-	renderMain() {
+	renderMain(): (Menu|string)[] {
 		return [];
 	}
 
-	renderProfile() {
+	renderProfile(): any {
 		return null;
 	}
 
-	renderShortcut() {
+	renderShortcut(): any {
 		return null;
 	}
 	
-	renderWidget() {
+	renderWidget(): any {
 		return null;
 	}
 }

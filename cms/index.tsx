@@ -28,29 +28,30 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import CMSPage, {CMSDataPage} from './page';
+import './utils.css';
+import * as jq from 'jquery';
+import * as raphael from 'raphael';
 
-export * from '..';
+(globalThis as any).jQuery = (globalThis as any).$ = jq;
+(globalThis as any).Raphael = raphael;
 
-require('./utils.css');
-global.jQuery = global.$ = require('jquery');
-global.Raphael = require('raphael');
-require('./_ext');
-// require('nifty/plugins/sparkline/jquery.sparkline.js');
-require('nifty/css/bootstrap.min.css');
-require('nifty/js/bootstrap.js');
-require('nifty/plugins/font-awesome/css/font-awesome.min.css');
-require('nifty/css/nifty.min.css');
-require('nifty/plugins/magic-check/css/magic-check.css');
-require('nifty/plugins/pace/pace.css');
-require('nifty/plugins/pace/pace.js');
-require('nifty/plugins/morris-js/morris.css');
-require('nifty/plugins/morris-js/morris.js');
-// require('nifty/css/demo/nifty-demo-icons.css');
-// require('nifty/css/demo/nifty-demo.css');
+import './_ext';
+// import '../nifty/plugins/sparkline/jquery.sparkline.js';
+import '../nifty/css/bootstrap.min.css';
+import '../nifty/js/bootstrap.js';
+import '../nifty/plugins/font-awesome/css/font-awesome.min.css';
+import '../nifty/css/nifty.min.css';
+import '../nifty/plugins/magic-check/css/magic-check.css';
+import '../nifty/plugins/pace/pace.css';
+import '../nifty/plugins/pace/pace.js';
+import '../nifty/plugins/morris-js/morris.css';
+import '../nifty/plugins/morris-js/morris.js';
+// import '../nifty/css/demo/nifty-demo-icons.css';
+// import '../nifty/css/demo/nifty-demo.css';
 
-import { initialize, error, Router as MyRouter, Root } from '..';
+import { Router as MyRouter, Root, RootProps } from '../pc';
 import {Router, Route, Switch} from 'react-router-dom';
 import Login from './login';
 import Menu from './menu';
@@ -59,17 +60,22 @@ import Footer from './footer';
 import ExamplesMenu from '../test/cms-menu';
 import NotFound from './404';
 
+export * from '../pc';
 export { CMSPage, CMSDataPage, Header, Footer, Menu, Login };
 
-/**
- * @class CMSRoot
- */
-export class CMSRoot extends Root {
+export interface CMSRootProps extends RootProps {
+	login?: JSX.Element;
+	menu?: JSX.Element;
+	header?: JSX.Element;
+	footer?: JSX.Element;
+}
 
-	constructor(props) {
+export class CMSRoot<P extends CMSRootProps = CMSRootProps> extends Root<P> {
+
+	constructor(props: P) {
 		super(props);
 		this.state.is_404 = false;
-		this.history.listen( (location, action) => {
+		this.history.listen(()=> {
 			if (this.state.is_404) {
 				this._no404();
 			}
@@ -77,7 +83,7 @@ export class CMSRoot extends Root {
 	}
 
 	render() {
-		var _NotFound = this.props.notFound || NotFound;
+		var _NotFound = this.props.notFound || NotFound as any;
 
 		return (
 			this.state.isLoaded ?
@@ -100,10 +106,7 @@ export class CMSRoot extends Root {
 							{this.menu()}
 							
 							{/* -- Content -- */}
-							<MyRouter ref="router"
-								history={this.history}
-								notFound={_NotFound} routes={this.props.routes}
-							/>
+							<MyRouter ref="router" notFound={_NotFound} routes={this.props.routes} />
 
 							{this.footer()}
 
@@ -120,7 +123,7 @@ export class CMSRoot extends Root {
 			<div className="init-loading">Loading..</div>
 		);
 	}
-	
+
 	_404() {
 		this.setState({ is_404: true });
 	}
@@ -132,14 +135,13 @@ export class CMSRoot extends Root {
 	login() {
 		return this.props.login || <Login />;
 	}
-	
+
 	menu() {
 		return this.props.menu || <ExamplesMenu />;
 	}
 
 	header() {
-
-		return this.props.header || <Header history={this.history}/>;
+		return this.props.header || <Header />;
 	}
 
 	footer() {

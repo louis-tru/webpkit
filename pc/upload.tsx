@@ -30,26 +30,33 @@
 
 import nxkit from 'nxkit';
 import path from 'nxkit/path';
-import React, { Component } from 'react';
-import sdk from 'dphoto-magic-sdk';
-// import { Toast } from './antd';
+import * as React from 'react';
+import {Component} from 'react';
+import store from '../utils/store';
 import './utils.css';
-import access from './access_auth';
-import * as qiniu from 'qiniu-js';
+import access from '../utils/auth';
 import Loading from './loading';
+// import { Toast } from './antd';
+
+const qiniu = require('qiniu-js');
+
+export interface QiniuUptoken {
+	token: string;
+	domain: string;
+}
 
 var uploadUrl = '/service-api/utils/uploadFile';
 var qiniuUptoken = async function () {
-	var uptoken = await sdk.utils.qiniuUptoken();
-	return uptoken;
+	var uptoken = await store.utils.methods.qiniuUptoken();
+	return uptoken as QiniuUptoken;
 }
 
-export function setConfig(uptoken, upload_url) {
+export function setConfig(uptoken: ()=>Promise<QiniuUptoken>, upload_url: string) {
 	qiniuUptoken = uptoken;
 	uploadUrl = upload_url;
 }
 
-export async function uploadFile(file, params) {
+export async function uploadFile(file: File, params?: Dict) {
 	var url = uploadUrl; // config.serviceAPI + '/service-api/utils/uploadFile';
 	var xhr = new XMLHttpRequest();
 
@@ -90,7 +97,7 @@ export async function uploadFile(file, params) {
 	});
 }
 
-export async function uploadQiniu(file, params = {}) {
+export async function uploadQiniu(file: File, params: Dict = {}) {
 	var uptoken = await qiniuUptoken(); //sdk.utils.qiniuUptoken();
 
 	var url = await new Promise((resolve, reject)=>{
@@ -104,22 +111,36 @@ export async function uploadQiniu(file, params = {}) {
 		}, {
 			useCdnDomain: true,
 			region: qiniu.region.z0,
-		}).subscribe(r=>{ // progress
+		}).subscribe((r:any)=>{ // progress
 			// r.total.percent
-		}, e=>{ // err
+		}, (e:any)=>{ // err
 			reject(e);
-		}, async e=>{ // ok
+		}, async (e: any)=>{ // ok
 			resolve(uptoken.domain + '/' + e.key);
 		});
 	});
 
-	return url;
+	return url as string;
 }
 
-export default class Upload extends Component {
-	state = { src: '' };
+export interface UploadProps {
+	onStartUpload?: (file: File)=>void;
+	onChange?: (src: string, raw: string)=>void;
+	onError?: (err: Error)=>void;
+	src?: string;
+	value?: string;
+	size?: number;
+	class?: string;
+	className?: string;
+	noShow?: boolean;
+	accept?: string;
+}
 
-	m_handle_change = async (e)=>{
+export default class Upload extends Component<UploadProps, Dict> {
+	state = { src: '' };
+	private m_id: string = '';
+
+	private m_handle_change = async (e:any)=>{
 		var file = e.target.files[0];
 		if (!file) return;
 		var name = file.name;
@@ -138,19 +159,19 @@ export default class Upload extends Component {
 		// }
 	}
 
-	m_onChange(src, raw) {
+	private m_onChange(src: string, raw: string) {
 		if (this.props.onChange) {
 			this.props.onChange(src, raw);
 		}
 	}
 
-	m_onStartUpload(file) {
+	private m_onStartUpload(file: File) {
 		if (this.props.onStartUpload) {
 			this.props.onStartUpload(file);
 		}
 	}
 
-	m_onError(err) {
+	private m_onError(err: any) {
 		if (this.props.onError) {
 			this.props.onError(err);
 		}
@@ -161,7 +182,7 @@ export default class Upload extends Component {
 	}
 
 	componentDidMount() {
-		this.m_id = `upload_${nxkit.iid}`;
+		this.m_id = `upload_${nxkit.id}`;
 		this.setState({ src: this.props.src || this.props.value || '' });
 	}
 
@@ -196,7 +217,7 @@ export default class Upload extends Component {
 					opacity: 0.01,
 				}} />
 				{/*this.props.children*/}
-				<div class="upload_icon"></div>
+				<div className="upload_icon"></div>
 			</div>
 		);
 	}

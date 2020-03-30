@@ -28,36 +28,33 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import React, { Component } from 'react';
-import { Router as RouterRaw, Route, Switch, Redirect } from 'react-router-dom';
-import error from './error';
+import utils from 'nxkit';
+import * as React from 'react';
+import { Component } from 'react';
+import { Router as RouterRaw, Route as RouteRaw, Switch } from 'react-router-dom';
+import handles from './handles';
 import nxkit from 'nxkit';
-import Page from './page';
+import Page, {History, Loading} from './page';
 import NotFound from './404';
+import * as _history from 'history';
+import { match } from 'react-router';
 
-/**
- * @class Loading
- */
-class Loading extends Component {
-	render() {
-		return <div> {this.props.content||''} </div>
-	}
-}
+export const history: History = _history.createBrowserHistory();
 
-function route(router, { path, page, ...args }) {
+function route(router: Router, { path, page, ...args }: { path: string, page: ()=>Promise<{ default: typeof Page }> } & Dict) {
 
-	class _Route extends Component {
+	class _Route extends Component<{location: any, match: match}> {
 
 		state = { com: Loading, isLoaded: false };
-		
+
 		async componentDidMount() {
 			if (!this.state.isLoaded) {
 				try {
 					var com = (await page()).default;
-					nxkit.assert(nxkit.equalsClass(Page, com), 'TypeError');
+					nxkit.assert(nxkit.equalsClass(Page, com), 'Page TypeError, nxkit.equalsClass(Page, com)');
 					this.setState({ com, isLoaded: true });
 				} catch(err) {
-					error.defaultErrorHandle(err);
+					handles(err);
 				}
 			}
 		}
@@ -67,7 +64,7 @@ function route(router, { path, page, ...args }) {
 			return (
 				<Com
 					router={router}
-					history={router.history}
+					history={history}
 					location={this.props.location}
 					match={this.props.match}
 				/>
@@ -75,21 +72,21 @@ function route(router, { path, page, ...args }) {
 		}
 	}
 
-	return <Route path={path} key={path} {...args} component={_Route}/>
+	return <RouteRaw path={path} key={path} {...args} component={_Route}/>
 }
 
-/**
- * @class Router
- */
-export class Router extends Component {
+export interface Route extends Dict {
+	path: string | string[];
+	page(): Promise<typeof Page>;
+}
 
-	type = '';
+export class Router extends Component<{notFound?: typeof Page, routes?: Route[] }> {
+	private _routes: Dict = {};
+	private _notFound: typeof Page;
+	private _current: Page | null = null;
 
-	constructor(props) {
+	constructor(props: any) {
 		super(props);
-		this._notFound = this.props.notFound || NotFound;
-		this._routes = {};
-		
 		(this.props.routes || []).forEach(e=>{
 			if (e.path) {
 				if (Array.isArray(e.path)) {
@@ -101,23 +98,28 @@ export class Router extends Component {
 				}
 			}
 		});
+		this._notFound = this.props.notFound || NotFound as typeof Page;
+	}
+
+	get current(): Page {
+		utils.assert(this._current);
+		return this._current as Page;
 	}
 
 	get history() {
-		return this.props.history;
+		return history;
 	}
 
 	render() {
+		var notFound = { path: '', page: async ()=>({ default: this._notFound }) };
 		return (
 			<RouterRaw history={this.history}>
 				<Switch>
 					{Object.values(this._routes).map(e=>route(this, e))}
-					{route(this, { page: e=>({ default: this._notFound }) })}
+					{route(this, notFound)}
 				</Switch>
 			</RouterRaw>
 		);
 	}
 
 }
-
-export { Page };

@@ -28,16 +28,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { React, Page, Link, Component } from '..';
-import * as History from 'history';
+import { React } from '../pc';
+import GlobalState from '../utils/state';
 
-const history = History.createBrowserHistory(); // History.createHashHistory();
+export default class extends GlobalState {
 
-export default class extends Component {
-	constructor() {
-		super()
-		this.history = history
-	}
 	get title() {
 		return 'Nifty';
 	}

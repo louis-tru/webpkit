@@ -1,5 +1,5 @@
 
-@import "./assets/font/iconfont.css";
+@import "../assets/iconfont.css";
 
 * {
 	-webkit-touch-callout: none; 

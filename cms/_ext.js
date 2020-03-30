@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var jQuery = require('jquery');
+import * as jQuery from 'jquery';
 
 function on( elem, types, selector, data, fn, one ) {
 	var origFn, type;

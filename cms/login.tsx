@@ -28,31 +28,33 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import nxkit from 'nxkit';
-import CMSPage from './page';
-import { Root, React, sdk } from '..';
-import {alert} from '../dialog';
+import utils from 'nxkit';
+import { React } from '../pc';
+import {alert} from '../pc/dialog';
+import GlobalState from '../utils/state';
 
 /**
  * @class Login
  */
-export default class Login extends CMSPage {
+export default class Login extends GlobalState<{admin?: boolean; padAll?: 'none'}> {
 
+	private m_vcode_delay_id: any;
 	state = { $$url: '', verificationtext: '获取验证码', disabledbtn: false};
-	
+
 	onUnload() {
 		clearTimeout(this.m_vcode_delay_id);
 	}
 
 	signin() {
-		// 点击登录
 	}
 
-	changeVerificationText(text) {
-		
+	private changeVerificationText(text: string) {
 	}
 
-	set_vcode_delay(vcode_delay) {
+	getVerificationCodeImpl(phone: string): any {
+	}
+
+	set_vcode_delay(vcode_delay: number) {
 		vcode_delay--;
 		if (vcode_delay) {
 			this.setState({ verificationtext: vcode_delay + '秒', disabledbtn: true });
@@ -70,30 +72,29 @@ export default class Login extends CMSPage {
 		this.set_vcode_delay(61);
 	}
 
-	checkPhone(phone) {
+	checkPhone(phone: string) {
 		return (/^1[34578]\d{9}$/.test(phone))
 	}
 
 	getCheckPhone() {
-		var iphone = this.refs.uname.value;
-		nxkit.assert(this.checkPhone(iphone), new Error('手机输入不正确'));
+		var iphone = (this.refs.uname as HTMLInputElement).value;
+		utils.assert(this.checkPhone(iphone), '手机输入不正确');
 		return iphone;
 	}
 
 	getCheckVcode() {
-		var vcode = this.refs.upwd.value;
-		nxkit.assert(/^\d{6}$/.test(vcode), new Error('手机验证码输入不正确'));
+		var vcode = (this.refs.upwd as HTMLInputElement).value;
+		utils.assert(/^\d{6}$/.test(vcode), '手机验证码输入不正确');
 		return vcode;
 	}
 
-	showErrordialog(text) {
+	showErrordialog(text: string) {
 		alert(text);
 	}
 
 	render() {
-		const { admin}  = this.props
+		const {admin}  = this.props
 		return (
-			this.loading ? null:
 			<div id="container" className="cls-container">
 				{/* {this.renderContent()} */}
 				{/*-- BACKGROUND IMAGE --*/}
@@ -115,10 +116,10 @@ export default class Login extends CMSPage {
 									<input type="text" className="form-control" placeholder="请输入手机号" ref="uname" autoFocus />
 								</div>
 								<div className="form-group" style={{position: 'relative'}}>
-									<input type={admin ? 'password' : 'text'} maxLength="6" className="form-control" placeholder={admin ? '请输入密码' : '请输入验证码'} ref="upwd"/>
+									<input type={admin ? 'password' : 'text'} maxLength={6} className="form-control" placeholder={admin ? '请输入密码' : '请输入验证码'} ref="upwd"/>
 									<button className="btn btn-default" 
 										style={{position: 'absolute', top: '1px',right: '1px', padding: '4px 12px',border: 'none', display: admin ? 'none' : 'block'}} 
-										onClick={()=>{this.getVerificationCode()}} disabled={this.state.disabledbtn ? 'disabled' : ''}>
+										onClick={()=>{this.getVerificationCode()}} disabled={this.state.disabledbtn ? true : false}>
 										{this.state.verificationtext}</button>
 								</div>
 								

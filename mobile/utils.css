@@ -137,7 +137,7 @@ body {
 	height: 100%;
 	font-weight: initial;
 	width: 1.4rem;
-	background-image: url(./icon1.png);
+	background-image: url(./img/icon1.png);
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 0.48rem;
@@ -285,7 +285,7 @@ body {
 .radio {
 	width: 0.76rem;
 	height: 0.76rem;
-	background: url(./icon2.png);
+	background: url(./img/icon2.png);
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 0.48rem;
@@ -300,7 +300,7 @@ body {
 }
 
 .radio.on {
-	background-image: url(./icon2_on.png);
+	background-image: url(./img/icon2_on.png);
 }
 
 .form_item {
@@ -401,7 +401,7 @@ body {
 {
 	width: 0.44rem;
 	height: 0.44rem;
-	background: url(./icon6.png);
+	background: url(./img/icon6.png);
 	padding: 0.2rem 0.28rem;
 	background-size: 0.44rem;
 	background-repeat: no-repeat;
@@ -415,7 +415,7 @@ body {
 }
 
 .form_item.show .add {
-	background-image: url(./icon7.png);
+	background-image: url(./img/icon7.png);
 }
 
 .form_item .value {
@@ -686,7 +686,7 @@ body {
 
 .g_load_btn div:after {
 	content: '';
-	background: url(../img/general_arrowdown@2x.png);
+	background: url(./img/general_arrowdown@2x.png);
 	width: 0.26rem;
 	height: 0.18rem;
 	display: inline-block;

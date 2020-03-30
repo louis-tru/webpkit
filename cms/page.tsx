@@ -29,13 +29,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 import nxkit from 'nxkit';
-import { Page } from '../pc';
-import { DataPage } from '../pc/page';
+import Page, { IDataPage, DataPage } from '../pc/page';
 
-/**
- * @class CMSPage
- */
-export default class CMSPage extends Page {
+export default class CMSPage<P = {}, S = {}> extends Page<P, S> {
 
 	reloadNifty() {
 		require('nifty/js/nifty.js').initialize();
@@ -45,9 +41,25 @@ export default class CMSPage extends Page {
 		this.reloadNifty();
 		await super.componentDidMount();
 	}
-
 }
 
-export class CMSDataPage extends CMSPage { };
+export declare class CMSDataPage<P = {}, S = {}, Data = Dict> extends CMSPage<P, S> implements IDataPage<Data> {
+	name: string;
+	dataPage: number;
+	readonly dataPageCount: number
+	data: Data[];
+	readonly indexPage: number;
+	index: number
+	total: number;
+	readonly length: number;
+	readonly hasMore: boolean;
+	loadMore(): Promise<void>;
+	reload(params: Dict, page?: number): Promise<void>;
+	loadData(params: Dict): Promise<{ value: Data[]; total?: number; index?: number }>;
+}
+
+class _CMSDataPage extends CMSPage {}
 
 nxkit.extendClass(CMSDataPage, DataPage);
+
+exports.CMSDataPage = _CMSDataPage
