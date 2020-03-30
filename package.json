@@ -2,7 +2,7 @@
 	"name": "cport-h5",
 	"version": "0.1.8",
 	"description": "",
-	"main": "index.jsx",
+	"main": "pc/index.js",
 	"author": "louistru@hotmail.com",
 	"scripts": {
 		"dev": "webpack-dev-server --inline --progress --config webpack/index.js",
