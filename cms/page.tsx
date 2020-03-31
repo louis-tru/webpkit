@@ -29,7 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import nxkit from 'nxkit';
-import Page, { IDataPage, DataPage } from '../pc/page';
+import Page, { IDataPage, DataPage } from '../lib/page';
 
 export default class CMSPage<P = {}, S = {}> extends Page<P, S> {
 

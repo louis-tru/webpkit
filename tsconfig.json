@@ -1,14 +1,12 @@
 {
 	"compileOnSave": true,
 	"compilerOptions": {
-		"module": "commonjs",
+		"module": "amd",
 		"target": "ES2018",
 		"moduleResolution": "node",
-		"sourceMap": false,
-		"outDir": "out/cport-h5",
-		"rootDir": ".",
-		"baseUrl": ".",
-		"declaration": true,
+		"sourceMap": true,
+		"outDir": "out/dist",
+		"declaration": false,
 		"alwaysStrict": true,
 		"allowJs": true,
 		"checkJs": false,
@@ -33,5 +31,7 @@
 		".svn",
 		"node_modules",
 		"_.js",
+		"webpack",
+		"nifty",
 	]
 }

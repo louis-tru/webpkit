@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { React, Page, Link, Component } from '..';
+import { React, Page, Link, Component } from '../lib';
 
 export default class ContentContainer extends Component {
 	render() {

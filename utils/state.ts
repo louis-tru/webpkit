@@ -32,18 +32,18 @@ import { Component } from 'react';
 import storage from 'nxkit/storage';
 
 var __id = 0;
-var global_state_components = {};
-var global_state_components_arr = [];
-var global_states = {};
+var global_state_components: Dict = {};
+var global_state_components_arr: any[] = [];
+var global_states: Dict = {};
 
-function set_global_state_value(name, value) {
+function set_global_state_value(name: string, value: any) {
 	global_states[name] = value;
 	if (name[1] == '$') {
 		storage.set('global_state_' + name, value);
 	}
 }
 
-function fill_global_state_value(self, trigger) {
+function fill_global_state_value(self: any, trigger?: boolean) {
 	var change = false;
 	self._global_state_key = '|';
 	for (var name in self.state) {
@@ -72,7 +72,7 @@ function fill_global_state_value(self, trigger) {
 	}
 }
 
-function registerState(self) {
+function registerState(self: any) {
 	if (!self.__id) {
 		self.__id = ++__id;
 		global_state_components[self.__id] = self;
@@ -80,14 +80,14 @@ function registerState(self) {
 	}
 }
 
-function unregisterState(self) {
+function unregisterState(self: any) {
 	if (self.__id) {
 		delete global_state_components[self.__id];
 		global_state_components_arr = Object.values(global_state_components);
 	}
 }
 
-function setGlobalState(self, state) {
+function setGlobalState(self: GlobalState | null, state: Dict) {
 	var global_state = [];
 
 	for (var name in state) {
@@ -98,16 +98,14 @@ function setGlobalState(self, state) {
 		}
 	}
 
-	var r = null;
-
 	if (self)
-		r = Component.prototype.setState.call(self, state);
+		Component.prototype.setState.call(self, state);
 
 	if (global_state.length) {
 		for (var com of global_state_components_arr) {
 			if (com !== self) {
 				var key = com._global_state_key;
-				var state = {}, ok = false;
+				var state: Dict = {}, ok = false;
 
 				for ( var name of global_state ) {
 					if (key.indexOf('|' + name + '|') >= 0) {
@@ -121,17 +119,17 @@ function setGlobalState(self, state) {
 			}
 		}
 	}
-
-	return r;
 }
 
 /**
  * @class GlobalState
  */
 export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
+	private __id: number;
+	private _global_state_key: string;
 
 	setState(state: S) {
-		return setGlobalState(this, state);
+		setGlobalState(this, state);
 	}
 
 	componentDidMount() {

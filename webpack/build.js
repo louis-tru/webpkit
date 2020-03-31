@@ -30,8 +30,6 @@
 
 require('./check-versions')();
 
-// process.env.NODE_ENV = 'production';
-
 const ora = require('../node_modules/ora');
 const rm = require('rimraf');
 const path = require('path');

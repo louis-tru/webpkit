@@ -28,47 +28,89 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+import 'normalize.css';
+import './utils.css';
 import utils from 'nxkit';
-import req from 'nxkit/request';
-import path from 'nxkit/path';
-import {Page,React} from 'cport-h5';
-import './index.css';
+import {store,initialize as initStore} from '../utils/store';
+import handles from './handles';
+import { Router, Route, history } from './router';
+import Page, { DataPage } from './page';
+import * as ReactDom from 'react-dom';
+import * as React from 'react';
+import {Component} from 'react';
+import {Link} from 'react-router-dom';
+import GlobalState from '../utils/state';
+import * as _history from 'history';
+import * as dialog from './dialog';
+import errno from '../utils/errno';
 
-const LINES = 100;
+var current: Root | null = null;
 
-export default class A extends Page {
-	
-	state = { logs : [], color: path.getParam('color') || '0f0' };
+export interface RootProps {
+	onLoad?: (root:Root)=>void;
+	initSDK?: boolean;
+	config?: Dict;
+	notFound?: typeof Page;
+	routes?: Route[]
+}
 
-	async showLog() {
-		var {data:{text}} = await req.get(`./static/${path.getParam('log')||'log'}.txt`);
-		var logsAll = text.split(/\n/);
-		var index = 0, len = logsAll.length;
-		var logs = [];
-		while (true) {
-			logs.push(logsAll[index]);
-			if (logs.length > LINES) {
-				logs.shift();
+export class Root<P extends RootProps = RootProps> extends GlobalState<P, Dict> {
+
+	state = { isLoaded: false } as Dict;
+
+	async componentDidMount() {
+		current = this;
+
+		try {
+			await this.onLoad();
+			if ( typeof this.props.onLoad == 'function') {
+				await this.props.onLoad(this);
 			}
-			this.setState({ logs });
-			await utils.sleep(utils.random(50, 1000));
-			index = (index + 1) % len;
+		} catch(err) {
+			if (err.code != errno.ERR_LOGIN_FORWARD[0]) {
+				dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
+			}
+			throw err;
 		}
+
+		store.addEventListener('uncaughtException', function(err) {
+			handles(err.data);
+		});
+
+		this.setState({ isLoaded: true });
 	}
 
-	onLoad() {
-		this.showLog();
+	async onLoad() {
+		if (this.props.initSDK !== false)
+			await initStore(this.props.config || {});
 	}
 
+	get history() {
+		return history;
+	}
+	
 	render() {
 		return (
-			<div className="index">
-				<div className="con">
-					{this.state.logs.map((e,i)=>
-						<div className="log" style={{color:'#'+this.state.color}} key={i}>{e}</div>
-					)}
-				</div>
-			</div>
+			this.state.isLoaded ?
+			<Router ref="router" 
+				notFound={this.props.notFound}
+				routes={this.props.routes}
+			/>:
+			<div className="init-loading">Loading..</div>
 		);
 	}
+
+	static get current() {
+		utils.assert(current);
+		return current as Root;
+	}
 }
+
+export {
+	React,
+	ReactDom,
+	Component,
+	Router,
+	Page, DataPage,
+	Link,
+};

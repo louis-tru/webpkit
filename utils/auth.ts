@@ -75,9 +75,9 @@ class H5Signer extends Signer {
 		url = url.replace(/^.+\/service-api\//, '/service-api/');
 		sha256.update(st + fuzz_key + url);
 
-		var message = Buffer.from(sha256.digest());
+		var message = buffer.from(sha256.digest());
 		var { signature, recovery } = crypto.sign(message, privateKeyBytes);
-		var sign = new Buffer(65);
+		var sign = buffer.alloc(65);
 
 		signature.copy(sign);
 		sign[64] = recovery;

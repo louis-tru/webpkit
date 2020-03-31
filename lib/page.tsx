@@ -51,7 +51,7 @@ export default class Page<P = {}, S = {}> extends GlobalState<P & PageProps, S &
 	private _params: Dict;
 	private _router: Router;
 
-	constructor(props: P) {
+	constructor(props: P & PageProps) {
 		super(props);
 		utils.assert(this.props.router, 'no router');
 		this._url = this.props.location.pathname + this.props.location.search;

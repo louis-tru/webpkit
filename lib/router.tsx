@@ -77,7 +77,9 @@ function route(router: Router, { path, page, ...args }: { path: string, page: ()
 
 export interface Route extends Dict {
 	path: string | string[];
-	page(): Promise<typeof Page>;
+	page(): Promise<any>;
+	// page(): Promise<{ default: typeof Page }>;
+	exact?: boolean;
 }
 
 export class Router extends Component<{notFound?: typeof Page, routes?: Route[] }> {

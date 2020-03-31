@@ -28,8 +28,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-//global.__resourceQuery = '?https://52block.net/test_wx'
-
 const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
@@ -38,42 +36,35 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const VueLoaderPlugin = require('../node_modules/vue-loader/lib/plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin") ;
 const os = require('os');
 
-const isProd =
-	process.env.NODE_ENV === 'production' ||
-	process.env.NODE_ENV === 'prod';
-const sourceMapEnabled = isProd
-	? config.build.productionSourceMap
-	: config.dev.cssSourceMap;
+const NODE_ENV = 
+	process.env.NODE_ENV == 'prod' ? 'production': 
+	process.env.NODE_ENV == 'dev' ? 'development': process.env.NODE_ENV || 'development';
 
-// console.log('--------------', process.env.NODE_ENV)
+const isProd = NODE_ENV == 'production';
+const sourceMapEnabled = isProd ?
+	config.build.productionSourceMap: config.dev.cssSourceMap;
+
+// console.log('--------------', process.env.NODE_ENV, NODE_ENV)
 
 const HOST = config.dev.host;
 const PORT = config.dev.port;
-// const ENV = { NODE_ENV: isProd ? '"production"': '"development"' };
-const ENV = { NODE_ENV: `"${process.env.NODE_ENV}"` || '"development"' };
 const name = config.productName;
 const views = 
 	fs.existsSync(`${config.source}/views`) && 
 	fs.statSync(`${config.source}/views`).isDirectory() ?
-	fs.readdirSync('./views').filter(e=>path.extname(e)=='.jsx').map(e=>{
-		var name = e.substr(0, e.length - 4);
+	fs.readdirSync('./views').filter(e=>['.jsx','.tsx','.ts','.js'].indexOf(path.extname(e))!=-1).map(e=>{
+		var name = e.substr(0, e.length - path.extname(e).length);
 		return { name, path: `./views/${name}` };
-	}): 
+	}):
 	[{ name: name=='app'?'index': name, path: `./${name}/index` }];
-
-// console.log('views', isProd);
 
 // develop plugins
 const develop_plugins = [
-	// new BundleAnalyzerPlugin(),
-	new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/),
 	new webpack.HotModuleReplacementPlugin(),
 	new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
 	new webpack.NoEmitOnErrorsPlugin(),
@@ -86,7 +77,6 @@ const develop_plugins = [
 ];
 
 const prod_plugins = [
-	new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/),
 	// extract css into its own file
 	new MiniCssExtractPlugin({
 		filename: utils.assetsPath('css/[name].min.css?[chunkhash]'), // [contenthash]
@@ -122,9 +112,8 @@ const prod_plugins = [
 ];
 
 const plugins = [
-	new VueLoaderPlugin(),
-	// http://vuejs.github.io/vue-loader/en/workflow/production.html
-	new webpack.DefinePlugin({ 'process.env': ENV }),
+	new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/),
+	new webpack.DefinePlugin({ 'process.env': { NODE_ENV: `"${NODE_ENV}"` } }),
 	// copy custom static assets
 	new CopyWebpackPlugin(config.staticAssets.map(e=>({
 		from: utils.resolve(e),
@@ -157,22 +146,17 @@ if (!isProd && config.dev.inline === false) {
 	}
 }
 
-var defaultBabelOption;
+var babelOptions;
 var babelrc = [utils.resolve('.babelrc'), path.join(__dirname + '/../.babelrc')];
 
 for (var src of babelrc) {
 	try {
-		defaultBabelOptions = eval('(' + fs.readFileSync(src, 'utf-8') + ')');
+		babelOptions = eval('(' + fs.readFileSync(src, 'utf-8') + ')');
 		break;
 	} catch(err) {
 		console.warn(err);
 	}
 }
-
-// console.log(defaultBabelOptions);
-
-// utils.assert(defaultBabelOption, '.babelrc undefined');
-// console.log(defaultBabelOptions.presets[1]);
 
 module.exports = {
 	mode: isProd ? 'production': 'development',
@@ -187,10 +171,8 @@ module.exports = {
 		publicPath: config.publicPath,
 	},
 	resolve: {
-		extensions: ['.js', '.vue', '.json', '.jsx', '.css'],
+		extensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.css', '.sass'],
 		alias: {
-			'@ant-design/icons/lib/dist$': path.resolve('./icons.js'),
-			'vue$': 'vue/dist/vue.esm.js',
 			'static': utils.resolve('static'),
 			'nifty': path.join(__dirname, '../nifty'),
 		}
@@ -198,62 +180,30 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /\.vue$/,
-				loader: 'vue-loader',
-				options: {
-					loaders: utils.cssLoaders({
-						sourceMap: sourceMapEnabled,
-						extract: isProd,
-					}),
-					cssSourceMap: sourceMapEnabled,
-					cacheBusting: config.dev.cacheBusting,
-					transformToRequire: {
-						video: ['src', 'poster'],
-						source: 'src',
-						img: 'src',
-						image: 'xlink:href',
-					},
-				},
-			},
-			{
 				test: /\.(js|jsx)$/,
-				include: [
-					utils.resolve('.'),
-					path.join(__dirname, '..'),
-					// path.join(__dirname, '../../dphoto-magic-sdk'),
-					// path.join(__dirname, '../../crypto-tx'),
-					// path.join(process.env.NGUI, 'libs/nxkit'),
-				],
+				include: [utils.resolve('.'), path.join(__dirname, '..')],
 				exclude: /(typeof|_bigint)\.js/,
-				// loader: 'babel-loader',
-				// options: defaultBabelOptions,
 				use: [{
 					loader: 'babel-loader',
-					options: defaultBabelOptions,
-				}]
+					options: babelOptions,
+				}],
 			},
 			{
-				test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+				test: /\.(ts|tsx)$/,
+				include: [utils.resolve('.'), path.join(__dirname, '..')],
+				use: [{
+					loader: 'babel-loader',
+					options: babelOptions,
+				},{
+					loader: 'ts-loader',
+				}],
+			},
+			{
+				test: /\.(png|jpe?g|gif|svg|mp4|webm|ogg|mp3|wav|flac|aac|woff2?|eot|ttf|otf)(\?.*)?$/,
 				loader: 'url-loader',
 				options: {
 					limit: 10000,
-					name: utils.assetsPath('[name].[hash:7].[ext]')
-				}
-			},
-			{
-				test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-				loader: 'url-loader',
-				options: {
-					limit: 10000,
-					name: utils.assetsPath('[name].[hash:7].[ext]')
-				}
-			},
-			{
-				test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-				loader: 'url-loader',
-				options: {
-					limit: 10000,
-					name: utils.assetsFontPath('[name].[hash:7].[ext]')
+					name: utils.assetsPath('assets/[name].[hash:7].[ext]')
 				}
 			},
 			...utils.styleLoaders({ sourceMap: sourceMapEnabled, usePostCSS: true, extract: isProd, }),
@@ -273,15 +223,15 @@ module.exports = {
 			}),
 		],
 		splitChunks: {
-			// chunks: 'all', //同时分割同步和异步代码,推荐。
+			// chunks: 'all'|'async'|'initial', //同时分割同步和异步代码,推荐。
 			// maxAsyncRequests: 5,  // 异步加载chunk的并发请求数量<=5
 			// maxInitialRequests: 3, // 一个入口并发加载的chunk数量<=3
 			// minSize: 30000, // 模块超过30k自动被抽离成公共模块
 			// minChunks: 1, // 模块被引用>=1次，便分割
 			cacheGroups: {
 				vendors: {
-					// test: /node_modules/,
-					test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+					// test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+					test: /node_modules/,
 					name: "vendors",
 					chunks: "all",
 					priority: 3,
@@ -301,7 +251,7 @@ module.exports = {
 					enforce: true,
 					priority: 5,
 				},
-				low: {
+				low: { // TODO 最高优先级必须先加载low.js文件,有些旧浏览器需要这些api
 					test: /webpack\/low/,
 					name: "low",
 					chunks: "all",
@@ -355,3 +305,5 @@ module.exports = {
 views.forEach(({name,path})=>{
 	module.exports.entry[name] = ['cport-h5/webpack/low', ...devClient, path ];
 });
+
+// console.log(module.exports.entry)

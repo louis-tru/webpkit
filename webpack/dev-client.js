@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var path = require('nxkit/path');
+var path = require('nxkit/path').default;
 var url = require('url');
 var stripAnsi = require('strip-ansi');
 var log = require('loglevel').getLogger('webpack-dev-server');

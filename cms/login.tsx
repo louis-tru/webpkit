@@ -29,8 +29,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 import utils from 'nxkit';
-import { React } from '../pc';
-import {alert} from '../pc/dialog';
+import { React } from '../lib';
+import {alert} from '../lib/dialog';
 import GlobalState from '../utils/state';
 
 /**

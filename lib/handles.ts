@@ -28,49 +28,28 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var path = require('nxkit/path')
+import {Dialog,alert} from './dialog';
 
-var ocav = document.getElementById("cav");
-var ctx = ocav.getContext("2d");
-var W = window.innerWidth;
-var H = window.innerHeight;
-ocav.width = W;
-ocav.height = H;
-var fontsize = 16;
-var columns = Math.ceil(W / fontsize);
-var drops = [];
-var texts = "0123456789ABCDEFHIJKMLNOPQRSTUVWXYZ".split("");
+const dialog_handles: Dict<Dialog> = {};
 
-for (var i = 0; i < columns; i++) {
-	drops[i] = 0;
-}
-
-var color = "#0ff";
-if (path.getParam('color')) {
-	color = '#' + path.getParam('color');
-}
-
-function run() {
-	ctx.fillStyle = "rgba(0,0,0,0.05)";
-	ctx.fillRect(0, 0, W, H);
-	ctx.fillStyle = color;
-	ctx.font = fontsize + "px Arial";
-	for (var i = 0; i < columns; i++) {
-		var text = texts[Math.floor(Math.random() * texts.length)];
-		ctx.fillText(text, i * fontsize, drops[i] * fontsize);
-		if (drops[i] * fontsize > H || Math.random() > 0.95) {
-			drops[i] = 0;
+var _handle = function(e: any) {
+	var err = Error.new(e);
+	if (err.code) {
+		if ( !dialog_handles[err.code] ) {
+			var dag = alert(err.message || 'An unknown exception', ()=>{
+				delete dialog_handles[err.code];
+			});
+			dialog_handles[err.code] = dag;
 		}
-		drops[i]++;
+	} else {
+		alert(err.message || 'An unknown exception');
 	}
-}
-setInterval(run, 30);
+};
 
-
-class Test {
-	a() {
-		console.log('test')
-	}
+export default function(e: any) {
+	_handle(e);
 }
 
-export default Test;
+export function setErrorHandle(handle: (e:any)=>void) {
+	_handle = handle;
+}

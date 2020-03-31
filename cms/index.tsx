@@ -51,7 +51,7 @@ import '../nifty/plugins/morris-js/morris.js';
 // import '../nifty/css/demo/nifty-demo-icons.css';
 // import '../nifty/css/demo/nifty-demo.css';
 
-import { Router as MyRouter, Root, RootProps } from '../pc';
+import { Router as MyRouter, Root, RootProps } from '../lib';
 import {Router, Route, Switch} from 'react-router-dom';
 import Login from './login';
 import Menu from './menu';
@@ -60,7 +60,7 @@ import Footer from './footer';
 import ExamplesMenu from '../test/cms-menu';
 import NotFound from './404';
 
-export * from '../pc';
+export * from '../lib';
 export { CMSPage, CMSDataPage, Header, Footer, Menu, Login };
 
 export interface CMSRootProps extends RootProps {

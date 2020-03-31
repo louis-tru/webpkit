@@ -34,11 +34,7 @@ const packageConfig = require(config.source + '/package.json');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 exports.assetsPath = function (_path) {
-	return path.posix.join(config.productName, _path)
-}
-
-exports.assetsFontPath = function (_path) {
-	return path.posix.join('/' + _path)
+	return path.posix.join(config.productName, _path);
 }
 
 exports.resolve = function(dir) {
@@ -64,7 +60,7 @@ exports.cssLoaders = function (options) {
 
 	// generate loader string to be used with extract text plugin
 	function generateLoaders (loader, loaderOptions) {
-		const loaders = options.usePostCSS ? [cssLoader, postcssLoader] : [cssLoader]
+		const loaders = options.usePostCSS ? [cssLoader, postcssLoader]: [cssLoader]
 
 		if (loader) {
 			loaders.push({
@@ -83,11 +79,9 @@ exports.cssLoaders = function (options) {
 					options: {
 						hmr: options.extract ? true: false,
 					},
-				},
-				'vue-style-loader',
-			].concat(loaders);
+				}, 'style-loader', ...loaders];
 		} else {
-			return ['vue-style-loader'].concat(loaders);
+			return ['style-loader', ...loaders];
 		}
 	}
 
@@ -110,9 +104,10 @@ exports.styleLoaders = function (options) {
 
 	for (const extension in loaders) {
 		const loader = loaders[extension]
+		// console.log('styleLoaders', extension);
 		output.push({
 			test: new RegExp('\\.' + extension + '$'),
-			use: loader
+			use: loader,
 		})
 	}
 

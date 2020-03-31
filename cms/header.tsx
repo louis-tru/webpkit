@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { React } from '../pc';
+import { React } from '../lib';
 import GlobalState from '../utils/state';
 
 export default class extends GlobalState {

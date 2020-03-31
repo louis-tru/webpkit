@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { React, Link } from '../pc';
+import { React, Link } from '../lib';
 import GlobalState from '../utils/state';
 
 export interface Main {

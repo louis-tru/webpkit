@@ -29,7 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import CMSPage from './page';
-import { React } from '../pc';
+import { React } from '../lib';
 import '../nifty/plugins/datatables/media/js/jquery.dataTables.min.js';
 import '../nifty/plugins/datatables/media/css/jquery.dataTables.min.css';
 import '../nifty/plugins/datatables/extensions/Responsive/css/dataTables.responsive.css';

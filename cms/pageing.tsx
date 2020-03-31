@@ -30,7 +30,7 @@
 
 import * as React from 'react';
 import {Component} from 'react';
-import {DataPage} from '../pc';
+import {DataPage} from '../lib';
 
 export default class Pageing extends Component<{page: DataPage}> {
 
@@ -61,7 +61,7 @@ export default class Pageing extends Component<{page: DataPage}> {
 							if (j < 0 || j >= dataPageCount) return null;
 							return (
 								<li className={`footable-page ${indexPage==j?'active':''}`}>
-									<a data-page="0" href="#" onClick={e=>indexPage!=j&&this.page.reload(0, j)}>{j+1}</a>
+									<a data-page="0" href="#" onClick={e=>indexPage!=j&&this.page.reload({}, j)}>{j+1}</a>
 								</li>
 							);
 						}).filter(e=>e)
