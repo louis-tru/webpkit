@@ -28,32 +28,46 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import nxkit from 'nxkit';
+import utils from 'nxkit';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Component } from 'react';
 import GlobalState from '../utils/state';
 import error from '../lib/handles';
 
-interface PrivPageProps {
-	component: any;
-	route: any;
+var loading = '正在载入数据..';
+
+export interface Route {
+	path: string | string[];
+	page: ()=>Promise<any>;
+}
+
+export type Args = string | { url: string, params?: Dict };
+
+interface ParseParams {
+	nav: Nav,
 	url: string;
+	pathname: string,
+	params: Dict,
+	notFound?: typeof NavPage;
+	route?: Route;
+}
+
+interface PrivPageProps extends ParseParams {
 	index: number;
 	panel: HTMLDivElement;
 }
 
 class PrivPage extends Component<PrivPageProps> {
-
 	m_prev: any = null;
 	m_next: any = null;
 	m_status = -1;
 	m_panel: HTMLDivElement;
 	m_timeout?: any;
 	m_index = 0;
-	m_props: any;
+	m_props: PrivPageProps;
 	_count: number = 0;
-	state = { component: null } as {component: any};
+	state: {component: typeof NavPage | null} = { component: null };
 
 	constructor(props: PrivPageProps) {
 		super(props);
@@ -64,10 +78,10 @@ class PrivPage extends Component<PrivPageProps> {
 
 	async loader() {
 		try {
-			if (this.props.component) {
-				this.setState({ component: this.props.component });
+			if (this.m_props.notFound) {
+				this.setState({ component: this.m_props.notFound });
 			} else {
-				var route = this.props.route;
+				var route = this.m_props.route as Route;
 				this._count++;
 				var com = (await route.page()).default;
 				if (this.state.component === com) {
@@ -85,7 +99,19 @@ class PrivPage extends Component<PrivPageProps> {
 	}
 
 	get url() {
-		return this.props.url;
+		return this.m_props.url;
+	}
+
+	get nav() {
+		return this.m_props.nav;
+	}
+
+	get pathname() {
+		return this.m_props.pathname;
+	}
+
+	get params() {
+		return this.m_props.params;
 	}
 
 	get index() {
@@ -118,11 +144,11 @@ class PrivPage extends Component<PrivPageProps> {
 
 	unmount() {
 		// this.setState({ component: null });
-		ReactDOM.unmountComponentAtNode(this.m_panel);
+		ReactDom.unmountComponentAtNode(this.m_panel);
 		(this.m_panel.parentNode as HTMLDivElement).removeChild(this.m_panel);
 	}
 
-	replace(props: PrivPageProps) {
+	replace(props: ParseParams) {
 		this.m_props = {
 			...props,
 			index: this.m_index,
@@ -136,7 +162,9 @@ class PrivPage extends Component<PrivPageProps> {
 		var Com = this.state.component;
 		if (Com) {
 			var props = {
-				...this.m_props,
+				url: this.m_props.url,
+				pathname: this.m_props.pathname,
+				params: this.m_props.params,
 				ref: 'self',
 				priv: this,
 			};
@@ -145,9 +173,7 @@ class PrivPage extends Component<PrivPageProps> {
 			);
 		} else {
 			return (
-				<div className="init-loading">
-					正在载入数据..
-				</div>
+				<div className="init-loading"> {loading} </div>
 			);
 		}
 	}
@@ -216,7 +242,7 @@ class PrivPage extends Component<PrivPageProps> {
 						`);
 						this.m_timeout = setTimeout(e=>{
 							this.m_panel.style.transitionProperty = 'none';
-							this.m_panel.style.boxshadow = 'none';
+							this.m_panel.style.boxShadow = 'none';
 							this.m_panel.style.transform = 'none';
 							this.m_panel.style.boxShadow = 'none';
 							// this.m_panel.style.zIndex = -1; // 该死的ios9.0bug,不加这个属性，排行页面不显示。
@@ -291,46 +317,61 @@ class PrivPage extends Component<PrivPageProps> {
 	}
 }
 
-export class Nav extends Component {
+export interface NavArgs {
+	action: 'push' | 'pop' | 'replace';
+	pathname: string;
+	params: Dict;
+	count: number;
+}
 
-	m_pages = [];
-	m_current = null;
-	m_routes = {};
-	m_animating = false;
+export interface NavProps {
+	routes: Route[];
+	initURL?: string;
+	notFound?: typeof NavPage;
+	onNav?: (args: NavArgs)=>void;
+	onEnd?: ()=>void;
+}
 
-	constructor(props) {
-		super(props);
-	}
+export class Nav extends Component<NavProps> {
+	private m_pages: PrivPage[] = [];
+	private m_current: PrivPage | null = null;
+	private m_routes: Dict<Route> = {};
+	private m_animating = false;
 
 	componentDidMount() {
 		var routes = this.props.routes;
 		routes.forEach(e=>{
-			this.m_routes[e.path] = e;
+			if (typeof e.path == 'string') {
+				e.path = [e.path];
+			}
+			for (var url of e.path) {
+				url = url != '/' ? '/' + url : url;
+				this.m_routes[url] = e;
+			}
 		});
-		this.push(this.props.initUrl, 0);
+		this.push(this.props.initURL || '/', false);
 	}
 
 	get length() {
 		return this.m_pages.length;
 	}
 
-	getPage(index) {
-		return this.m_pages[index].refs.self;
+	getPage(index: number) {
+		return this.m_pages[index].refs.self as NavPage;
 	}
 
 	get routes() {
 		return this.m_routes;
 	}
 
-	m_parseProps(args) {
+	private m_parseProps(args: Args): ParseParams {
 		if (typeof args == 'string') {
-			args = {url:args};
+			args = { url: args };
 		}
 		var { url, params = {} } = args;
 
 		url = url[0] != '/' ? '/' + url : url;
 
-		// var search = {};
 		var pathname = url;
 		var index = url.indexOf('?');
 
@@ -345,17 +386,17 @@ export class Nav extends Component {
 		}
 
 		var route = this.m_routes[pathname];
-		var props = { 
+		var props: ParseParams = { 
 			nav: this,
 			url: url,
 			pathname: pathname,
-			params: params, //Object.assign(search, params),
+			params: params,
 			route: route,
 		};
 
 		if (!route) {
 			if (this.props.notFound) {
-				props.component = this.props.notFound;
+				props.notFound = this.props.notFound;
 			} else {
 				throw new Error(`Not found ${url}`);
 			}
@@ -363,7 +404,7 @@ export class Nav extends Component {
 		return props;
 	}
 
-	m_push(url, animate, index, cb) {
+	private m_push(url: Args, animate: boolean, index: number, cb?: (page: PrivPage)=>void) {
 
 		if (this.m_animating && animate) return false;
 
@@ -387,33 +428,35 @@ export class Nav extends Component {
 				prev.m_next = page;
 			}
 
-			animate = animate ? 400: 0;
+			var animateNum = animate ? 400: 0;
 
 			if (animate) {
 				self.m_animating = true;
-				setTimeout(e=>self.m_animating = false, animate);
+				setTimeout(e=>self.m_animating = false, animateNum);
 			}
 
 			if (prev) {
-				prev.intoBackground(animate);
+				prev.intoBackground(animateNum);
 			}
-			page.intoForeground(animate, { active: 'push' });
+			page.intoForeground(animateNum, { active: 'push' });
 
 			if (self.props.onNav) {
-				self.props.onNav({ type: 'push', url: props.url, count: 1 });
+				var {pathname,params} = props;
+				self.props.onNav({ action: 'push', pathname, params, count: 1 });
 			}
 
-			if (cb) cb(page);
+			if (cb)
+				cb(page);
 		});
 
 		return true;
 	}
 
-	push(url: string, animate = 1) {
+	push(url: Args, animate = true) {
 		return this.m_push(url, animate, this.length);
 	}
 
-	pops(result: Dict, index: number, animate = 1) {
+	pops(result: any, index: number, animate = true) {
 
 		if (this.m_animating && animate) return false;
 
@@ -430,7 +473,7 @@ export class Nav extends Component {
 
 		var page = this.m_pages[index];
 		var arr = this.m_pages.splice(index + 1);
-		var next = arr.pop();
+		var next = arr.pop() as PrivPage;
 
 		arr.forEach(function (page) {
 			page.intoLeave(0);
@@ -438,31 +481,31 @@ export class Nav extends Component {
 
 		this.m_current = page;
 
-		animate = animate ? 400: 0;
+		var animateNum = animate ? 400: 0;
 
 		if (animate) {
 			this.m_animating = true;
-			setTimeout(e=>this.m_animating = false, animate);
+			setTimeout(e=>this.m_animating = false, animateNum);
 		}
 
 		page.m_next = null;
 		next.m_prev = null;
 
-		page.intoForeground(animate, { ...result, active: 'pop' });
-		next.intoLeave(animate);
+		page.intoForeground(animateNum, { ...result, active: 'pop' });
+		next.intoLeave(animateNum);
 
 		if (this.props.onNav) {
-			this.props.onNav({ type: 'pop', url: page.url, count: arr.length + 1 });
+			this.props.onNav({ action: 'pop', pathname: page.pathname, params: page.params, count: arr.length + 1 });
 		}
 
 		return true;
 	}
 
-	pop(result: Dict = {}, animate = 1) {
+	pop(animate = true, result: Dict = {}) {
 		return this.pops(result, this.length - 2, animate);
 	}
 
-	replace(url: string, animate = 0, index = -1) {
+	replace(url: Args, animate = false, index = -1) {
 		// if (this.m_animating) return false;
 
 		if (index >= 0 && index < this.length - 1) { // pop
@@ -470,10 +513,11 @@ export class Nav extends Component {
 		}
 		else if (animate) { // ani push
 
-			var cur = this.m_current;
-			if (!cur) return false;
+			var cur = this.m_current as PrivPage;
+			if (!cur)
+				return false;
 
-			nxkit.assert(this.length > 0);
+			utils.assert(this.length > 0);
 
 			return this.m_push(url, animate, this.length - 1, page=>{
 				setTimeout(e=>{
@@ -484,8 +528,9 @@ export class Nav extends Component {
 					prev.m_next = page;
 				}
 				page.m_prev = prev;
-				this.m_pages.deleteValue(cur);
-				this.props.onNav({ type: 'replace', url: page.url, count: 0 });
+				this.m_pages.deleteOf(cur);
+				if (this.props.onNav)
+					this.props.onNav({ action: 'replace', pathname: page.pathname, params: page.params, count: 0 });
 			});
 		}
 
@@ -493,15 +538,16 @@ export class Nav extends Component {
 		if (this.m_current) {
 			this.m_current.replace(props);
 			if (this.props.onNav) {
-				this.props.onNav({ type: 'replace', url: props.url, count: 0 });
+				this.props.onNav({ action: 'replace', pathname: props.pathname, params: props.params, count: 0 });
 			}
 		}
 
 		return true;
 	}
-	
+
 	get current() {
-		return this.m_current.refs.self;
+		utils.assert(this.m_current);
+		return (this.m_current as PrivPage).refs.self as NavPage;
 	}
 
 	render() {
@@ -510,34 +556,40 @@ export class Nav extends Component {
 			</div>
 		);
 	}
-
 }
 
-export class NavPage extends GlobalState {
-	state = {};
-	platform = '';
+interface BaseProps<P> {
+	priv: PrivPage;
+	url: string;
+	pathname: string;
+	params: P;
+}
 
-	getMainClass(cls = '') {
+interface BaseState {
+	loadingComplete: boolean;
+}
+
+export class NavPage<P = Dict, S = {}> extends GlobalState<BaseProps<P>, S & BaseState> {
+	state = { loadingComplete: false } as (S & BaseState);
+	static platform = '';
+
+	mcls(cls = '') {
 		var cls_1 = 'main ';
-		if (nxkit.debug) {
+		if (utils.debug) {
 			cls_1 += 'test ';
 		}
-		if (this.platform == 'android') {
+		if (NavPage.platform == 'android') {
 			cls_1 += 'android ';
-		} else if (this.platform == 'iphonex') {
+		} else if (NavPage.platform == 'iphonex') {
 			cls_1 += 'iphonex ';
-		} else if (this.platform == 'iphone') {
+		} else if (NavPage.platform == 'iphone') {
 			cls_1 += 'iphone ';
 		}
 		return cls_1 + cls;
 	}
 
-	mcls(cls = '') {
-		return this.getMainClass(cls);
-	}
-
 	get nav() {
-		return this.props.nav;
+		return this.props.priv.nav;
 	}
 
 	get url() {
@@ -549,23 +601,23 @@ export class NavPage extends GlobalState {
 	}
 
 	get index() {
-		return this.props.index;
+		return this.props.priv.index;
 	}
 
 	get params() {
 		return this.props.params;
 	}
 
-	get loading() {
-		return !this.state.loading_complete;
+	get loaded() {
+		return this.state.loadingComplete;
 	}
 
-	updateState(data) {
-		var state = {};
+	updateState(data: S) {
+		var state = {} as S & BaseState;
 		for (var i in data) {
 			var o = data[i];
 			if (typeof o == 'object' && !Array.isArray(o)) {
-				state[i] = Object.assign(this.state[i] || {}, data[i]);
+				state[i] = Object.assign(this.state[i] || {}, data[i]) as any;
 			}
 		}
 		this.setState(state);
@@ -574,7 +626,7 @@ export class NavPage extends GlobalState {
 	async componentDidMount() {
 		super.componentDidMount();
 		await this.onLoad();
-		this.setState({ loading_complete: true });
+		this.setState({ loadingComplete: true } as S & BaseState);
 		if (this.props.priv.status == 0) {
 			this.onShow({ active: 'init' });
 		}
@@ -596,7 +648,7 @@ export class NavPage extends GlobalState {
 		// overwrite
 	}
 
-	onShow(data: any) {
+	onShow(data: { active?: 'init', [key: string]: any } = {}) {
 		// overwrite
 	}
 
@@ -604,15 +656,15 @@ export class NavPage extends GlobalState {
 		// overwrite
 	}
 	
-	pushPage(url, animate = 1) {
+	pushPage(url: Args, animate = true) {
 		return this.nav.push(url, animate);
 	}
 
-	popPage(result = {}, animate = 1) {
-		return this.nav.pop(result, animate);
+	popPage(animate = true, result: Dict = {}) {
+		return this.nav.pop(animate, result);
 	}
 
-	replacePage(url, animate = 0, index = -1) {
+	replacePage(url: Args, animate = false, index = -1) {
 		return this.nav.replace(url, animate, index);
 	}
 

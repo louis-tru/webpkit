@@ -39,15 +39,15 @@ import * as raphael from 'raphael';
 
 import './_ext';
 // import '../nifty/plugins/sparkline/jquery.sparkline.js';
-import '../nifty/css/bootstrap.min.css';
-import '../nifty/js/bootstrap.js';
-import '../nifty/plugins/font-awesome/css/font-awesome.min.css';
-import '../nifty/css/nifty.min.css';
-import '../nifty/plugins/magic-check/css/magic-check.css';
-import '../nifty/plugins/pace/pace.css';
-import '../nifty/plugins/pace/pace.js';
-import '../nifty/plugins/morris-js/morris.css';
-import '../nifty/plugins/morris-js/morris.js';
+import 'cport-nifty/css/bootstrap.min.css';
+import 'cport-nifty/js/bootstrap.js';
+import 'cport-nifty/plugins/font-awesome/css/font-awesome.min.css';
+import 'cport-nifty/css/nifty.min.css';
+import 'cport-nifty/plugins/magic-check/css/magic-check.css';
+import 'cport-nifty/plugins/pace/pace.css';
+import 'cport-nifty/plugins/pace/pace.js';
+import 'cport-nifty/plugins/morris-js/morris.css';
+import 'cport-nifty/plugins/morris-js/morris.js';
 // import '../nifty/css/demo/nifty-demo-icons.css';
 // import '../nifty/css/demo/nifty-demo.css';
 

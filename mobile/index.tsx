@@ -32,17 +32,16 @@ import 'normalize.css';
 import '../lib/utils.css';
 import './utils.css';
 import rem from './rem';
-import nxkit from 'nxkit';
 import {store, initialize as initStore} from '../utils/store';
 import error from '../lib/handles';
 import * as dialog from '../lib/dialog';
-import { NavPage, Nav } from './nav';
+import { NavPage, Nav, Route, NavArgs } from './nav';
 import * as ReactDom from 'react-dom';
 import * as React from 'react';
 import { Component } from 'react';
 import _404 from './404';
 import GlobalState from '../utils/state';
-import NavDataPage from './page';
+import {NavDataPage} from './page';
 import errno from '../utils/errno';
 
 export interface RootProps {
@@ -51,6 +50,8 @@ export interface RootProps {
 	title?: string;
 	config?: Dict;
 	initSDK?: boolean;
+	routes?: Route[];
+	notFound?: typeof NavPage;
 }
 
 export class Root extends GlobalState<RootProps> {
@@ -91,17 +92,17 @@ export class Root extends GlobalState<RootProps> {
 		return '';
 	}
 
-	onNav(e: any) {
-		if (e.type == 'pop') {
+	onNav(e: NavArgs) {
+		if (e.action == 'pop') {
 			// window.history.go(-e.count);
-		} else if (e.type == 'push') {
-			window.history.pushState({}, this.props.title||'', '#' + e.url);
+		} else if (e.action == 'push') {
+			window.history.pushState({}, this.props.title||'', '#' + e.pathname);
 		} else { // replace
-			window.history.replaceState({}, this.props.title||'', '#' + e.url);
+			window.history.replaceState({}, this.props.title||'', '#' + e.pathname);
 		}
 	}
 
-	onEnd(e:any) {
+	onEnd() {
 		// console.log('closeApp');
 	}
 
@@ -111,11 +112,11 @@ export class Root extends GlobalState<RootProps> {
 			this.state.isLoaded ?
 			<Nav 
 				ref="nav"
-				notFound={_404}
+				notFound={this.props.notFound || _404}
 				routes={this.props.routes||[]}
 				onNav={e=>this.onNav(e)}
-				onEnd={e=>this.onEnd(e)}
-				initUrl={url}
+				onEnd={()=>this.onEnd()}
+				initURL={url}
 			/>:
 			<div className="init-loading">
 				Loading..
@@ -131,6 +132,5 @@ export {
 	Nav,
 	NavPage,
 	dialog,
-	sdk,
 	NavDataPage,
 };

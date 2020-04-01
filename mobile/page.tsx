@@ -28,14 +28,27 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import nxkit from 'nxkit';
-import { NavPage, Nav } from './nav';
-import React, { Component } from 'react';
-import GlobalState from '../state';
-import { DataPage } from '../page';
+import utils from 'nxkit';
+import { NavPage } from './nav';
+import { DataPage, IDataPage } from '../lib/page';
 
-export default class NavDataPage extends NavPage {}
+export declare class NavDataPage<P = {}, S = {}, Data = Dict> extends NavPage<P, S> implements IDataPage<Data> {
+	name: string;
+	dataPage: number;
+	readonly dataPageCount: number
+	data: Data[];
+	readonly indexPage: number;
+	index: number
+	total: number;
+	readonly length: number;
+	readonly hasMore: boolean;
+	loadMore(): Promise<void>;
+	reload(params: Dict, page?: number): Promise<void>;
+	loadData(params: Dict): Promise<{ value: Data[]; total?: number; index?: number }>;
+}
 
-nxkit.extendClass(NavDataPage, DataPage);
+class _NavDataPage extends NavPage {}
 
-// export default NavDataPage;
+utils.extendClass(_NavDataPage, DataPage);
+
+exports.NavDataPage = _NavDataPage

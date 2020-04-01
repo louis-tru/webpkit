@@ -31,7 +31,7 @@
 import { NavPage } from './nav';
 import * as React from 'react';
 
-export default class extends NavPage {
+export default class _404 extends NavPage {
 
 	render() {
 		return (
