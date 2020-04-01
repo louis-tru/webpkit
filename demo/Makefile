@@ -1,6 +1,7 @@
 NODE    ?= node
 CWD     ?= $(shell pwd)
 ENV     ?= dev
+NAME    ?= dphoto-hacker
 
 cfg = \
 if [ -f .config.js ]; then \
@@ -18,7 +19,7 @@ all: build
 build:
 	@$(call cfg,$(ENV))
 	@npm run $@
-	@cd out; tar cfvz dphoto-hacker.tgz public
+	@cd out; tar cfvz $(NAME).tgz public
 
 dev:
 	@$(call cfg,$(ENV))
