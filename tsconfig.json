@@ -20,6 +20,7 @@
 		"removeComments": true,
 		"jsx": "react",
 		"jsxFactory": "React.createElement",
+		// "esModuleInterop": true,
 	},
 	"include": [
 		"**/*",
