@@ -36,6 +36,12 @@ async function exec_cmd(cmd) {
 	process.exit();
 }
 
+function install() {
+	console.log('install depes ...');
+	fs.copySync(__dirname + '/node_modules', process.cwd() + '/node_modules');
+	exec_cmd(`npm install`);
+}
+
 function main() {
 
 	if (opts.help) {
@@ -49,12 +55,14 @@ function main() {
 	}
 
 	if (cmd == 'init') {
+		console.log('init ...');
 		fs.copySync(__dirname + '/demo', process.cwd());
 		var name = path.basename(process.cwd());
 		var json = fs.readFileSync(process.cwd() + '/package.json', 'utf8').replace('"demo"', `"${name}"`);
 		fs.writeFileSync(process.cwd() + '/package.json', json);
+		install();
 	} else if (cmd == 'install') { // build
-		exec_cmd(`npm run install`);
+		install();
 	} else if (cmd == 'build') { // build
 		cp_cfg(cfg || 'prod');
 		exec_cmd(`npm run build`);

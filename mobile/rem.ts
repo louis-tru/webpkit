@@ -28,41 +28,70 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-require('./check-versions')();
+var win = window;
+var document = win.document;
+var docEl = document.documentElement;
+var dpr = window.devicePixelRatio || 1;
+var is_initialize = 0;
+var atomPixel = 1;
+var rootFontSize = 12;
+var scale = 7.5
 
-const ora = require('../node_modules/ora');
-const rm = require('rimraf');
-const path = require('path');
-const chalk = require('chalk');
-const webpack = require('webpack');
-const config = require('./cfg');
-const webpackConfig = require('./index');
+document.addEventListener("touchstart", function(){}, true);
 
-const spinner = ora('building for production...');
-spinner.start();
+function refreshRem() {
+	var width = docEl.getBoundingClientRect().width;
+	if (width / dpr > 980) {
+		width = 980 * dpr;
+	}
+	var rem = width / scale;
+	
+	docEl.style.fontSize = rem + 'px';
 
-rm(path.join(config.output, config.productName), err => {
-	if (err) throw err
-	webpack(webpackConfig, (err, stats) => {
-		spinner.stop()
-		if (err) throw err
-		process.stdout.write(stats.toString({
-			colors: true,
-			modules: false,
-			children: false, // If you are using ts-loader, setting this to true will make TypeScript errors show up during build.
-			chunks: false,
-			chunkModules: false
-		}) + '\n\n')
-		
-		if (stats.hasErrors()) {
-			console.log(chalk.red('  Build failed with errors.\n'))
-			process.exit(1)
+	rootFontSize = rem;
+	
+	atomPixel = width / (scale*100);
+
+	// if (doc.body && window.orientation == 0) {
+	// 	var _rem = rem;
+	// 	var html_width = width;
+	// 	var body_width = doc.body.getBoundingClientRect().width;
+
+	// 	if (html_width != body_width) { // 系统字体放大
+	// 		_rem = rem * (html_width / body_width);
+	// 		docEl.style.fontSize = _rem + 'px';
+	// 	}
+	// }
+}
+
+function initialize(_scale?: number) {
+
+	if (is_initialize) return;
+	is_initialize = 1;
+
+	scale = _scale || scale;
+
+	var tid: any;
+	win.addEventListener('resize', function() {
+		clearTimeout(tid);
+		tid = setTimeout(refreshRem, 300);
+	}, false);
+
+	win.addEventListener('pageshow', function(e) {
+		if (e.persisted) {
+			clearTimeout(tid);
+			tid = setTimeout(refreshRem, 300);
 		}
+	}, false);
 
-		console.log(chalk.cyan('  Build complete.\n'))
-		console.log(chalk.yellow(
-			'  Tip: built files are meant to be served over an HTTP server.\n' +
-			'  Opening index.html over file:// won\'t work.\n'
-		))
-	})
-});
+	document.addEventListener('DOMContentLoaded', refreshRem, false);
+
+	refreshRem();
+}
+
+export default {
+	get atomPixel() { return atomPixel },
+	get rootFontSize() { return rootFontSize },
+	refreshRem,
+	initialize,
+}

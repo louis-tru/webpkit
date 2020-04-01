@@ -29,7 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 const path = require('path');
-const config = require('./config');
+const config = require('./cfg');
 const packageConfig = require(config.source + '/package.json');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 

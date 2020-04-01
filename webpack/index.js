@@ -31,7 +31,7 @@
 const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
-const config = require('./config');
+const config = require('./cfg');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -196,6 +196,7 @@ module.exports = {
 					options: babelOptions,
 				},{
 					loader: 'ts-loader',
+					options: { allowTsInNodeModules: true },
 				}],
 			},
 			{
