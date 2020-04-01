@@ -9,6 +9,6 @@
 		"build": "NODE_ENV=prod node node_modules/cport-h5/webpack/build.js"
 	},
 	"dependencies": {
-		"cport-h5": "~0.2.4"
+		"cport-h5": "~0.2.7"
 	}
 }
