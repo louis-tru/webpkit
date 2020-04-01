@@ -1,16 +1,20 @@
 {
 	"name": "cport-h5",
-	"version": "0.2.0",
+	"version": "0.2.3",
 	"description": "",
 	"main": "index.js",
 	"types": "index.ts",
 	"author": "louistru@hotmail.com",
 	"scripts": {
-		"dev": "webpack-dev-server --inline --progress --config webpack/index.js",
-		"build": "node webpack/build.js"
+		"dev": "DEV_INLINE=false webpack-dev-server --inline --progress --config webpack/index.js",
+		"build": "NODE_ENV=prod node webpack/build.js"
+	},
+	"bin": {
+		"cport": "shell.js"
 	},
 	"dependencies": {
-		"nxkit": "~0.10.47",
+		"cport-nifty": "~0.1.0",
+		"nxkit": "~0.10.49",
 		"typescript": "~3.8.3",
 		"@types/react": "~16.9.26",
 		"@types/react-dom": "~16.9.5",

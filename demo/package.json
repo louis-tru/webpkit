@@ -1,14 +1,14 @@
 {
-  "name": "template",
-  "version": "0.1.0",
-  "description": "",
-  "author": "louistru@hotmail.com",
-  "private": true,
-  "scripts": {
-    "dev": "DEV_INLINE=false node node_modules/cport-h5/node_modules/.bin/webpack-dev-server --inline --progress --config node_modules/cport-h5/webpack/index.js",
-    "build": "NODE_ENV=prod node node_modules/cport-h5/webpack/build.js"
-  },
-  "devDependencies": {
-    "cport-h5": "file:../cport-h5"
-  }
+	"name": "demo",
+	"version": "0.1.0",
+	"description": "",
+	"author": "louistru@hotmail.com",
+	"private": true,
+	"scripts": {
+		"dev": "DEV_INLINE=false node node_modules/.bin/webpack-dev-server --inline --progress --config node_modules/cport-h5/webpack/index.js",
+		"build": "NODE_ENV=prod node node_modules/cport-h5/webpack/build.js"
+	},
+	"dependencies": {
+		"cport-h5": "~0.2.2"
+	}
 }

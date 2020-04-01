@@ -34,7 +34,8 @@ import Page, { IDataPage, DataPage } from '../lib/page';
 export default class CMSPage<P = {}, S = {}> extends Page<P, S> {
 
 	reloadNifty() {
-		require('nifty/js/nifty.js').initialize();
+		import('cport-nifty/js/nifty.js').then(e=>e.initialize());
+		// require('cport-nifty/js/nifty.js').initialize();
 	}
 
 	async componentDidMount() {

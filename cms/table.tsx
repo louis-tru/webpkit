@@ -30,9 +30,9 @@
 
 import CMSPage from './page';
 import { React } from '../lib';
-import '../nifty/plugins/datatables/media/js/jquery.dataTables.min.js';
-import '../nifty/plugins/datatables/media/css/jquery.dataTables.min.css';
-import '../nifty/plugins/datatables/extensions/Responsive/css/dataTables.responsive.css';
+import 'cport-nifty/plugins/datatables/media/js/jquery.dataTables.min.js';
+import 'cport-nifty/plugins/datatables/media/css/jquery.dataTables.min.css';
+import 'cport-nifty/plugins/datatables/extensions/Responsive/css/dataTables.responsive.css';
 
 export interface TableProps {
 	initial?: boolean;
@@ -46,9 +46,9 @@ export default class extends CMSPage<TableProps> {
 	async onLoad() {
 		const flag = this.props.initial === undefined ? true : this.props.initial
 
-		// await import('../nifty/plugins/datatables/media/js/jquery.dataTables.min.js');
-		// await import('../nifty/plugins/datatables/media/css/jquery.dataTables.min.css');
-		// await import('../nifty/plugins/datatables/extensions/Responsive/css/dataTables.responsive.css');
+		// await import('cport-nifty/plugins/datatables/media/js/jquery.dataTables.min.js');
+		// await import('cport-nifty/plugins/datatables/media/css/jquery.dataTables.min.css');
+		// await import('cport-nifty/plugins/datatables/extensions/Responsive/css/dataTables.responsive.css');
 
 		if (flag) {
 			($('#demo-dt-basic') as any).dataTable({
