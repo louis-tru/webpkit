@@ -18,7 +18,7 @@ all: build
 build:
 	@$(call cfg,$(ENV))
 	@npm run $@
-	@cd out; tar cfvz publish.tgz public
+	@cd out; tar cfvz public.tgz public
 
 dev:
 	@$(call cfg,$(ENV))
