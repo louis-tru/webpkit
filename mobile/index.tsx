@@ -45,17 +45,15 @@ import {NavDataPage} from './page';
 import errno from '../utils/errno';
 
 export interface RootProps {
-	onLoad?: (root:Root)=>string;
 	scale?: number;
 	title?: string;
 	config?: Dict;
-	initSDK?: boolean;
 	routes?: Route[];
 	notFound?: typeof NavPage;
 }
 
 export class Root extends GlobalState<RootProps> {
-
+	loadingText = 'Loading..';
 	state = { isLoaded: false };
 	private m_path: string;
 
@@ -64,9 +62,6 @@ export class Root extends GlobalState<RootProps> {
 
 		try {
 			this.m_path = await this.onLoad();
-			if ( typeof this.props.onLoad == 'function') {
-				this.m_path = (await this.props.onLoad(this)) || this.m_path;
-			}
 		} catch(err) {
 			if (err.code != errno.ERR_LOGIN_FORWARD[0]) {
 				dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
@@ -87,9 +82,10 @@ export class Root extends GlobalState<RootProps> {
 	}
 
 	async onLoad() {
-		if (this.props.initSDK !== false)
-			await initStore(this.props.config || {});
-		return '';
+		var config = this.props.config;
+		if (config && config.serviceAPI)
+			await initStore(config);
+		return '/';
 	}
 
 	onNav(e: NavArgs) {
@@ -118,9 +114,7 @@ export class Root extends GlobalState<RootProps> {
 				onEnd={()=>this.onEnd()}
 				initURL={url}
 			/>:
-			<div className="init-loading">
-				Loading..
-			</div>
+			<div className="init-loading">{this.loadingText}</div>
 		);
 	}
 }

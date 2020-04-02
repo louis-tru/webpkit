@@ -47,15 +47,13 @@ import errno from '../utils/errno';
 var current: Root | null = null;
 
 export interface RootProps {
-	onLoad?: (root:Root)=>void;
-	initSDK?: boolean;
 	config?: Dict;
+	routes?: Route[];
 	notFound?: typeof Page;
-	routes?: Route[]
 }
 
 export class Root<P extends RootProps = RootProps> extends GlobalState<P, Dict> {
-
+	loadingText = 'Loading..';
 	state = { isLoaded: false } as Dict;
 
 	async componentDidMount() {
@@ -63,9 +61,6 @@ export class Root<P extends RootProps = RootProps> extends GlobalState<P, Dict> 
 
 		try {
 			await this.onLoad();
-			if ( typeof this.props.onLoad == 'function') {
-				await this.props.onLoad(this);
-			}
 		} catch(err) {
 			if (err.code != errno.ERR_LOGIN_FORWARD[0]) {
 				dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
@@ -81,14 +76,15 @@ export class Root<P extends RootProps = RootProps> extends GlobalState<P, Dict> 
 	}
 
 	async onLoad() {
-		if (this.props.initSDK !== false)
-			await initStore(this.props.config || {});
+		var config = this.props.config;
+		if (config && config.serviceAPI)
+			await initStore(config);
 	}
 
 	get history() {
 		return history;
 	}
-	
+
 	render() {
 		return (
 			this.state.isLoaded ?
@@ -96,7 +92,7 @@ export class Root<P extends RootProps = RootProps> extends GlobalState<P, Dict> 
 				notFound={this.props.notFound}
 				routes={this.props.routes}
 			/>:
-			<div className="init-loading">Loading..</div>
+			<div className="init-loading">{this.loadingText}</div>
 		);
 	}
 

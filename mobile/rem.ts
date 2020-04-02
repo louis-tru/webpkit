@@ -44,19 +44,14 @@ function refreshRem() {
 	if (width / dpr > 980) {
 		width = 980 * dpr;
 	}
-	var rem = width / scale;
-	
-	docEl.style.fontSize = rem + 'px';
-
-	rootFontSize = rem;
-	
+	rootFontSize = width / scale;
+	docEl.style.fontSize = rootFontSize + 'px';
 	atomPixel = width / (scale*100);
 
 	// if (doc.body && window.orientation == 0) {
 	// 	var _rem = rem;
 	// 	var html_width = width;
 	// 	var body_width = doc.body.getBoundingClientRect().width;
-
 	// 	if (html_width != body_width) { // 系统字体放大
 	// 		_rem = rem * (html_width / body_width);
 	// 		docEl.style.fontSize = _rem + 'px';

@@ -41,6 +41,7 @@ export interface Options {
 	prompt?: {
 		type?: string;
 		value?: string;
+		input?: InputConstructor;
 	},
 	nomask?: boolean,
 }
@@ -89,8 +90,6 @@ export class Dialog extends Component<Options, {
 			style.background = 'none';
 		}
 
-		// TODO initialValue
-
 		return (
 			<div ref="root" className="dialog" style={style}>
 				<div className="core">
@@ -99,25 +98,31 @@ export class Dialog extends Component<Options, {
 						props.prompt ?
 						<div className="b">
 							<div>{props.text}</div>
-							<input 
-								ref="prompt" 
-								type={props.prompt.type}
-								style={{
-									border: 'solid 0.015rem #ccc',
-									width: '90%',
-									marginTop: '0.1rem',
-									height: '0.5rem',
-									padding: '0 2px',
-								}}
-								onChange={this.m_handleChange_1}
-								value={props.prompt.value}
-							/>
+							{	(()=>{
+								var Input = props.prompt.input;
+								var type = props.prompt.type || 'text';
+								var inputProps = {
+									ref: 'prompt',
+									style: {
+										border: 'solid 0.015rem #ccc',
+										width: '90%',
+										marginTop: '0.1rem',
+										height: '0.5rem',
+										padding: '0 2px',
+									} as React.CSSProperties,
+								}
+								return (
+									Input ? 
+									<Input {...inputProps} value={props.prompt.value} />: 
+									<input {...inputProps} defaultValue={props.prompt.value} type={type} />
+								);
+							})()}
 						</div>:
 						<div className="b" dangerouslySetInnerHTML={{ __html: props.text || ''}}></div>
 					}
 					<div className="btns">
 					{
-						(e=>{
+						(()=>{
 							var r = [];
 							for (var i in buttons) {
 								var t = i[0] == '@' ? i.substr(1) : i;
@@ -152,9 +157,14 @@ export function show(opts: Options) {
 	return Dialog.show(opts);
 }
 
-export function alert(text: string, cb?: ()=>void) {
+export type DialogIn = string | {
+	text?: string;
+	title?: string;
+}
+
+export function alert(In: DialogIn, cb?: ()=>void) {
 	var _cb = cb || function() {}
-	var o = typeof text == 'string' ? { text: text, title: '' }: text;
+	var o = typeof In == 'string' ? { text: In, title: '' }: In;
 	var { text, title } = o;
 	return Dialog.show({
 		title, text, buttons: {
@@ -162,9 +172,9 @@ export function alert(text: string, cb?: ()=>void) {
 	}});
 }
 
-export function confirm(text: string, cb?: (ok: boolean)=>void) {
+export function confirm(In: DialogIn, cb?: (ok: boolean)=>void) {
 	var _cb = cb || function() {};
-	var o = typeof text == 'string' ? { text: text, title: '' } : text;
+	var o = typeof In == 'string' ? { text: In, title: '' } : In;
 	var { text, title } = o;
 	return Dialog.show({title, text, buttons: {
 		'取消': e=>_cb(false),
@@ -172,12 +182,33 @@ export function confirm(text: string, cb?: (ok: boolean)=>void) {
 	}});
 }
 
-export function prompt(text: string, cb?: (value: string, ok: boolean)=>void, type = 'text') {
+export interface InputProps {
+	onChange?: ()=>void;
+	onDone?: ()=>void;
+	value?: string;
+	className?: string;
+	style?: Dict;
+	type?: string;
+}
+
+export interface InputConstructor {
+	new(props: InputProps): Component<InputProps>;
+}
+
+export type PromptIn = string | {
+	text?: string;
+	title?: string;
+	value?: string;
+	type?: string;
+	input?: InputConstructor;
+}
+
+export function prompt(In: PromptIn, cb?: (value: string, ok: boolean)=>void) {
 	var _cb = cb || function() {}
-	var o = typeof text == 'string' ? { text: text, title: '', value: '' }: text;
-	var { text, title, value } = o;
+	var o = typeof In == 'string' ? { text: In, title: '', value: '', type: 'text' }: In;
+	var { text, title, value, type, input } = o;
 	return Dialog.show({title, text, buttons: {
 		'取消': e=> _cb(e.refs.prompt.value, false),
 		'@确定': e=> _cb(e.refs.prompt.value, true),
-	}, prompt: {value, type}});
+	}, prompt: {value, type, input}});
 }

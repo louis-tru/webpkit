@@ -45,17 +45,21 @@ export interface PageProps {
 	match: match;
 }
 
-export default class Page<P = {}, S = {}> extends GlobalState<P & PageProps, S & Dict> {
-	state = {} as S & Dict;
+interface BaseState {
+	loadingComplete?: boolean;
+}
+
+export default class Page<P = {}, S extends BaseState = {}, PP = {}> extends GlobalState<PageProps & PP, S> {
+	state = {} as S;
 	private _url = '';
-	private _params: Dict;
+	private _params: P;
 	private _router: Router;
 
-	constructor(props: P & PageProps) {
+	constructor(props: PP & PageProps) {
 		super(props);
 		utils.assert(this.props.router, 'no router');
 		this._url = this.props.location.pathname + this.props.location.search;
-		this._params = Object.assign({}, this.props.match && this.props.match.params);
+		this._params = Object.assign({}, this.props.match && this.props.match.params) as P;
 		this._router = this.props.router;
 		var search = this.props.location.search.substr(1);
 		if (search) {
@@ -66,7 +70,7 @@ export default class Page<P = {}, S = {}> extends GlobalState<P & PageProps, S &
 					if (value.length > 1) {
 						val = value.join('=');
 					}
-					this._params[key] = decodeURIComponent(val);
+					(this as any)._params[key] = decodeURIComponent(val);
 				}
 			});
 		}
@@ -165,7 +169,7 @@ export default class Page<P = {}, S = {}> extends GlobalState<P & PageProps, S &
 
 }
 
-export class Loading extends Page<{content?:string}> {
+export class Loading extends Page<{}, {}, {content?:string}> {
 	render() {
 		return <div> {this.props.content||''} </div>
 	}
@@ -221,7 +225,7 @@ export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements
 
 	get data(): Data[] {
 		var name = `${this.name}_data`;
-		return this.state[name] || GlobalState.getGlobalState()[name] || [];
+		return (this as any).state[name] || GlobalState.getGlobalState()[name] || [];
 	}
 
 	set data(value: Data[]) {
@@ -253,7 +257,7 @@ export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements
 	}
 
 	get hasMore() {
-		var data = this.state[`${this.name}_data`];
+		var data = (this as any).state[`${this.name}_data`];
 		if (data && data.length) {
 			if (data.length % this.dataPage === 0) {
 				return true;

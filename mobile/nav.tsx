@@ -34,6 +34,7 @@ import * as ReactDom from 'react-dom';
 import { Component } from 'react';
 import GlobalState from '../utils/state';
 import error from '../lib/handles';
+import event,{EventNoticer, Event} from 'nxkit/event';
 
 var loading = '正在载入数据..';
 
@@ -180,8 +181,8 @@ class PrivPage extends Component<PrivPageProps> {
 
 	getStyle(styleStr: string) {
 		return `
-			width: 100vw;
-			min-height: 100vh;
+			width: 100%;
+			min-height: 100%;
 			background: #fff;
 			position: absolute;
 			z-index: ${this.m_index};
@@ -199,7 +200,7 @@ class PrivPage extends Component<PrivPageProps> {
 					requestAnimationFrame(e=>{
 						this.m_panel.style.cssText = this.getStyle(`
 							display: block;
-							transform: translateX(-35vw);
+							transform: translateX(-35vw) translateZ(1px);
 							transition-property: transform;
 							transition-duration: ${time}ms;
 						`);
@@ -235,7 +236,7 @@ class PrivPage extends Component<PrivPageProps> {
 				requestAnimationFrame(e=>{
 					requestAnimationFrame(e=>{
 						this.m_panel.style.cssText = this.getStyle(`
-							transform: translateX(0);
+							transform: translateX(0) translateZ(1px);
 							transition-property: transform;
 							transition-duration: ${time}ms;
 							box-shadow: -1px 0 2px #aaa;
@@ -269,7 +270,7 @@ class PrivPage extends Component<PrivPageProps> {
 					requestAnimationFrame(e=>{
 						this.m_panel.style.cssText = this.getStyle(`
 							display: block;
-							transform: translateX(0);
+							transform: translateX(0) translateZ(1px);
 							transition-property: transform;
 							transition-duration: ${time}ms;
 							border-left: none;
@@ -300,7 +301,7 @@ class PrivPage extends Component<PrivPageProps> {
 			if ( time ) {
 				this.m_panel.style.cssText = this.getStyle(`
 					display: block;
-					transform: translateX(100vw);
+					transform: translateX(100vw) translateZ(1px);
 					transition-property: transform;
 					transition-duration: ${time}ms;
 					box-shadow: -1px 0 2px #aaa;
@@ -338,6 +339,23 @@ export class Nav extends Component<NavProps> {
 	private m_routes: Dict<Route> = {};
 	private m_animating = false;
 
+	readonly onNav = new EventNoticer<Event<NavArgs, Nav>>('Nav', this);
+	readonly onEnd = new EventNoticer<Event<void, Nav>>('End', this);
+
+	triggerNav(data: NavArgs) {
+		if (this.props.onNav) {
+			this.props.onNav(data);
+		}
+		this.onNav.trigger(data);
+	}
+
+	triggerEnd() {
+		if (this.props.onEnd) {
+			this.props.onEnd();
+		}
+		this.onEnd.trigger();
+	}
+
 	componentDidMount() {
 		var routes = this.props.routes;
 		routes.forEach(e=>{
@@ -345,7 +363,7 @@ export class Nav extends Component<NavProps> {
 				e.path = [e.path];
 			}
 			for (var url of e.path) {
-				url = url != '/' ? '/' + url : url;
+				url = url[0] != '/' ? '/' + url : url;
 				this.m_routes[url] = e;
 			}
 		});
@@ -440,10 +458,8 @@ export class Nav extends Component<NavProps> {
 			}
 			page.intoForeground(animateNum, { active: 'push' });
 
-			if (self.props.onNav) {
-				var {pathname,params} = props;
-				self.props.onNav({ action: 'push', pathname, params, count: 1 });
-			}
+			var {pathname,params} = props;
+			self.triggerNav({ action: 'push', pathname, params, count: 1 })
 
 			if (cb)
 				cb(page);
@@ -461,9 +477,7 @@ export class Nav extends Component<NavProps> {
 		if (this.m_animating && animate) return false;
 
 		if (this.length == 1 && index <= -1) {
-			if (this.props.onEnd) {
-				this.props.onEnd();
-			}
+			this.triggerEnd();
 			return false;
 		}
 
@@ -494,9 +508,7 @@ export class Nav extends Component<NavProps> {
 		page.intoForeground(animateNum, { ...result, active: 'pop' });
 		next.intoLeave(animateNum);
 
-		if (this.props.onNav) {
-			this.props.onNav({ action: 'pop', pathname: page.pathname, params: page.params, count: arr.length + 1 });
-		}
+		this.triggerNav({ action: 'pop', pathname: page.pathname, params: page.params, count: arr.length + 1 });
 
 		return true;
 	}
@@ -529,17 +541,14 @@ export class Nav extends Component<NavProps> {
 				}
 				page.m_prev = prev;
 				this.m_pages.deleteOf(cur);
-				if (this.props.onNav)
-					this.props.onNav({ action: 'replace', pathname: page.pathname, params: page.params, count: 0 });
+				this.triggerNav({ action: 'replace', pathname: page.pathname, params: page.params, count: 0 });
 			});
 		}
 
 		var props = this.m_parseProps(url);
 		if (this.m_current) {
 			this.m_current.replace(props);
-			if (this.props.onNav) {
-				this.props.onNav({ action: 'replace', pathname: props.pathname, params: props.params, count: 0 });
-			}
+			this.triggerNav({ action: 'replace', pathname: props.pathname, params: props.params, count: 0 });
 		}
 
 		return true;
@@ -566,11 +575,11 @@ interface BaseProps<P> {
 }
 
 interface BaseState {
-	loadingComplete: boolean;
+	loadingComplete?: boolean;
 }
 
-export class NavPage<P = Dict, S = {}> extends GlobalState<BaseProps<P>, S & BaseState> {
-	state = { loadingComplete: false } as (S & BaseState);
+export class NavPage<P = {}, S extends BaseState = {}> extends GlobalState<BaseProps<P>, S> {
+	state = { } as S;
 	static platform = '';
 
 	mcls(cls = '') {
