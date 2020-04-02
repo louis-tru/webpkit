@@ -70,10 +70,13 @@ export class Dialog extends Component<Options, {
 	m_handleClick_1(cb: (s:any)=>void) {
 		this.setState({ opacity: 0 });
 		setTimeout(()=>{
-			cb(this);
-			var div = (this.refs.root as HTMLDivElement).parentNode as HTMLDivElement;
-			ReactDom.unmountComponentAtNode(div);
-			document.body.removeChild(div);
+			var root = this.refs.root;
+			if (root) {
+				cb(this);
+				var div = (this.refs.root as HTMLDivElement).parentNode as HTMLDivElement;
+				ReactDom.unmountComponentAtNode(div);
+				document.body.removeChild(div);
+			}
 		}, 500);
 	}
 
