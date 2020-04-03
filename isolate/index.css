@@ -1,0 +1,79 @@
+
+	.hc_desktop {
+		width: 100%;
+		height: 100%;
+		position: relative;
+		overflow: hidden;
+	}
+	
+	.hc_desktop_cells {
+		height: 100%;
+		display: flex;
+		flex-direction: row;
+		transform-style: preserve-3d;
+		transition-property: transform /*, filter*/;
+		transition-duration: 0ms;
+	}
+
+	.hc_desktop_cell {
+		height: 100%;
+		flex: 1;
+		float: left;
+		position: relative;
+		z-index: 1;
+	}
+
+	.hc_desktop_cover {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 2;
+		width: 100%;
+		height: 100%;
+		transform-style: preserve-3d;
+		transition-property: transform;
+		transition-duration: 0ms;
+	}
+
+	.hc_desktop_top {
+		top: -100%;
+	}
+
+	.hc_desktop_bottom {
+		top: 100%;
+	}
+
+	.hc_desktop_cell > *, .hc_desktop_cover > * {
+		width: 100%;
+		height: 100%;
+	}
+
+	.hc_desktop_layers {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 3;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+	}
+
+	.hc_desktop_layers > * {
+		pointer-events: all;
+	}
+
+	.hc_desktop_layer {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		transform-origin: 50% 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.hc_desktop_layer > * {
+		transform-origin: 50% 50%;
+	}
