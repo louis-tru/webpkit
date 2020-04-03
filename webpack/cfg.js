@@ -34,7 +34,7 @@
 const fs = require('fs');
 const path = require('path');
 const devinline = process.env.DEV_INLINE == 'false' ? false: true;
-const productName = process.env.PRODUCT_NAME || 'app';
+const productName = process.env.PRODUCT_NAME || readPackageJson().name || 'app';
 const prot = Number(process.env.PORT) || 8080;
 const assetsPublicPath = process.env.VIRTUAL || '';
 const source = path.resolve(process.env.ROOT_DIR || process.cwd());
@@ -52,6 +52,13 @@ var staticAssets = [];
 if (fs.existsSync(source + '/.static')) {
 	staticAssets = fs.readFileSync(source + '/.static', 'utf8')
 		.split('\n').map(e=>e.trim()).filter(e=>e);
+}
+
+function readPackageJson() {
+	try {
+		return require(`${process.cwd()}/package.json`);
+	} catch(err) {}
+	return {};
 }
 
 module.exports = {

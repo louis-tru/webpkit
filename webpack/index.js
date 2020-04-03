@@ -28,6 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
@@ -53,15 +54,22 @@ const sourceMapEnabled = isProd ?
 
 const HOST = config.dev.host;
 const PORT = config.dev.port;
-const name = config.productName;
-const views = 
-	fs.existsSync(`${config.source}/views`) && 
-	fs.statSync(`${config.source}/views`).isDirectory() ?
-	fs.readdirSync('./views').filter(e=>['.jsx','.tsx','.ts','.js'].indexOf(path.extname(e))!=-1).map(e=>{
-		var name = e.substr(0, e.length - path.extname(e).length);
-		return { name, path: `./views/${name}` };
-	}):
-	[{ name: name=='app'?'index': name, path: `./${name}/index` }];
+const inputDir = ['views', 'app'].find(function(name) {
+	if (fs.existsSync(`${config.source}/${name}`) &&
+		fs.statSync(`${config.source}/${name}`).isDirectory())
+		return true;
+}) || '.';
+// assert(inputDir, `Find the entry point form views/app directory`);
+
+const views = fs.readdirSync(inputDir)
+.filter(e=>['.jsx','.tsx','.ts','.js'].indexOf(path.extname(e))!=-1)
+.filter(e=fs.statSync(e).isFile())
+.map(e=>{
+	var name = e.substr(0, e.length - ext.length);
+	var path_ = './' + path.join(inputDir, name);
+	return { name, path: path_, html: path_ + '.html' };
+})
+.filter(e=>fs.existsSync(e.html)&&fs.statSync(e.html).isFile());
 
 // develop plugins
 const develop_plugins = [
@@ -204,7 +212,7 @@ module.exports = {
 				loader: 'url-loader',
 				options: {
 					limit: 10000,
-					name: utils.assetsPath('assets/[name].[hash:7].[ext]')
+					name: utils.assetsPath('res/[name].[hash:7].[ext]')
 				}
 			},
 			...utils.styleLoaders({ sourceMap: sourceMapEnabled, usePostCSS: true, extract: isProd, }),
