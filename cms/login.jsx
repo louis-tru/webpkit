@@ -90,6 +90,8 @@ export default class Login extends CMSPage {
 		alert(text);
 	}
 
+	phoneChange (e) {
+	}
 	render() {
 		const { admin}  = this.props
 		return (
@@ -107,12 +109,12 @@ export default class Login extends CMSPage {
 					<div className="cls-content-sm panel">
 						<div className="panel-body">
 							<div className="mar-ver pad-btm">
-								<h3 className="h4 mar-no">Account Login</h3>
-								<p className="text-muted">Hashii后台管理系统</p>
+							<h3 className="h4 mar-no">{this.props.title ? this.props.title : '后台管理系统'}</h3>
+								{/* <p className="text-muted">Hashii后台管理系统</p> */}
 							</div>
 							{/* <form> */}
 								<div className="form-group">
-									<input type="text" className="form-control" placeholder="请输入手机号" ref="uname" autoFocus />
+									<input type="text" className="form-control" placeholder="请输入手机号" ref="uname" autoFocus onChange={this.phoneChange.bind(this)} maxLength="11"/>
 								</div>
 								<div className="form-group" style={{position: 'relative'}}>
 									<input type={admin ? 'password' : 'text'} maxLength="6" className="form-control" placeholder={admin ? '请输入密码' : '请输入验证码'} ref="upwd"/>
