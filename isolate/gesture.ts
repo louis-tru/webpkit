@@ -1,9 +1,9 @@
-/**
+/*
  * @copyright © 2018 Copyright dphone.com
- * @date 2019-01-08
+ * @date 2020-04-07
  */
 
-import GlobalState from 'cport-h5/utils/state';
+import GlobalState from '../utils/state';
 
 export function getHorizontalDirection(angle: number) {
 	angle += 90;
@@ -125,7 +125,7 @@ export default class Gesture<P = {}, S = {}> extends GlobalState<P, S> {
 				distance: 0, instant_distance: 0,
 			};
 	
-			self.onBeginMove(ev);
+			self.triggerBeginMove(ev);
 		}
 	}
 
@@ -183,7 +183,7 @@ export default class Gesture<P = {}, S = {}> extends GlobalState<P, S> {
 		self._ev = { ...ev };
 		self._begin = true;
 	
-		self.onMove(ev);
+		self.triggerMove(ev);
 	}
 
 	// @private
@@ -225,7 +225,7 @@ export default class Gesture<P = {}, S = {}> extends GlobalState<P, S> {
 
 		ev.begin = false;
 
-		self.onEndMove(ev);
+		self.triggerEndMove(ev);
 	
 		self._identifier = -1;
 		self._time = 0;
@@ -245,10 +245,11 @@ export default class Gesture<P = {}, S = {}> extends GlobalState<P, S> {
 		el.addEventListener('touchend', e=>Gesture.handle_touchend(this, e));
 		this._width = el.clientWidth;
 		this._height = el.clientHeight;
+		super.componentDidMount();
 	}
 
-	protected onBeginMove(e: Ev) {}
-	protected onMove(e: Ev) {}
-	protected onEndMove(e: Ev) {}
+	protected triggerBeginMove(e: Ev) {}
+	protected triggerMove(e: Ev) {}
+	protected triggerEndMove(e: Ev) {}
 
 }

@@ -31,7 +31,7 @@
 import 'normalize.css';
 import '../lib/utils.css';
 import './utils.css';
-import rem from './rem';
+import rem from '../utils/rem';
 import {store, initialize as initStore} from '../utils/store';
 import error from '../lib/handles';
 import * as dialog from '../lib/dialog';

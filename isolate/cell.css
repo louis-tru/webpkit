@@ -1,0 +1,22 @@
+
+.iso_cells {
+	height: 100%;
+	display: flex;
+	flex-direction: row;
+	transform-style: preserve-3d;
+	transition-property: transform /*, filter*/;
+	transition-duration: 0ms;
+}
+
+.iso_cell {
+	height: 100%;
+	flex: 1;
+	float: left;
+	position: relative;
+	z-index: 1;
+}
+
+.iso_cell > * {
+	width: 100%;
+	height: 100%;
+}

@@ -79,7 +79,7 @@ import {
 	getDesktopCtrlTypeWithCom,
 	component,
 } from './ctrl';
-import DesktopDialog from './dialog';
+import DesktopDialog from './dialog_';
 import Gesture, { get_horizontal_direction } from './gesture';
 
 var CELLS_BLUR = 0;
