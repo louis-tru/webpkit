@@ -111,39 +111,39 @@ Gesture<{width?: number|string, height?: number|string}> {
 		return (
 			<div className="iso_sys">
 				<div className="iso_bodys" ref="__bodys">
-					{
-						ctx.body.map(({args,Constructor,app})=>
-							<Constructor {...args} __app__={app} key={app.name} />
-						)
-					}
+				{
+					ctx.body.map(({args,Constructor,app})=>
+						<Constructor {...args} __app__={app} key={app.name} />
+					)
+				}
 				</div>
 				<div className="iso_widgets" ref="__widgets" >
-					{
-						ctx.widget.map(({args,Constructor,app,id})=>
-							<Constructor {...args} __app__={app} key={app.name + id} />
-						)
-					}
+				{
+					ctx.widget.map(({args,Constructor,app,id})=>
+						<Constructor {...args} __app__={app} key={app.name + id} />
+					)
+				}
 				</div>
 				<div className="iso_covers" style={{top: '-100%'}} ref="__tops" >
-					{
-						ctx.top.map(({args,Constructor,app,id})=>
-							<Constructor {...args} __app__={app} key={app.name + id} />
-						)
-					}
+				{
+					ctx.top.map(({args,Constructor,app,id})=>
+						<Constructor {...args} __app__={app} key={app.name + id} />
+					)
+				}
 				</div>
 				<div className="iso_covers" style={{top: '100%'}} ref="__bottoms">
-					{
-						ctx.bottom.map(({args,Constructor,app,id})=>
-							<Constructor {...args} __app__={app} key={app.name + id} />
-						)
-					}
+				{
+					ctx.bottom.map(({args,Constructor,app,id})=>
+						<Constructor {...args} __app__={app} key={app.name + id} />
+					)
+				}
 				</div>
 				<div className="iso_dialogs" ref="__dialogs">
-					{
-						ctx.dialog.map(({args,Constructor,app,id})=>
-							<Constructor {...args} __app__={app} key={app.name + id} />
-						)
-					}
+				{
+					ctx.dialog.map(({args,Constructor,app,id})=>
+						<Constructor {...args} __app__={app} key={app.name + id} />
+					)
+				}
 				</div>
 			</div>
 		);
