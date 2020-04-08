@@ -4,15 +4,15 @@
  */
 
 import {React} from '../lib';
-import {ViewController} from './ctr';
+import {BaseUI} from './ctr';
 
-export class CellPanel extends ViewController {
+export class CellPanel extends BaseUI {
 	render() {
 		return (<div></div>)
 	}
 }
 
-export class Cell extends ViewController {
+export class Cell extends BaseUI {
 	render() {
 		return (<div></div>)
 	}

@@ -4,50 +4,37 @@
  */
 
 import utils from 'nxkit';
+import {React} from '../lib';
 import GlobalState from '../utils/state';
-import ApplicationIsolate from './app';
+import Application from './app';
+import './ctr.css';
 
-export type Type = 'main' | 'widget' | 'top' | 'bottom' | 'layer';
-
-export interface Construction<T = ViewController> {
+export interface Construction<T extends BaseUI = BaseUI> {
 	new(args?: any): T;
-	readonly type: Type;
 }
 
-export class ViewController<P = {}> extends GlobalState<P> {
-	readonly application: ApplicationIsolate;
+export class BaseUI<P = {}> extends GlobalState<P> {
+	readonly application: Application;
 	constructor(props: any) {
-		var application = props.__app as ApplicationIsolate;
+		var application = props.__app__ as Application;
 		utils.assert(application);
 		utils.assert(application.isActive);
 		super(props);
 		this.application = application;
 	}
-	static get type() { return '' }
 }
 
-export class Activity<P = {}> extends ViewController<P> {
-	static get type() { return 'activity' }
+export class Activity<P = {}> extends BaseUI<P> {
 }
 
-export class Widget<P = {}> extends ViewController<P> {
-	static get type() { return 'widget' }
+export class Widget<P = {}> extends BaseUI<P> {
 }
 
-class Cover<P = {}> extends Activity<P> {
-}
-
-export class Top<P = {}> extends Cover<P> {
-	static get type() { return 'top' }
-}
-
-export class Bottom<P = {}> extends Cover<P> {
-	static get type() { return 'bottom' }
-}
-
-/**
- * @class Layer 只在所属的application活跃时对能被显示,除系统application外
- */
-export class Layer<P = {}> extends ViewController<P> {
-	static get type() { return 'layer' }
+export class Dialog<P = {}> extends BaseUI<P> {
+	render() {
+		return (
+			<div className="iso_dialog">
+			</div>
+		);
+	}
 }

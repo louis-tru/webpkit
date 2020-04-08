@@ -62,9 +62,7 @@ export class Root<P extends RootProps = RootProps> extends GlobalState<P, Dict> 
 		try {
 			await this.onLoad();
 		} catch(err) {
-			if (err.code != errno.ERR_LOGIN_FORWARD[0]) {
-				dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
-			}
+			dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
 			throw err;
 		}
 

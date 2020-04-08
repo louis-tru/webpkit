@@ -63,9 +63,7 @@ export class Root extends GlobalState<RootProps> {
 		try {
 			this.m_path = await this.onLoad();
 		} catch(err) {
-			if (err.code != errno.ERR_LOGIN_FORWARD[0]) {
-				dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
-			}
+			dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
 			throw err;
 		}
 
@@ -74,7 +72,6 @@ export class Root extends GlobalState<RootProps> {
 		});
 
 		this.setState({ isLoaded: true });
-		// setTimeout(e=>window.history.replaceState({}, this.props.title||'', '#/'), 10);
 
 		window.addEventListener('hashchange', (e)=>{
 			(this.refs.nav as Nav).current.popPage(true); // 不管前进或后退都当成后退处理

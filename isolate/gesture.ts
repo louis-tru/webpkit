@@ -18,7 +18,7 @@ export interface Point {
 	x: number;
 	y: number;
 }
-	
+
 function get_angle(p1: Point, p2: Point) {
 	var arc = Math.atan2(p1.y - p2.y, p2.x - p1.x);
 	var angle = (arc / Math.PI * 180 + 360) % 360;

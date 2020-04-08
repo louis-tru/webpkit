@@ -45,11 +45,11 @@ function install() {
 function main() {
 
 	if (opts.help) {
-		process.stdout.write('Usage:\n  cport\n');
-		process.stdout.write('     :\n  cport init\n');
-		process.stdout.write('     :\n  cport dev [cfg]\n');
-		process.stdout.write('     :\n  cport build [cfg]\n');
-		process.stdout.write('     :\n  cport install\n');
+		process.stdout.write('Usage:\n  webpkit\n');
+		process.stdout.write('     :\n  webpkit init\n');
+		process.stdout.write('     :\n  webpkit dev [cfg]\n');
+		process.stdout.write('     :\n  webpkit build [cfg]\n');
+		process.stdout.write('     :\n  webpkit install\n');
 		process.stdout.write('  ' + help_info.join('\n  ') + '\n');
 		process.exit();
 	}

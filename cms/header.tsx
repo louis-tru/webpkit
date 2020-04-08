@@ -448,14 +448,16 @@ export default class extends GlobalState {
 		);
 	}
 	renderLogo () {
-		<div className="navbar-header">
-			<a href="/" className="navbar-brand">
-				<img src="nifty/img/logo.png" alt="Nifty Logo" className="brand-icon" />
-				<div className="brand-title">
-					<span className="brand-text">{this.title}</span>
-				</div>
-			</a>
-		</div>
+		return (
+			<div className="navbar-header">
+				<a href="/" className="navbar-brand">
+					<img src="nifty/img/logo.png" alt="Nifty Logo" className="brand-icon" />
+					<div className="brand-title">
+						<span className="brand-text">{this.title}</span>
+					</div>
+				</a>
+			</div>
+		);
 	}
 	render() {
 		return (

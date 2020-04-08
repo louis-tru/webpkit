@@ -3,7 +3,7 @@
  * @date 2020-04-07
  */
 
-import {Activity,Construction,Top,Bottom} from './ctr';
+import {Activity,Construction} from './ctr';
 import ApplicationLauncher from './sys';
 
 /**
@@ -19,9 +19,9 @@ export default abstract class Application {
 	triggerResume() {}
 	triggerBackground() {}
 	triggerForeground() {}
-	abstract main(): Construction<Activity>;
-	top(): Construction<Top> | null { return null; }
-	bottom(): Construction<Bottom> | null { return null; }
+	abstract body(): Construction<Activity>;
+	top(): Construction<Activity> | null { return null; }
+	bottom(): Construction<Activity> | null { return null; }
 }
 
 export interface ApplicationFactory {

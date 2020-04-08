@@ -5,14 +5,22 @@
 
 import utils from 'nxkit';
 import {React} from '../lib';
-import {ViewController,Activity,Widget,Top,Bottom,Layer,Construction,Type} from './ctr';
+import {BaseUI,Activity,Widget,Dialog,Construction} from './ctr';
 import Application, {ApplicationFactory} from './app';
-import './sys.css';
 import Gesture, {Ev} from './gesture';
+import './sys.css';
 
 var _cur: ApplicationLauncher | null = null;
 
-interface ConstructorWrap<T = ViewController> {
+enum Type {
+	BODY = 'body',
+	TOP = 'top',
+	BOTTOM = 'bottom',
+	WIDGET = 'widget',
+	DIALOG = 'dialog',
+}
+
+interface ConstructorWrap<T extends BaseUI = BaseUI> {
 	args?: any;
 	app: Application;
 	Constructor: Construction<T>;
@@ -20,23 +28,21 @@ interface ConstructorWrap<T = ViewController> {
 	type: Type;
 }
 
-function getId<T>(ctr: Construction<T>, app: Application) {
+function getId<T extends BaseUI>(ctr: Construction<T>, app: Application) {
 	utils.assert(ctr);
-	if (!(ctr as any).hasOwnProperty('__id')) {
-		(ctr as any).__id = String(utils.id);
+	if (!(ctr as any).hasOwnProperty('__default_id')) {
+		(ctr as any).__default_id = String(utils.id);
 	}
-	return String((ctr as any).__id) + '_' + app.name;
+	return String((ctr as any).__default_id) + '_' + app.name;
 }
 
-export default class ApplicationLauncher extends Gesture<{width?: number|string, height?: number|string}> {
+export default class ApplicationLauncher extends 
+Gesture<{width?: number|string, height?: number|string}> {
 	public state = { __ch: 0 };
 	private _installed: Map<string, ()=>Promise<ApplicationFactory>> = new Map();
-	private _app: Application | null = null; // current launch app
-	private __main: ConstructorWrap<Activity>[] = [];
-	private __widget: ConstructorWrap<Widget>[] = [];
-	private __top: ConstructorWrap<Top>[] = [];
-	private __bottom: ConstructorWrap<Bottom>[] = [];
-	private __layer: ConstructorWrap<Layer>[] = [];
+	private _sys: Application | null = null; // sys app
+	private _cur: Activity | null = null; // current activity
+	private _apps: Application[] = [];
 	private _IDs: Map<string, ConstructorWrap> = new Map();
 
 	componentWillMount() {
@@ -70,67 +76,72 @@ export default class ApplicationLauncher extends Gesture<{width?: number|string,
 		// TODO ...
 	}
 
-	private _show<T = ViewController>(app: Application, ctr: Construction<T>, args?: any) {
-		utils.extendClass(ViewController, ctr);
+	private _load<T extends BaseUI>(app: Application, ctr: Construction<T>, type: Type, args?: any) {
+		utils.extendClass(BaseUI, ctr);
 		var id = String(args ? args.id: getId(ctr, app));
-		var type = ctr.type;
-		utils.assert(type, 'Incorrect type');
-		utils.assert(!this._IDs.has(id), 'ID already exists');
+		utils.assert(!this._IDs.has(id), `ID already exists "${id}"`);
 		var c: ConstructorWrap<T> = { app, args, Constructor: ctr, id, type };
-		(this as any)['__' + type].push(c);
 		this._IDs.set(id, c as any);
 		this.setState({ __ch: this.state.__ch + 1 });
+		return id;
 	}
 
-	private _close<T = ViewController>(app: Application, id: string | Construction<T>) {
-		var id_: string;
-		if (typeof id == 'string') {
-			id_ = String(id) + '_' + app.name;
-		} else {
-			id_ = getId(id, app);
-		}
+	private _destroy<T extends BaseUI>(app: Application, id: string | Construction<T>) {
+		var id_: string = typeof id == 'string' ? String(id) + '_' + app.name: getId(id, app);
 		var c = this._IDs.get(id_);
 		if (c) {
-			(this as any)['__' + c.type].deleteOf(c);
+			this._IDs.delete(id_);
 			this.setState({ __ch: this.state.__ch + 1 });
 		}
 	}
 
 	render() {
+		var ctx = {
+			body: [] as  ConstructorWrap<Activity>[],
+			top: [] as  ConstructorWrap<Activity>[],
+			bottom: [] as ConstructorWrap<Activity>[],
+			widget: [] as  ConstructorWrap<Widget>[],
+			dialog: [] as ConstructorWrap<Dialog>[],
+		};
+
+		for (var [,c] of this._IDs) {
+			ctx[c.type].push(c as any);
+		}
+
 		return (
 			<div className="iso_sys">
-				<div className="iso_main" ref="__main">
+				<div className="iso_bodys" ref="__bodys">
 					{
-						this.__main.map(({args,Constructor,app})=>
-							<Constructor {...args} app={app} key={app.name} />
+						ctx.body.map(({args,Constructor,app})=>
+							<Constructor {...args} __app__={app} key={app.name} />
 						)
 					}
 				</div>
-				<div className="iso_layers" ref="__widget" >
+				<div className="iso_widgets" ref="__widgets" >
 					{
-						this.__widget.map(({args,Constructor,app,id})=>
-							<Constructor {...args} app={app} key={app.name + id} />
+						ctx.widget.map(({args,Constructor,app,id})=>
+							<Constructor {...args} __app__={app} key={app.name + id} />
 						)
 					}
 				</div>
-				<div className="iso_cover" style={{top: '-100%'}} ref="__top" >
+				<div className="iso_covers" style={{top: '-100%'}} ref="__tops" >
 					{
-						this.__top.map(({args,Constructor,app,id})=>
-							<Constructor {...args} app={app} key={app.name + id} />
+						ctx.top.map(({args,Constructor,app,id})=>
+							<Constructor {...args} __app__={app} key={app.name + id} />
 						)
 					}
 				</div>
-				<div className="iso_cover" style={{top: '100%'}} ref="__bottom"> */}
+				<div className="iso_covers" style={{top: '100%'}} ref="__bottoms">
 					{
-						this.__bottom.map(({args,Constructor,app,id})=>
-							<Constructor {...args} app={app} key={app.name + id} />
+						ctx.bottom.map(({args,Constructor,app,id})=>
+							<Constructor {...args} __app__={app} key={app.name + id} />
 						)
 					}
 				</div>
-				<div className="iso_layers" ref="__layer">
+				<div className="iso_dialogs" ref="__dialogs">
 					{
-						this.__layer.map(({args,Constructor,app,id})=>
-							<Constructor {...args} app={app} key={app.name + id} />
+						ctx.dialog.map(({args,Constructor,app,id})=>
+							<Constructor {...args} __app__={app} key={app.name + id} />
 						)
 					}
 				</div>

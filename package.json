@@ -1,6 +1,6 @@
 {
-	"name": "cport-h5",
-	"version": "0.2.7",
+	"name": "webpkit",
+	"version": "0.1.0",
 	"description": "",
 	"main": "index.js",
 	"types": "index.ts",
@@ -10,7 +10,7 @@
 		"build": "NODE_ENV=prod node webpack/build.js"
 	},
 	"bin": {
-		"cport": "shell.js"
+		"webpkit": "shell.js"
 	},
 	"dependencies": {
 		"cport-nifty": "~0.1.0",

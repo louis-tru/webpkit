@@ -72,7 +72,6 @@ export default class Loading extends Component<{text?: string}> {
 		var div = document.getElementById(id);
 		if (div && div.getAttribute('__') == 'Loading') {
 			ReactDom.unmountComponentAtNode(div);
-			document.body.removeChild(div);
 		}
 	}
 }

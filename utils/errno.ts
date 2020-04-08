@@ -30,8 +30,6 @@
 
 export class ErrnoList {
 	ERR_UNKNOWN_ERROR: ErrnoCode = [-30000, 'UNKNOWN_ERROR'];
-	ERR_METHOD_CALL_TIMEOUT: ErrnoCode = [-50006, '连接超时', '方法调用超时'];
-	ERR_LOGIN_FORWARD: ErrnoCode = [500001, '登录跳转', 'login forward'];
 }
 
 export default new ErrnoList();
