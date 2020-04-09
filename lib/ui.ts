@@ -32,11 +32,12 @@ import * as React from 'react';
 import GlobalState from './state';
 
 interface UIState {
-	loadingComplete?: boolean;
+	__loaded?: boolean;
 }
 
-export default class UI<P = {}, S extends UIState = {}, PP = any> extends GlobalState<P, S, PP> {
-	state = {} as S;
+export default class UI<P = {}, S extends UIState = {}, SS = any> extends GlobalState<P, S, SS> {
+	private m_mounted?: boolean;
+	private m_loaded?: boolean;
 
 	updateState(data: S) {
 		var state: S = {} as S;
@@ -50,33 +51,54 @@ export default class UI<P = {}, S extends UIState = {}, PP = any> extends Global
 	}
 
 	get isLoaded() {
-		return !!this.state.loadingComplete;
+		return !!this.m_loaded;
+	}
+
+	get isMounted() {
+		return !!this.m_mounted;
+	}
+
+	async componentWillMount() {
+		super.componentWillMount(); // call super
+		var r = this.triggerLoad() as any; // trigger event Load, private props visit
+		if (r instanceof Promise) {
+			r.then(()=>{
+				this.m_loaded = true;
+				this.setState({ __loaded: true } as any);
+			});
+		} else {
+			this.m_loaded = true;
+			this.setState({ __loaded: true } as any);
+		}
 	}
 
 	async componentDidMount() {
-		super.componentDidMount();
-		await this.onLoad();
-		this.setState({ loadingComplete: true } as any);
+		this.m_mounted = true;
+		this.triggerMounted();
 	}
 
-	componentWillUnmount() {
-		super.componentWillUnmount();
-		this.onUnload();
+	async componentWillUnmount() {
+		super.componentWillUnmount(); // call super
+		this.triggerRemove();
 	}
 
-	componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-		this.onError(error, errorInfo);
+	async componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+		this.triggerError(error, errorInfo);
 	}
 
-	protected onLoad() {
+	protected triggerLoad() {
 		// overwrite
 	}
 
-	protected onUnload() {
+	protected triggerMounted() {
 		// overwrite
 	}
 
-	protected onError(error: Error, errorInfo: React.ErrorInfo) {
+	protected triggerRemove() {
+		// overwrite
+	}
+
+	protected triggerError(error: Error, errorInfo: React.ErrorInfo) {
 		// overwrite
 	}
 

@@ -14,7 +14,7 @@ body {
 	left: 0;
 }
 
-.iso_bodys, .iso_widgets, .iso_covers, .iso_dialogs,
+.iso_bodys, .iso_widgets, .iso_covers,
 .iso_bodys > *, .iso_covers > * {
 	position: absolute;
 	top: 0;
@@ -42,11 +42,7 @@ body {
 	pointer-events: none;
 }
 
-.iso_dialogs {
-	z-index: 4;
-	pointer-events: none;
-}
-
-.iso_dialogs > *, .iso_widgets > * {
+.iso_widgets > * {
+	position: absolute;
 	pointer-events: initial;
 }

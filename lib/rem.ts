@@ -46,7 +46,7 @@ function refreshRem() {
 	}
 	rootFontSize = width / scale;
 	docEl.style.fontSize = rootFontSize + 'px';
-	atomPixel = width / (scale*100);
+	atomPixel = width / (scale * 100);
 
 	// if (doc.body && window.orientation == 0) {
 	// 	var _rem = rem;

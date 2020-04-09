@@ -77,8 +77,7 @@ function route(router: Router, { path, page, ...args }: { path: string, page: ()
 
 export interface Route extends Dict {
 	path: string | string[];
-	page(): Promise<any>;
-	// page(): Promise<{ default: typeof Page }>;
+	page(): Promise<any/*{ default: typeof Page }*/>;
 	exact?: boolean;
 }
 

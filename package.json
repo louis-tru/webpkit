@@ -1,14 +1,10 @@
 {
 	"name": "webpkit",
 	"version": "0.1.0",
-	"description": "",
+	"description": "Web Page KIT Framework",
 	"main": "index.js",
 	"types": "index.ts",
 	"author": "louistru@hotmail.com",
-	"scripts": {
-		"dev": "DEV_INLINE=false webpack-dev-server --inline --progress --config webpack/index.js",
-		"build": "NODE_ENV=prod node webpack/build.js"
-	},
 	"bin": {
 		"webpkit": "shell.js"
 	},
@@ -89,9 +85,5 @@
 		"uglifyjs-webpack-plugin": "^1.1.1",
 		"qiniu-js": "^2.4.0",
 		"webpack-bundle-analyzer": "^3.6.0"
-	},
-	"engines": {
-		"node": ">= 6.0.0",
-		"npm": ">= 3.0.0"
 	}
 }

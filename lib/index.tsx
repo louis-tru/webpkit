@@ -51,10 +51,10 @@ export interface RootProps {
 	notFound?: typeof Page;
 }
 
-export class Root<P extends RootProps = RootProps> extends UI<P, Dict> {
+export class Root<P extends RootProps = {}, S = {}> extends UI<P, S> {
 	loadingText = 'Loading..';
 
-	async onLoad() {
+	protected async triggerLoad() {
 		current = this;
 		var config = this.props.config;
 		if (config && config.serviceAPI) {

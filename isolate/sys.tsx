@@ -44,14 +44,14 @@ Gesture<{width?: number|string, height?: number|string}> {
 	private _apps: Application[] = [];
 	private _IDs: Map<string, ConstructorWrap> = new Map();
 
-	componentWillMount() {
+	triggerLoad() {
 		utils.assert(!_cur);
 		_cur = this;
+		super.triggerLoad();
 	}
 
-	componentWillUnmount() {
+	triggerRemove() {
 		_cur = null;
-		super.componentWillUnmount();
 	}
 
 	/**
@@ -85,13 +85,15 @@ Gesture<{width?: number|string, height?: number|string}> {
 		return id;
 	}
 
-	private _destroy<T>(app: Application, id: string | Construction<T>) {
+	private _destroy<T>(app: Application, id: string | Construction<T>): boolean {
 		var id_: string = typeof id == 'string' ? String(id) + '_' + app.name: getId(id, app);
 		var c = this._IDs.get(id_);
 		if (c) {
 			this._IDs.delete(id_);
 			this.setState({ __ch: this.state.__ch + 1 });
+			return true;
 		}
+		return false;
 	}
 
 	render() {
@@ -140,12 +142,18 @@ Gesture<{width?: number|string, height?: number|string}> {
 		);
 	}
 
+	protected get $el() {
+		return this.refs.iso_sys as HTMLElement;
+	}
+
 	protected triggerBeginMove(e: Ev) {
 		// TODO ...
 	}
+
 	protected triggerMove(e: Ev) {
 		// TODO ...
 	}
+
 	protected triggerEndMove(e: Ev) {
 		// TODO ...
 	}

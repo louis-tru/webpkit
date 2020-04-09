@@ -38,9 +38,9 @@ export default class CMSPage<P = {}, S = {}> extends Page<P, S> {
 		require('cport-nifty/js/nifty.js').initialize();
 	}
 
-	async componentDidMount() {
+	async triggerLoad() {
 		this.reloadNifty();
-		await super.componentDidMount();
+		await super.triggerLoad();
 	}
 }
 

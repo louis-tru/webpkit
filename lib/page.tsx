@@ -96,13 +96,11 @@ export default class Page<P = {}, S = {}, PP = {}> extends UI<PageProps & PP, S>
 		return this._params;
 	}
 
-	onLoad() {
+	triggerLoad() {
 		this._router && ((this._router as any)._current = this);
-		super.onLoad();
 	}
 
-	onUnload() {
-		super.onUnload();
+	triggerRemove() {
 		if (this._router && (this._router as any)._current === this) {
 			(this._router as any)._current = null;
 		}

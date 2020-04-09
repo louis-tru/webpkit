@@ -1,5 +1,5 @@
 
-@import "../font/iconfont.css";
+@import "../accets/iconfont.css";
 
 * {
 	-webkit-touch-callout: none; 
@@ -81,7 +81,7 @@ view {
 }
 
 .g_upload div.upload_icon {
-	background-image: url(./img/icon_input_uploadpic@2x.png);
+	background-image: url(../assets/lib/icon_input_uploadpic@2x.png);
 	position: absolute;
 	z-index: 1;
 	width: 0.4rem;

@@ -73,13 +73,12 @@ export interface CMSRootProps extends RootProps {
 	footer?: JSX.Element;
 }
 
-export class CMSRoot<P extends CMSRootProps = CMSRootProps> extends Root<P> {
+export class CMSRoot<P extends CMSRootProps = CMSRootProps, S = {}> extends Root<P, S> {
 
 	constructor(props: P) {
 		super(props);
-		this.state.is_404 = false;
 		this.history.listen(()=> {
-			if (this.state.is_404) {
+			if ((this.state as any).__is_404) {
 				this._no404();
 			}
 		});
@@ -89,8 +88,8 @@ export class CMSRoot<P extends CMSRootProps = CMSRootProps> extends Root<P> {
 		var _NotFound = this.props.notFound || NotFound as any;
 
 		return (
-			this.state.isLoaded ?
-			this.state.is_404 ? <_NotFound />:
+			this.isLoaded ?
+			(this.state as any).__is_404 ? <_NotFound />:
 			<Router history={this.history}>
 				<Switch>
 
@@ -128,11 +127,11 @@ export class CMSRoot<P extends CMSRootProps = CMSRootProps> extends Root<P> {
 	}
 
 	_404() {
-		this.setState({ is_404: true });
+		this.setState({ __is_404: true } as any);
 	}
 
 	_no404() {
-		this.setState({ is_404: false });
+		this.setState({ __is_404: false } as any);
 	}
 
 	login() {

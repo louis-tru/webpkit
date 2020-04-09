@@ -3,7 +3,7 @@
  * @date 2020-04-07
  */
 
-import GlobalState from '../lib/state';
+import UI from '../lib/ui';
 
 export function getHorizontalDirection(angle: number) {
 	angle += 90;
@@ -67,7 +67,7 @@ export interface Ev {
 	distance: number, instant_distance: number,
 }
 
-export default class Gesture<P = {}, S = {}> extends GlobalState<P, S> {
+export default abstract class Gesture<P = {}, S = {}> extends UI<P, S> {
 	private _identifier = -1;
 	private _begin_x = 0;
 	private _begin_y = 0;
@@ -236,16 +236,15 @@ export default class Gesture<P = {}, S = {}> extends GlobalState<P, S> {
 		self._begin_x = self._begin_y = self._x = self._y = 0;
 	}
 
-	protected get $el(): HTMLElement { throw 'unimpl' }
+	protected abstract get $el(): HTMLElement;
 
-	componentDidMount() {
+	triggerMounted() {
 		var el = this.$el;
 		el.addEventListener('touchstart', (e)=>Gesture.handle_touchstart(this, e));
 		el.addEventListener('touchmove', e=>Gesture.handle_touchmove(this, e));
 		el.addEventListener('touchend', e=>Gesture.handle_touchend(this, e));
 		this._width = el.clientWidth;
 		this._height = el.clientHeight;
-		super.componentDidMount();
 	}
 
 	protected triggerBeginMove(e: Ev) {}

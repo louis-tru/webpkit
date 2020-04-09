@@ -30,14 +30,15 @@
 
 import CMSPage from './page';
 import { Root, React } from '../lib';
+import {CMSRoot} from './index';
 
 export default class extends CMSPage {
 
-	componentDidMount() {
-		if (Root.current) {
-			(Root.current as any)._404();
-		}
-		return super.componentDidMount();
+	triggerLoad() {
+		try {
+			(Root.current as CMSRoot)._404();
+		} catch(err) {}
+		return super.triggerLoad();
 	}
 
 	render() {

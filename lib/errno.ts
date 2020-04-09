@@ -28,8 +28,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-export class ErrnoList {
-	ERR_UNKNOWN_ERROR: ErrnoCode = [-30000, 'UNKNOWN_ERROR'];
+import {ErrnoList} from 'nxkit/errno';
+
+export class ErrnoList_1 extends ErrnoList {
+	// define errno
 }
 
-export default new ErrnoList();
+export default new ErrnoList_1();

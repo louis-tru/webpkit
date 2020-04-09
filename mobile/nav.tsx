@@ -32,7 +32,6 @@ import utils from 'nxkit';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Component } from 'react';
-import GlobalState from '../lib/state';
 import UI from '../lib/ui';
 import error from '../lib/handles';
 import {EventNoticer, Event} from 'nxkit/event';
@@ -126,9 +125,7 @@ class PrivPage extends Component<PrivPageProps> {
 
 	onShow(data = {}) {
 		try {
-			if ((this.refs.self as NavPage).onShow) {
-				(this.refs.self as NavPage).onShow(data);
-			}
+			(this.refs.self as NavPage).triggerShow(data);
 		} catch(err) {
 			console.error(err);
 		}
@@ -136,9 +133,7 @@ class PrivPage extends Component<PrivPageProps> {
 
 	onHide() {
 		try {
-			if ((this.refs.self as NavPage).onHide) {
-				(this.refs.self as NavPage).onHide();
-			}	
+			(this.refs.self as NavPage).triggerHide();
 		} catch(err) {
 			console.error(err);
 		}
@@ -613,24 +608,22 @@ export class NavPage<P = {}, S = {}, SS = any> extends UI<BaseProps<P>, S, SS> {
 		return this.props.params;
 	}
 
-	async onLoad() {
-		await super.onLoad();
+	async triggerLoad() {
 		if (this.props.priv.status == 0) {
-			this.onShow({ active: 'init' });
+			this.triggerShow({ active: 'init' });
 		}
 	}
 
-	onUnload() {
+	triggerRemove() {
 		if (this.props.priv.status == -1)
-			this.onHide();
-		super.onUnload();
+			this.triggerHide();
 	}
 
-	onShow(data: { active?: 'init', [key: string]: any } = {}) {
+	triggerShow(data: { active?: 'init', [key: string]: any } = {}) {
 		// overwrite
 	}
 
-	onHide() {
+	triggerHide() {
 		// overwrite
 	}
 	

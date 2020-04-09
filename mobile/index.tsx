@@ -51,32 +51,11 @@ export interface RootProps {
 	notFound?: typeof NavPage;
 }
 
-export class Root extends UI<RootProps> {
+export class Root<P extends RootProps = {}, S = {}> extends UI<P, S> {
 	loadingText = 'Loading..';
-	private m_path: string;
+	protected startupPath: string = '/';
 
-	async componentDidMount() {
-		rem.initialize(this.props.scale);
-
-		try {
-			this.m_path = await this.onLoad();
-		} catch(err) {
-			dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
-			throw err;
-		}
-
-		store.addEventListener('uncaughtException', function(err) {
-			error(err.data);
-		});
-
-		this.setState({ isLoaded: true });
-
-		window.addEventListener('hashchange', (e)=>{
-			(this.refs.nav as Nav).current.popPage(true); // 不管前进或后退都当成后退处理
-		});
-	}
-
-	async onLoad() {
+	async triggerLoad() {
 		rem.initialize(this.props.scale);
 
 		var config = this.props.config;
@@ -96,34 +75,34 @@ export class Root extends UI<RootProps> {
 		window.addEventListener('hashchange', (e)=>{
 			(this.refs.nav as Nav).current.popPage(true); // 不管前进或后退都当成后退处理
 		});
-
-		return '/';
 	}
 
-	onNav(e: NavArgs) {
+	triggerNav(e: NavArgs) {
+		var title = this.props.title as string || '';
 		if (e.action == 'pop') {
 			// window.history.go(-e.count);
 		} else if (e.action == 'push') {
-			window.history.pushState({}, this.props.title||'', '#' + e.pathname);
+			window.history.pushState({}, title, '#' + e.pathname);
 		} else { // replace
-			window.history.replaceState({}, this.props.title||'', '#' + e.pathname);
+			window.history.replaceState({}, title, '#' + e.pathname);
 		}
 	}
 
-	onEnd() {
+	triggerEnd() {
 		// console.log('closeApp');
 	}
 
 	render() {
-		var url = this.m_path || (location.hash ? location.hash.replace(/^#/, '') : '/');
+		var url = this.startupPath || (location.hash ? location.hash.replace(/^#/, '') : '/');
+		var routes = this.props.routes as Route[] || [];
 		return (
 			this.isLoaded ?
 			<Nav 
 				ref="nav"
 				notFound={this.props.notFound || _404}
-				routes={this.props.routes||[]}
-				onNav={e=>this.onNav(e)}
-				onEnd={()=>this.onEnd()}
+				routes={routes}
+				onNav={e=>this.triggerNav(e)}
+				onEnd={()=>this.triggerEnd()}
 				initURL={url}
 			/>:
 			<div className="init-loading">{this.loadingText}</div>
