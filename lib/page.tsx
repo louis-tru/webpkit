@@ -30,7 +30,8 @@
 
 import utils from 'nxkit';
 import * as React from 'react';
-import GlobalState from '../utils/state';
+import UI from './ui';
+import GlobalState from './state';
 import * as _history from 'history';
 import {Location} from 'history';
 import {Router} from './router';
@@ -45,12 +46,7 @@ export interface PageProps {
 	match: match;
 }
 
-interface BaseState {
-	loadingComplete?: boolean;
-}
-
-export default class Page<P = {}, S extends BaseState = {}, PP = {}> extends GlobalState<PageProps & PP, S> {
-	state = {} as S;
+export default class Page<P = {}, S = {}, PP = {}> extends UI<PageProps & PP, S> {
 	private _url = '';
 	private _params: P;
 	private _router: Router;
@@ -100,42 +96,16 @@ export default class Page<P = {}, S extends BaseState = {}, PP = {}> extends Glo
 		return this._params;
 	}
 
-	get loaded() {
-		return !!this.state.loadingComplete;
-	}
-
-	updateState(data: S) {
-		var state: S = {} as S;
-		for (var i in data) {
-			var o = data[i];
-			if (typeof o == 'object' && !Array.isArray(o)) {
-				state[i] = Object.assign(this.state[i] || {}, data[i]);
-			}
-		}
-		this.setState(state);
-	}
-
-	async componentDidMount() {
-		super.componentDidMount();
+	onLoad() {
 		this._router && ((this._router as any)._current = this);
-		await this.onLoad();
-		this.setState({ loadingComplete: true } as any);
+		super.onLoad();
 	}
 
-	componentWillUnmount() {
-		super.componentWillUnmount();
-		this.onUnload();
+	onUnload() {
+		super.onUnload();
 		if (this._router && (this._router as any)._current === this) {
 			(this._router as any)._current = null;
 		}
-	}
-
-	protected onLoad() {
-		// overwrite
-	}
-
-	protected onUnload() {
-		// overwrite
 	}
 
 	goBack() {

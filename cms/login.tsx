@@ -31,7 +31,7 @@
 import utils from 'nxkit';
 import { React } from '../lib';
 import {alert} from '../lib/dialog';
-import GlobalState from '../utils/state';
+import GlobalState from '../lib/state';
 
 /**
  * @class Login

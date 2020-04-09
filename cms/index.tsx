@@ -28,14 +28,17 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+import 'nxkit';
 import * as React from 'react';
 import CMSPage, {CMSDataPage} from './page';
-import './utils.css';
 import * as jq from 'jquery';
 import * as raphael from 'raphael';
+import './util.css';
 
-(globalThis as any).jQuery = (globalThis as any).$ = jq;
-(globalThis as any).Raphael = raphael;
+const glob = globalThis as any;
+
+glob.jQuery = glob.$ = jq;
+glob.Raphael = raphael;
 
 import './_ext';
 // import '../nifty/plugins/sparkline/jquery.sparkline.js';
@@ -57,7 +60,7 @@ import Login from './login';
 import Menu from './menu';
 import Header from './header';
 import Footer from './footer';
-import ExamplesMenu from '../test/cms-menu';
+import ExamplesMenu from './test/cms-menu';
 import NotFound from './404';
 
 export * from '../lib';

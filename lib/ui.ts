@@ -28,13 +28,56 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { Root,ReactDom,React } from 'cport-h5';
-import router from './router';
+import * as React from 'react';
+import GlobalState from './state';
 
-ReactDom.render(
-	<Root 
-		initSDK={false} 
-		routes={router}
-	/>,
-	document.querySelector('#app')
-);
+interface UIState {
+	loadingComplete?: boolean;
+}
+
+export default class UI<P = {}, S extends UIState = {}, PP = any> extends GlobalState<P, S, PP> {
+	state = {} as S;
+
+	updateState(data: S) {
+		var state: S = {} as S;
+		for (var i in data) {
+			var o = data[i];
+			if (typeof o == 'object' && !Array.isArray(o)) {
+				state[i] = Object.assign(this.state[i] || {}, data[i]);
+			}
+		}
+		this.setState(state);
+	}
+
+	get isLoaded() {
+		return !!this.state.loadingComplete;
+	}
+
+	async componentDidMount() {
+		super.componentDidMount();
+		await this.onLoad();
+		this.setState({ loadingComplete: true } as any);
+	}
+
+	componentWillUnmount() {
+		super.componentWillUnmount();
+		this.onUnload();
+	}
+
+	componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+		this.onError(error, errorInfo);
+	}
+
+	protected onLoad() {
+		// overwrite
+	}
+
+	protected onUnload() {
+		// overwrite
+	}
+
+	protected onError(error: Error, errorInfo: React.ErrorInfo) {
+		// overwrite
+	}
+
+}

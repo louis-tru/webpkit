@@ -28,47 +28,32 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import utils from 'nxkit';
-import req from 'nxkit/request';
-import path from 'nxkit/path';
-import {Page,React} from 'cport-h5';
-import './index.css';
+import { React, CMSPage } from '../..';
 
-const LINES = 100;
+import ContentContainer from './cms-content-container';
+import Aside from './cms-aside';
+import DemoSet from './cms-demo-set';
 
-export default class Index extends Page {
-	
-	state = { logs: [], color: path.getParam('color') || '0f0' };
+import './node_modules/nifty/css/demo/nifty-demo-icons.css';
+import './node_modules/nifty/css/demo/nifty-demo.css';
 
-	async showLog() {
-		var {data:text} = await req.get(`./static/${path.getParam('log')||'log'}.txt`);
-		var logsAll = (text + '').split(/\n/);
-		var index = 0, len = logsAll.length;
-		var logs = [];
-		while (true) {
-			logs.push(logsAll[index]);
-			if (logs.length > LINES) {
-				logs.shift();
-			}
-			this.setState({ logs });
-			await utils.sleep(utils.random(50, 1000));
-			index = (index + 1) % len;
-		}
-	}
+export default class extends CMSPage {
 
 	onLoad() {
-		this.showLog();
+		require('./node_modules/nifty/js/demo/nifty-demo.js.js').default();
+		require('./node_modules/nifty/js/demo/dashboard.jsx.js').default();
 	}
 
-	render() {
+	render(...agrs) {
 		return (
-			<div className="index">
-				<div className="con">
-					{this.state.logs.map((e,i)=>
-						<div className="log" style={{color:'#'+this.state.color}} key={i}>{e}</div>
-					)}
+			<div className="boxed">
+				<div className="boxed">
+					<Aside />
+					<ContentContainer />
 				</div>
+				<DemoSet />
 			</div>
 		);
 	}
+
 }

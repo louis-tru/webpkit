@@ -32,9 +32,9 @@ import nxkit from 'nxkit';
 import path from 'nxkit/path';
 import * as React from 'react';
 import {Component} from 'react';
-import store from '../utils/store';
+import store from './store';
 import './utils.css';
-import access from '../utils/auth';
+import access from './auth';
 import Loading from './loading';
 // import { Toast } from './antd';
 

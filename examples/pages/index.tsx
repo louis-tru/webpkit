@@ -28,74 +28,47 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import 'normalize.css';
-import './util.css';
 import utils from 'nxkit';
-import {store,initialize as initStore} from './store';
-import handles from './handles';
-import { Router, Route, history } from './router';
-import Page, { DataPage } from './page';
-import * as ReactDom from 'react-dom';
-import * as React from 'react';
-import {Component} from 'react';
-import {Link} from 'react-router-dom';
-import * as _history from 'history';
-import * as dialog from './dialog';
-import UI from './ui';
+import req from 'nxkit/request';
+import path from 'nxkit/path';
+import {Page,React} from 'webpkit';
+import './index.css';
 
-var current: Root | null = null;
+const LINES = 100;
 
-export interface RootProps {
-	config?: Dict;
-	routes?: Route[];
-	notFound?: typeof Page;
-}
+export default class Index extends Page {
+	
+	state = { logs: [], color: path.getParam('color') || '0f0' };
 
-export class Root<P extends RootProps = RootProps> extends UI<P, Dict> {
-	loadingText = 'Loading..';
-
-	async onLoad() {
-		current = this;
-		var config = this.props.config;
-		if (config && config.serviceAPI) {
-			try {
-				await initStore(config);
-			} catch(err) {
-				dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
-				throw err;
+	async showLog() {
+		var {data:text} = await req.get(`./static/${path.getParam('log')||'log'}.txt`);
+		var logsAll = (text + '').split(/\n/);
+		var index = 0, len = logsAll.length;
+		var logs = [];
+		while (true) {
+			logs.push(logsAll[index]);
+			if (logs.length > LINES) {
+				logs.shift();
 			}
+			this.setState({ logs });
+			await utils.sleep(utils.random(50, 1000));
+			index = (index + 1) % len;
 		}
-		store.addEventListener('uncaughtException', function(err) {
-			handles(err.data);
-		});
 	}
 
-	get history() {
-		return history;
+	onLoad() {
+		this.showLog();
 	}
 
 	render() {
 		return (
-			this.isLoaded ?
-			<Router ref="router" 
-				notFound={this.props.notFound}
-				routes={this.props.routes}
-			/>:
-			<div className="init-loading">{this.loadingText}</div>
+			<div className="index">
+				<div className="con">
+					{this.state.logs.map((e,i)=>
+						<div className="log" style={{color:'#'+this.state.color}} key={i}>{e}</div>
+					)}
+				</div>
+			</div>
 		);
 	}
-
-	static get current() {
-		utils.assert(current);
-		return current as Root;
-	}
 }
-
-export {
-	React,
-	ReactDom,
-	Component,
-	Router,
-	Page, DataPage,
-	Link,
-};

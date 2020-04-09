@@ -63,8 +63,6 @@
 	</div>
 </template>
 
-<script>
-
 import { DesktopCtrl, component } from './ctrl';
 
 /**
@@ -115,6 +113,22 @@ var DesktopDialog = component({
 
 export { DesktopDialog };
 
-export default DesktopDialog;
 
-</script>
+/* <div className="iso_dialogs" ref="__dialogs">
+{
+	ctx.dialog.map(({args,Constructor,app,id})=>
+		<Constructor {...args} __app__={app} key={app.name + id} />
+	)
+}
+</div> */
+
+// export class Dialog<P = {}> extends BaseUI<P> {
+// 	render() {
+// 		return (
+// 			<div className="iso_dialog">
+// 			</div>
+// 		);
+// 	}
+// }
+
+export default DesktopDialog;

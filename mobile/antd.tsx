@@ -31,7 +31,7 @@
 import { InputItem, Toast } from 'antd-mobile';
 import * as React from 'react';
 import { Component } from 'react';
-import GlobalState from '../utils/state';
+import GlobalState from '../lib/state';
 export * from 'antd-mobile';
 import 'antd-mobile/dist/antd-mobile.css';
 

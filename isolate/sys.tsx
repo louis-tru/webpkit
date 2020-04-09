@@ -5,7 +5,7 @@
 
 import utils from 'nxkit';
 import {React} from '../lib';
-import {BaseUI,Activity,Widget,Dialog,Construction} from './ctr';
+import {Window,Activity,Widget,Cover,Construction} from './ctr';
 import Application, {ApplicationFactory} from './app';
 import Gesture, {Ev} from './gesture';
 import './sys.css';
@@ -14,13 +14,12 @@ var _cur: ApplicationLauncher | null = null;
 
 enum Type {
 	BODY = 'body',
+	WIDGET = 'widget',
 	TOP = 'top',
 	BOTTOM = 'bottom',
-	WIDGET = 'widget',
-	DIALOG = 'dialog',
 }
 
-interface ConstructorWrap<T extends BaseUI = BaseUI> {
+interface ConstructorWrap<T = Window> {
 	args?: any;
 	app: Application;
 	Constructor: Construction<T>;
@@ -28,7 +27,7 @@ interface ConstructorWrap<T extends BaseUI = BaseUI> {
 	type: Type;
 }
 
-function getId<T extends BaseUI>(ctr: Construction<T>, app: Application) {
+function getId<T>(ctr: Construction<T>, app: Application) {
 	utils.assert(ctr);
 	if (!(ctr as any).hasOwnProperty('__default_id')) {
 		(ctr as any).__default_id = String(utils.id);
@@ -76,8 +75,8 @@ Gesture<{width?: number|string, height?: number|string}> {
 		// TODO ...
 	}
 
-	private _load<T extends BaseUI>(app: Application, ctr: Construction<T>, type: Type, args?: any) {
-		utils.extendClass(BaseUI, ctr);
+	private _load<T>(app: Application, ctr: Construction<T>, type: Type, args?: any) {
+		utils.extendClass(Window, ctr);
 		var id = String(args ? args.id: getId(ctr, app));
 		utils.assert(!this._IDs.has(id), `ID already exists "${id}"`);
 		var c: ConstructorWrap<T> = { app, args, Constructor: ctr, id, type };
@@ -86,7 +85,7 @@ Gesture<{width?: number|string, height?: number|string}> {
 		return id;
 	}
 
-	private _destroy<T extends BaseUI>(app: Application, id: string | Construction<T>) {
+	private _destroy<T>(app: Application, id: string | Construction<T>) {
 		var id_: string = typeof id == 'string' ? String(id) + '_' + app.name: getId(id, app);
 		var c = this._IDs.get(id_);
 		if (c) {
@@ -98,10 +97,9 @@ Gesture<{width?: number|string, height?: number|string}> {
 	render() {
 		var ctx = {
 			body: [] as  ConstructorWrap<Activity>[],
-			top: [] as  ConstructorWrap<Activity>[],
-			bottom: [] as ConstructorWrap<Activity>[],
 			widget: [] as  ConstructorWrap<Widget>[],
-			dialog: [] as ConstructorWrap<Dialog>[],
+			top: [] as  ConstructorWrap<Cover>[],
+			bottom: [] as ConstructorWrap<Cover>[],
 		};
 
 		for (var [,c] of this._IDs) {
@@ -134,13 +132,6 @@ Gesture<{width?: number|string, height?: number|string}> {
 				<div className="iso_covers" style={{top: '100%'}} ref="__bottoms">
 				{
 					ctx.bottom.map(({args,Constructor,app,id})=>
-						<Constructor {...args} __app__={app} key={app.name + id} />
-					)
-				}
-				</div>
-				<div className="iso_dialogs" ref="__dialogs">
-				{
-					ctx.dialog.map(({args,Constructor,app,id})=>
 						<Constructor {...args} __app__={app} key={app.name + id} />
 					)
 				}

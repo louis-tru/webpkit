@@ -32,9 +32,10 @@ import utils from 'nxkit';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Component } from 'react';
-import GlobalState from '../utils/state';
+import GlobalState from '../lib/state';
+import UI from '../lib/ui';
 import error from '../lib/handles';
-import event,{EventNoticer, Event} from 'nxkit/event';
+import {EventNoticer, Event} from 'nxkit/event';
 
 var loading = '正在载入数据..';
 
@@ -574,12 +575,7 @@ interface BaseProps<P> {
 	params: P;
 }
 
-interface BaseState {
-	loadingComplete?: boolean;
-}
-
-export class NavPage<P = {}, S extends BaseState = {}> extends GlobalState<BaseProps<P>, S> {
-	state = { } as S;
+export class NavPage<P = {}, S = {}, SS = any> extends UI<BaseProps<P>, S, SS> {
 	static platform = '';
 
 	mcls(cls = '') {
@@ -617,44 +613,17 @@ export class NavPage<P = {}, S extends BaseState = {}> extends GlobalState<BaseP
 		return this.props.params;
 	}
 
-	get loaded() {
-		return this.state.loadingComplete;
-	}
-
-	updateState(data: S) {
-		var state = {} as S & BaseState;
-		for (var i in data) {
-			var o = data[i];
-			if (typeof o == 'object' && !Array.isArray(o)) {
-				state[i] = Object.assign(this.state[i] || {}, data[i]) as any;
-			}
-		}
-		this.setState(state);
-	}
-
-	async componentDidMount() {
-		super.componentDidMount();
-		await this.onLoad();
-		this.setState({ loadingComplete: true } as S & BaseState);
+	async onLoad() {
+		await super.onLoad();
 		if (this.props.priv.status == 0) {
 			this.onShow({ active: 'init' });
 		}
 	}
 
-	async componentWillUnmount() {
-		super.componentWillUnmount();
-		if (this.props.priv.status == -1) {
-			this.onHide();
-		}
-		this.onUnload();
-	}
-
-	onLoad() {
-		// overwrite
-	}
-
 	onUnload() {
-		// overwrite
+		if (this.props.priv.status == -1)
+			this.onHide();
+		super.onUnload();
 	}
 
 	onShow(data: { active?: 'init', [key: string]: any } = {}) {

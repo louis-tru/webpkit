@@ -3,7 +3,7 @@
  * @date 2020-04-07
  */
 
-import GlobalState from '../utils/state';
+import GlobalState from '../lib/state';
 
 export function getHorizontalDirection(angle: number) {
 	angle += 90;

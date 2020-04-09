@@ -28,8 +28,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { React } from '../lib';
-import Menu from '../cms/menu';
+import { React } from '../../lib';
+import Menu from '../menu';
 
 export default class TestMenu extends Menu {
 

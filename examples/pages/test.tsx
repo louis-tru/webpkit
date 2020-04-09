@@ -28,32 +28,13 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { React, CMSPage } from '../cms';
+import {Page,React,Link} from 'webpkit';
 
-import ContentContainer from './cms-content-container';
-import Aside from './cms-aside';
-import DemoSet from './cms-demo-set';
+export default class Test extends Page {
 
-import 'nifty/css/demo/nifty-demo-icons.css';
-import 'nifty/css/demo/nifty-demo.css';
-
-export default class extends CMSPage {
-
-	onLoad() {
-		require('nifty/js/demo/nifty-demo.js').default();
-		require('nifty/js/demo/dashboard.jsx').default();
-	}
-
-	render(...agrs) {
+	render() {
 		return (
-			<div className="boxed">
-				<div className="boxed">
-					<Aside />
-					<ContentContainer />
-				</div>
-				<DemoSet />
-			</div>
+			<div>Test<Link to="/">Hello World</Link></div>
 		);
 	}
-
 }

@@ -29,10 +29,10 @@
  * ***** END LICENSE BLOCK ***** */
 
 import 'normalize.css';
-import '../lib/utils.css';
-import './utils.css';
-import rem from '../utils/rem';
-import {store, initialize as initStore} from '../utils/store';
+import '../lib/util.css';
+import './util.css';
+import rem from '../lib/rem';
+import {store, initialize as initStore} from '../lib/store';
 import error from '../lib/handles';
 import * as dialog from '../lib/dialog';
 import { NavPage, Nav, Route, NavArgs } from './nav';
@@ -40,9 +40,8 @@ import * as ReactDom from 'react-dom';
 import * as React from 'react';
 import { Component } from 'react';
 import _404 from './404';
-import GlobalState from '../utils/state';
+import UI from '../lib/ui';
 import {NavDataPage} from './page';
-import errno from '../utils/errno';
 
 export interface RootProps {
 	scale?: number;
@@ -52,9 +51,8 @@ export interface RootProps {
 	notFound?: typeof NavPage;
 }
 
-export class Root extends GlobalState<RootProps> {
+export class Root extends UI<RootProps> {
 	loadingText = 'Loading..';
-	state = { isLoaded: false };
 	private m_path: string;
 
 	async componentDidMount() {
@@ -79,9 +77,26 @@ export class Root extends GlobalState<RootProps> {
 	}
 
 	async onLoad() {
+		rem.initialize(this.props.scale);
+
 		var config = this.props.config;
-		if (config && config.serviceAPI)
-			await initStore(config);
+		if (config && config.serviceAPI) {
+			try {
+				await initStore(config);
+			} catch(err) {
+				dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
+				throw err;
+			}
+		}
+
+		store.addEventListener('uncaughtException', function(err) {
+			error(err.data);
+		});
+
+		window.addEventListener('hashchange', (e)=>{
+			(this.refs.nav as Nav).current.popPage(true); // 不管前进或后退都当成后退处理
+		});
+
 		return '/';
 	}
 
@@ -102,7 +117,7 @@ export class Root extends GlobalState<RootProps> {
 	render() {
 		var url = this.m_path || (location.hash ? location.hash.replace(/^#/, '') : '/');
 		return (
-			this.state.isLoaded ?
+			this.isLoaded ?
 			<Nav 
 				ref="nav"
 				notFound={this.props.notFound || _404}

@@ -742,5 +742,3 @@ export {
 	show, close, ref,
 };
 export default Desktop;
-
-</script>

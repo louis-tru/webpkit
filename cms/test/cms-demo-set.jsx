@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { React, Page, Link, Component } from '../lib';
+import { React, Page, Link, Component } from '../../lib';
 
 export default class DemoSet extends Component {
 	render() {

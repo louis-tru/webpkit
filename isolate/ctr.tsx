@@ -4,37 +4,27 @@
  */
 
 import utils from 'nxkit';
-import {React} from '../lib';
-import GlobalState from '../utils/state';
+import UI from '../lib/ui';
 import Application from './app';
 import './ctr.css';
 
-export interface Construction<T extends BaseUI = BaseUI> {
+export interface Construction<T> {
 	new(args?: any): T;
 }
 
-export class BaseUI<P = {}> extends GlobalState<P> {
+export class Window<P = {}> extends UI<P> {
 	readonly application: Application;
 	constructor(props: any) {
+		super(props);
 		var application = props.__app__ as Application;
 		utils.assert(application);
 		utils.assert(application.isActive);
-		super(props);
 		this.application = application;
 	}
 }
 
-export class Activity<P = {}> extends BaseUI<P> {
-}
+export class Activity<P = {}> extends Window<P> {}
 
-export class Widget<P = {}> extends BaseUI<P> {
-}
+export class Widget<P = {}> extends Window<P> {}
 
-export class Dialog<P = {}> extends BaseUI<P> {
-	render() {
-		return (
-			<div className="iso_dialog">
-			</div>
-		);
-	}
-}
+export class Cover<P = {}> extends Window<P> {}
