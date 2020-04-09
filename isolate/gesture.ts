@@ -55,7 +55,7 @@ function compute_speed(time0: number, time1: number, speed0: number, distance: n
 	};
 }
 
-export interface Ev {
+export interface Event {
 	begin: boolean,
 	time: number,
 	begin_x: number, begin_y: number,
@@ -77,7 +77,7 @@ export default abstract class Gesture<P = {}, S = {}> extends UI<P, S> {
 	private _height = 0;
 	private _speed = 0;
 	private _time = 0;
-	private _ev: Ev | null = null;
+	private _ev: Event | null = null;
 	private _begin = false;
 	private _begin_angle = 0;
 	private _begin_direction = 0;
@@ -112,7 +112,7 @@ export default abstract class Gesture<P = {}, S = {}> extends UI<P, S> {
 			self._speed = 0;
 			self._begin = false;
 	
-			var ev: Ev = {
+			var ev: Event = {
 				begin: true,
 				time: time,
 				begin_x: x, begin_y: y,
@@ -168,7 +168,7 @@ export default abstract class Gesture<P = {}, S = {}> extends UI<P, S> {
 		self._time = time;
 		self._speed = speed;
 
-		var ev: Ev = {
+		var ev: Event = {
 			begin: !self._begin,
 			time: time,
 			begin_x: self._begin_x,
@@ -247,8 +247,8 @@ export default abstract class Gesture<P = {}, S = {}> extends UI<P, S> {
 		this._height = el.clientHeight;
 	}
 
-	protected triggerBeginMove(e: Ev) {}
-	protected triggerMove(e: Ev) {}
-	protected triggerEndMove(e: Ev) {}
+	protected triggerBeginMove(e: Event) {}
+	protected triggerMove(e: Event) {}
+	protected triggerEndMove(e: Event) {}
 
 }

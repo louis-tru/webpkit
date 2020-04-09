@@ -5,44 +5,44 @@
 
 import utils from 'nxkit';
 import {React} from '../lib';
-import {Window,Activity,Widget,Cover,Construction} from './ctr';
+import {Type,Window,Activity,Widget,Cover,Construction} from './ctr';
 import Application, {ApplicationFactory} from './app';
-import Gesture, {Ev} from './gesture';
+import Gesture, {Event} from './gesture';
 import './sys.css';
 
 var _cur: ApplicationLauncher | null = null;
 
-enum Type {
-	BODY = 'body',
+enum Target {
+	ACTIVITY = 'activity',
 	WIDGET = 'widget',
 	TOP = 'top',
 	BOTTOM = 'bottom',
 }
 
-interface ConstructorWrap<T = Window> {
+interface ConstructorWrap<T extends Window> {
 	args?: any;
 	app: Application;
 	Constructor: Construction<T>;
 	id: string;
-	type: Type;
+	target: Target;
 }
 
-function getId<T>(ctr: Construction<T>, app: Application) {
-	utils.assert(ctr);
-	if (!(ctr as any).hasOwnProperty('__default_id')) {
-		(ctr as any).__default_id = String(utils.id);
+function getId<T extends Window>(window: Construction<T>, app: Application) {
+	utils.assert(window);
+	if (!(window as any).hasOwnProperty('__default_id')) {
+		(window as any).__default_id = String(utils.id);
 	}
-	return String((ctr as any).__default_id) + '_' + app.name;
+	return String((window as any).__default_id) + '_' + app.name;
 }
 
 export default class ApplicationLauncher extends 
 Gesture<{width?: number|string, height?: number|string}> {
 	public state = { __ch: 0 };
 	private _installed: Map<string, ()=>Promise<ApplicationFactory>> = new Map();
-	private _sys: Application | null = null; // sys app
-	private _cur: Activity | null = null; // current activity
 	private _apps: Application[] = [];
-	private _IDs: Map<string, ConstructorWrap> = new Map();
+	private _sys: Application | null = null; // sys app
+	private _cur: Application | null = null; // current application
+	private _IDs: Map<string, ConstructorWrap<any>> = new Map();
 
 	triggerLoad() {
 		utils.assert(!_cur);
@@ -75,21 +75,56 @@ Gesture<{width?: number|string, height?: number|string}> {
 		// TODO ...
 	}
 
-	private _load<T>(app: Application, ctr: Construction<T>, type: Type, args?: any) {
-		utils.extendClass(Window, ctr);
-		var id = String(args ? args.id: getId(ctr, app));
-		utils.assert(!this._IDs.has(id), `ID already exists "${id}"`);
-		var c: ConstructorWrap<T> = { app, args, Constructor: ctr, id, type };
-		this._IDs.set(id, c as any);
-		this.setState({ __ch: this.state.__ch + 1 });
-		return id;
+	showActivity(app: Application, window: Construction<Activity>, args?: any) {
+		utils.assert(window.type == Type.ACTIVITY);
+		this._load(app, window, Target.ACTIVITY, args);
 	}
 
-	private _destroy<T>(app: Application, id: string | Construction<T>): boolean {
-		var id_: string = typeof id == 'string' ? String(id) + '_' + app.name: getId(id, app);
-		var c = this._IDs.get(id_);
+	showWidget(app: Application, window: Construction<Widget>, args?: any) {
+		utils.assert(window.type == Type.WIDGET);
+		this._load(app, window, Target.WIDGET, args);
+	}
+
+	showTop(app: Application, window: Construction<Cover>, args?: any) {
+		utils.assert(window.type == Type.COVER);
+		this._load(app, window, Target.TOP, args);
+	}
+
+	showBottom(app: Application, window: Construction<Cover>, args?: any) {
+		utils.assert(window.type == Type.COVER);
+		this._load(app, window, Target.BOTTOM, args);
+	}
+
+	closeActivity(app: Application, window: string | Construction<Activity>) {
+		this._destroy(app, window);
+	}
+
+	closeWidget(app: Application, window: string | Construction<Widget>) {
+		this._destroy(app, window);
+	}
+
+	closeTop(app: Application, window: string | Construction<Cover>) {
+		this._destroy(app, window);
+	}
+
+	closeBottom(app: Application, window: string | Construction<Cover>) {
+		this._destroy(app, window);
+	}
+
+	private _load<T extends Window>(app: Application, window: Construction<T>, target: Target, args?: any) {
+		utils.extendClass(Window, window);
+		var id = String(args ? args.id: getId(window, app));
+		utils.assert(!this._IDs.has(id), `ID already exists "${id}"`);
+		var c: ConstructorWrap<T> = { app, args, Constructor: window, id, target };
+		this._IDs.set(id, c as any);
+		this.setState({ __ch: this.state.__ch + 1 });
+	}
+
+	private _destroy<T extends Window>(app: Application, window: string | Construction<T>): boolean {
+		var id: string = typeof window == 'string' ? String(window) + '_' + app.name: getId(window, app);
+		var c = this._IDs.get(id);
 		if (c) {
-			this._IDs.delete(id_);
+			this._IDs.delete(id);
 			this.setState({ __ch: this.state.__ch + 1 });
 			return true;
 		}
@@ -98,43 +133,43 @@ Gesture<{width?: number|string, height?: number|string}> {
 
 	render() {
 		var ctx = {
-			body: [] as  ConstructorWrap<Activity>[],
+			activity: [] as  ConstructorWrap<Activity>[],
 			widget: [] as  ConstructorWrap<Widget>[],
 			top: [] as  ConstructorWrap<Cover>[],
 			bottom: [] as ConstructorWrap<Cover>[],
 		};
 
 		for (var [,c] of this._IDs) {
-			ctx[c.type].push(c as any);
+			ctx[c.target].push(c as any);
 		}
 
 		return (
 			<div className="iso_sys">
 				<div className="iso_bodys" ref="__bodys">
 				{
-					ctx.body.map(({args,Constructor,app})=>
-						<Constructor {...args} __app__={app} key={app.name} />
+					ctx.activity.map(({args,Constructor,app,id})=>
+						<Constructor {...args} __app__={app} key={app.name} id={id} />
 					)
 				}
 				</div>
 				<div className="iso_widgets" ref="__widgets" >
 				{
 					ctx.widget.map(({args,Constructor,app,id})=>
-						<Constructor {...args} __app__={app} key={app.name + id} />
+						<Constructor {...args} __app__={app} key={app.name + id} id={id} />
 					)
 				}
 				</div>
 				<div className="iso_covers" style={{top: '-100%'}} ref="__tops" >
 				{
 					ctx.top.map(({args,Constructor,app,id})=>
-						<Constructor {...args} __app__={app} key={app.name + id} />
+						<Constructor {...args} __app__={app} key={app.name + id} id={id} />
 					)
 				}
 				</div>
 				<div className="iso_covers" style={{top: '100%'}} ref="__bottoms">
 				{
 					ctx.bottom.map(({args,Constructor,app,id})=>
-						<Constructor {...args} __app__={app} key={app.name + id} />
+						<Constructor {...args} __app__={app} key={app.name + id} id={id} />
 					)
 				}
 				</div>
@@ -146,15 +181,15 @@ Gesture<{width?: number|string, height?: number|string}> {
 		return this.refs.iso_sys as HTMLElement;
 	}
 
-	protected triggerBeginMove(e: Ev) {
+	protected triggerBeginMove(e: Event) {
 		// TODO ...
 	}
 
-	protected triggerMove(e: Ev) {
+	protected triggerMove(e: Event) {
 		// TODO ...
 	}
 
-	protected triggerEndMove(e: Ev) {
+	protected triggerEndMove(e: Event) {
 		// TODO ...
 	}
 

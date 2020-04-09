@@ -31,11 +31,7 @@
 import * as React from 'react';
 import GlobalState from './state';
 
-interface UIState {
-	__loaded?: boolean;
-}
-
-export default class UI<P = {}, S extends UIState = {}, SS = any> extends GlobalState<P, S, SS> {
+export default class UI<P = {}, S = {}, SS = any> extends GlobalState<P, S, SS> {
 	private m_mounted?: boolean;
 	private m_loaded?: boolean;
 

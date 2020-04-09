@@ -1,0 +1,49 @@
+
+
+.hc_dialog {
+	width:100%;
+	height: 100%;
+	position: absolute;
+	overflow: hidden;
+	background:rgba(0,0,0,.8);
+	top:0;
+	z-index: 20;
+	text-align: center;
+	background: rgba(0,0,0,.9);
+	animation-fill-mode: both;
+}
+
+.hc_dialog_box {
+	width: 100%;
+	height: 100%;
+	transform-origin: 50% 50%;
+	transform: translateZ(1px) scaleX(0.1) scaleY(0.1);
+	opacity: 0.1;
+	animation-fill-mode: both;
+	position: relative;
+	display:flex;
+	justify-content: center;
+	align-items: center;
+}
+
+@keyframes show_1 {
+	from {background: rgba(0,0,0,.1)}
+	to   {background: rgba(0,0,0,.8)}
+}
+
+@keyframes hide_1
+{
+	from {background: rgba(0,0,0,.8)}
+	to   {background: rgba(0,0,0,.1)}
+}
+
+@keyframes show_2 {
+	from {transform: translateZ(1px) scaleX(0.1) scaleY(0.1); opacity: 0.1}
+	to   {transform: translateZ(1px) scaleX(1) scaleY(1); opacity: 1}
+}
+
+@keyframes hide_2
+{
+	from   {transform: translateZ(1px) scaleX(1) scaleY(1); opacity: 1}
+	to {transform: translateZ(1px) scaleX(0.1) scaleY(0.1); opacity: 0.1}
+}

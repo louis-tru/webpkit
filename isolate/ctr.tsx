@@ -3,28 +3,67 @@
  * @date 2020-04-07
  */
 
+import * as React from 'react';
 import utils from 'nxkit';
 import UI from '../lib/ui';
 import Application from './app';
+import Dialog from './dialog';
 import './ctr.css';
 
-export interface Construction<T> {
+export enum Type {
+	ACTIVITY = 1,
+	WIDGET,
+	COVER,
+}
+
+export interface Construction<T extends Window> {
 	new(args?: any): T;
+	type: Type;
 }
 
 export class Window<P = {}> extends UI<P> {
-	readonly application: Application;
+	readonly app: Application;
+	readonly id: string;
 	constructor(props: any) {
 		super(props);
-		var application = props.__app__ as Application;
-		utils.assert(application);
-		utils.assert(application.isActive);
-		this.application = application;
+		utils.assert(props.__app__);
+		this.app = props.__app__;
+		this.id = props.id;
+	}
+	protected triggerResume() {
+		// overwrite
+	}
+	protected triggerPause() {
+		// overwrite
 	}
 }
 
-export class Activity<P = {}> extends Window<P> {}
+export class Activity<P = {}> extends Window<P> {
+	static readonly type: Type = Type.ACTIVITY;
+	launch(activity: Construction<Activity>, args?: any) {
+	}
+	saveState(): any {
+		return null;
+	}
+	show(dialog: typeof Dialog, opts?: any) {
+		// TODO ...
+	}
+	close(dialog: typeof Dialog | string) {
+		// TODO ...
+	}
+	render() {
+		return (
+			<div>
+				Activity
+			</div>
+		);
+	}
+}
 
-export class Widget<P = {}> extends Window<P> {}
+export class Widget<P = {}> extends Window<P> {
+	static readonly type = Type.WIDGET;
+}
 
-export class Cover<P = {}> extends Window<P> {}
+export class Cover<P = {}> extends Window<P> {
+	static readonly type = Type.COVER;
+}
