@@ -101,7 +101,7 @@ export interface ViewController<P = {}, S = {}> {
 
 export declare class ViewController<P = {}, S = {}> {
 	static contextType?: React.Context<any>;
-	context: any;
+	readonly context: any;
 	constructor(props: Readonly<P>);
 	constructor(props: P, context?: any);
 	setState<K extends keyof S>(
@@ -116,8 +116,8 @@ export declare class ViewController<P = {}, S = {}> {
 		[key: string]: ViewController<any> | Element;
 	};
 	updateState<K extends keyof S>(state: Pick<S, K> | S): void;
-	protected readonly isLoaded: boolean;
-	protected readonly isMounted: boolean;
+	readonly isLoaded: boolean;
+	readonly isMounted: boolean;
 	protected triggerLoad(): void;
 	protected triggerMounted(): void;
 	protected triggerUpdate(prevProps: Readonly<P>, prevState: Readonly<S>): void;
