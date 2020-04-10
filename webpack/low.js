@@ -2,9 +2,10 @@
 if (!window.WeakSet) {
 	window.WeakSet = function() {this.m_set = {}}
 	window.WeakSet.prototype = {
-		has() {return false},
-		add() {},
-		delete() {}
+		has(name) {return name in this.m_set},
+		add(name) {this.m_set[name]=1},
+		delete(name) {delete this.m_set[name]},
+		clear() {this.m_set = {}}
 	};
 }
 
