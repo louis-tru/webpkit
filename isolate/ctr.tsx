@@ -5,7 +5,7 @@
 
 import * as React from 'react';
 import utils from 'nxkit';
-import UI from '../lib/ui';
+import {ViewController} from '../lib/ctr';
 import Application from './app';
 import Dialog from './dialog';
 import './ctr.css';
@@ -13,15 +13,16 @@ import './ctr.css';
 export enum Type {
 	ACTIVITY = 1,
 	WIDGET,
-	COVER,
+	TOP,
+	BOTTOM,
 }
 
-export interface Construction<T extends Window> {
+export interface WindowNew<T extends Window> {
 	new(args?: any): T;
 	type: Type;
 }
 
-export class Window<P = {}> extends UI<P> {
+export class Window<P = {}> extends ViewController<P> {
 	readonly app: Application;
 	readonly id: string;
 	constructor(props: any) {
@@ -40,7 +41,7 @@ export class Window<P = {}> extends UI<P> {
 
 export class Activity<P = {}> extends Window<P> {
 	static readonly type: Type = Type.ACTIVITY;
-	launch(activity: Construction<Activity>, args?: any) {
+	launch(activity: WindowNew<Activity>, args?: any) {
 	}
 	saveState(): any {
 		return null;
@@ -65,5 +66,12 @@ export class Widget<P = {}> extends Window<P> {
 }
 
 export class Cover<P = {}> extends Window<P> {
-	static readonly type = Type.COVER;
+}
+
+export class Top<P = {}> extends Window<P> {
+	static readonly type = Type.TOP;
+}
+
+export class Bottom<P = {}> extends Window<P> {
+	static readonly type = Type.BOTTOM;
 }

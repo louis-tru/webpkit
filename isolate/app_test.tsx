@@ -25,8 +25,8 @@ class TestWidget extends Widget {
 
 class TestActivity extends Activity {
 
-	m_handle_show_widget = ()=>{
-		this.app.launcher.showWidget(this.app, TestWidget);
+	private m_handle_show_widget = ()=>{
+		this.app.launcher.show(this.app, TestWidget);
 	}
 
 	render() {

@@ -5,8 +5,8 @@
 
 import utils from 'nxkit';
 import {React} from '../lib';
-import {Type,Window,Activity,Widget,Cover,Construction} from './ctr';
-import Application, {ApplicationFactory} from './app';
+import {Type,Window,Activity,WindowNew} from './ctr';
+import Application, {ApplicationNew} from './app';
 import Gesture, {Event} from './gesture';
 import './sys.css';
 
@@ -19,157 +19,173 @@ enum Target {
 	BOTTOM = 'bottom',
 }
 
-interface ConstructorWrap<T extends Window> {
+interface WindowInfo {
 	args?: any;
 	app: Application;
-	Constructor: Construction<T>;
+	Window: WindowNew<Window>;
 	id: string;
 	target: Target;
+	key: boolean;
 }
 
-function getId<T extends Window>(window: Construction<T>, app: Application) {
+function get_id(app: Application, id: string) {
+	return id + '_' + app.name;
+}
+
+function getId<T extends Window>(window: WindowNew<T>, app: Application) {
 	utils.assert(window);
 	if (!(window as any).hasOwnProperty('__default_id')) {
 		(window as any).__default_id = String(utils.id);
 	}
-	return String((window as any).__default_id) + '_' + app.name;
+	return get_id(app, String((window as any).__default_id));
 }
 
 export default class ApplicationLauncher extends 
 Gesture<{width?: number|string, height?: number|string}> {
 	public state = { __ch: 0 };
-	private _installed: Map<string, ()=>Promise<ApplicationFactory>> = new Map();
-	private _apps: Application[] = [];
+	private _installed: Map<string, ()=>Promise<ApplicationNew>> = new Map();
+	private _apps: Map<string, Application> = new Map(); // current run applications
 	private _sys: Application | null = null; // sys app
-	private _cur: Application | null = null; // current application
-	private _IDs: Map<string, ConstructorWrap<any>> = new Map();
+	private _cur = ''; // current activity id
+	private _IDs: Map<string, WindowInfo> = new Map();
+	private _activity = [] as WindowInfo[];
+	private _widget = [] as WindowInfo[];
+	private _top = [] as WindowInfo[];
+	private _bottom = [] as WindowInfo[];
 
-	triggerLoad() {
+	protected triggerLoad() {
 		utils.assert(!_cur);
 		_cur = this;
-		super.triggerLoad();
 	}
 
-	triggerRemove() {
+	protected triggerRemove() {
 		_cur = null;
 	}
 
-	/**
-	 * @func install application
-	 */
-	install(appName: string, app: ()=>Promise<ApplicationFactory>) {
-		// TODO ...
+	install(appName: string, app: ()=>Promise<ApplicationNew>) {
+		utils.assert(!this._installed.has(appName));
+		this._installed.set(appName, app);
 	}
 
-	/**
-	 * @func uninstall application
-	 */
 	uninstall(appName: string) {
-		// TODO ...
+		utils.assert(this._installed.has(appName));
+		this._installed.delete(appName);
 	}
 
 	/**
 	 * @func launch application
 	 */
-	launch(appName: string, args?: any) {
-		// TODO ...
+	async launch(appName: string, args?: any) {
+		var app = this._apps.get(appName);
+		if (!app) {
+			var ff = this._installed.get(appName);
+			utils.assert(ff, `Application does not exist, ${appName}`);
+			if (!ff) return;
+			var App = await ff();
+			app = new App(this);
+			if (!this._sys)
+				this._sys = app;
+		}
+		this.show(app, app.body(), args);
 	}
 
-	showActivity(app: Application, window: Construction<Activity>, args?: any) {
-		utils.assert(window.type == Type.ACTIVITY);
-		this._load(app, window, Target.ACTIVITY, args);
+	show<T extends Window>(app: Application, window: WindowNew<T>, args?: any) {
+		if (window.type == Type.ACTIVITY) { // activity
+			this._load(app, window, Target.ACTIVITY, args);
+			this.showActivity(app, window as any, args);
+		} else if (window.type == Type.WIDGET) { // widget
+			this._load(app, window, Target.WIDGET, args);
+		} else if (window.type == Type.TOP) {
+			// this._load(app, window, Target.TOP, args);
+		} else if (window.type == Type.BOTTOM) {
+			// this._load(app, window, Target.BOTTOM, args);
+		}
 	}
 
-	showWidget(app: Application, window: Construction<Widget>, args?: any) {
-		utils.assert(window.type == Type.WIDGET);
-		this._load(app, window, Target.WIDGET, args);
-	}
-
-	showTop(app: Application, window: Construction<Cover>, args?: any) {
-		utils.assert(window.type == Type.COVER);
-		this._load(app, window, Target.TOP, args);
-	}
-
-	showBottom(app: Application, window: Construction<Cover>, args?: any) {
-		utils.assert(window.type == Type.COVER);
-		this._load(app, window, Target.BOTTOM, args);
-	}
-
-	closeActivity(app: Application, window: string | Construction<Activity>) {
+	close<T extends Window>(app: Application, window: string | WindowNew<T>) {
 		this._destroy(app, window);
 	}
 
-	closeWidget(app: Application, window: string | Construction<Widget>) {
-		this._destroy(app, window);
+	private _autoDestroyActivity() {
+		 // TODO auto destroy
+		this._activity.forEach(e=>this._destroy(e.app, e.id));
 	}
 
-	closeTop(app: Application, window: string | Construction<Cover>) {
-		this._destroy(app, window);
+	private showActivity(app: Application, window: WindowNew<Activity>, args?: any) {
+		this._autoDestroyActivity();
+		this._cur = this._load(app, window, Target.ACTIVITY, args);
+		(app as any)._cur = this._cur;
 	}
 
-	closeBottom(app: Application, window: string | Construction<Cover>) {
-		this._destroy(app, window);
-	}
-
-	private _load<T extends Window>(app: Application, window: Construction<T>, target: Target, args?: any) {
+	private _load<T extends Window>(app: Application, 
+		window: WindowNew<T>, target: Target, args?: any)
+	{
 		utils.extendClass(Window, window);
 		var id = String(args ? args.id: getId(window, app));
-		utils.assert(!this._IDs.has(id), `ID already exists "${id}"`);
-		var c: ConstructorWrap<T> = { app, args, Constructor: window, id, target };
-		this._IDs.set(id, c as any);
+		var c = this._IDs.get(id);
+		((this as any)['_' + target] as WindowInfo[]).forEach(c=>c.key=false);
+		if (c) {
+			c.key = true;
+		} else {
+			var c2: WindowInfo = { app, args, Window: window, id, target, key: true };
+			((this as any)['_' + c2.target] as any[]).push(c);
+			this._IDs.set(id, c as any);
+		}
 		this.setState({ __ch: this.state.__ch + 1 });
+		return id;
 	}
 
-	private _destroy<T extends Window>(app: Application, window: string | Construction<T>): boolean {
-		var id: string = typeof window == 'string' ? String(window) + '_' + app.name: getId(window, app);
+	private _destroy<T extends Window>(app: Application, 
+		window: string | WindowNew<T>)
+	{
+		var id: string = typeof window == 'string' ? 
+			get_id(app, String(window)): getId(window, app);
 		var c = this._IDs.get(id);
 		if (c) {
+			if (id === this._cur)
+				this._cur = '';
+			if (c.target == Target.ACTIVITY && (c.app as any)._cur == id)
+				(c.app as any)._cur = ''; // private visit
+			((this as any)['_' + c.target] as WindowInfo[]).deleteOf(c);
 			this._IDs.delete(id);
 			this.setState({ __ch: this.state.__ch + 1 });
-			return true;
 		}
-		return false;
+	}
+
+	getWindow(app: Application, id: string): null | Window {
+		return this.refs[get_id(app, id)] as Window;
 	}
 
 	render() {
-		var ctx = {
-			activity: [] as  ConstructorWrap<Activity>[],
-			widget: [] as  ConstructorWrap<Widget>[],
-			top: [] as  ConstructorWrap<Cover>[],
-			bottom: [] as ConstructorWrap<Cover>[],
-		};
-
-		for (var [,c] of this._IDs) {
-			ctx[c.target].push(c as any);
-		}
+		var {_activity,_widget,_top,_bottom} = this;
 
 		return (
-			<div className="iso_sys">
+			<div className="iso_sys" ref="__root">
 				<div className="iso_bodys" ref="__bodys">
 				{
-					ctx.activity.map(({args,Constructor,app,id})=>
-						<Constructor {...args} __app__={app} key={app.name} id={id} />
+					_activity.map(({args,Window,app,id})=>
+						<Window {...args} __app__={app} key={app.name} id={id} ref={id} />
 					)
 				}
 				</div>
 				<div className="iso_widgets" ref="__widgets" >
 				{
-					ctx.widget.map(({args,Constructor,app,id})=>
-						<Constructor {...args} __app__={app} key={app.name + id} id={id} />
+					_widget.map(({args,Window,app,id})=>
+						<Window {...args} __app__={app} key={app.name + id} id={id} ref={id} />
 					)
 				}
 				</div>
 				<div className="iso_covers" style={{top: '-100%'}} ref="__tops" >
 				{
-					ctx.top.map(({args,Constructor,app,id})=>
-						<Constructor {...args} __app__={app} key={app.name + id} id={id} />
+					_top.map(({args,Window,app,id})=>
+						<Window {...args} __app__={app} key={app.name + id} id={id} ref={id} />
 					)
 				}
 				</div>
 				<div className="iso_covers" style={{top: '100%'}} ref="__bottoms">
 				{
-					ctx.bottom.map(({args,Constructor,app,id})=>
-						<Constructor {...args} __app__={app} key={app.name + id} id={id} />
+					_bottom.map(({args,Window,app,id})=>
+						<Window {...args} __app__={app} key={app.name + id} id={id} ref={id} />
 					)
 				}
 				</div>
@@ -178,7 +194,7 @@ Gesture<{width?: number|string, height?: number|string}> {
 	}
 
 	protected get $el() {
-		return this.refs.iso_sys as HTMLElement;
+		return this.refs.__root as HTMLElement;
 	}
 
 	protected triggerBeginMove(e: Event) {

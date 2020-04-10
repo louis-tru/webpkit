@@ -30,7 +30,7 @@
 
 import utils from 'nxkit';
 import * as React from 'react';
-import UI from './ui';
+import {ViewController} from './ctr';
 import GlobalState from './state';
 import * as _history from 'history';
 import {Location} from 'history';
@@ -46,7 +46,7 @@ export interface PageProps {
 	match: match;
 }
 
-export default class Page<P = {}, S = {}, PP = {}> extends UI<PageProps & PP, S> {
+export default class Page<P = {}, S = {}, PP = {}> extends ViewController<PageProps & PP, S> {
 	private _url = '';
 	private _params: P;
 	private _router: Router;
@@ -96,11 +96,11 @@ export default class Page<P = {}, S = {}, PP = {}> extends UI<PageProps & PP, S>
 		return this._params;
 	}
 
-	triggerLoad() {
+	protected triggerLoad() {
 		this._router && ((this._router as any)._current = this);
 	}
 
-	triggerRemove() {
+	protected triggerRemove() {
 		if (this._router && (this._router as any)._current === this) {
 			(this._router as any)._current = null;
 		}

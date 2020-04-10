@@ -101,7 +101,7 @@ export default class Login extends GlobalState<{admin?: boolean; padAll?: 'none'
 				{/*--===================================================--*/}
 				<div id="bg-overlay" className={this.state.$$url ? 'bg-img': ''} 
 					style={{backgroundImage: this.state.$$url?`url(${this.state.$$url})`:'none'}}></div>
-				
+
 				{/*-- LOGIN FORM --*/}
 				{/*--===================================================--*/}
 				<div className="cls-content">
@@ -155,5 +155,3 @@ export default class Login extends GlobalState<{admin?: boolean; padAll?: 'none'
 		);
 	}
 }
-
-

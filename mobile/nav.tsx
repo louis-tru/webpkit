@@ -32,7 +32,7 @@ import utils from 'nxkit';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Component } from 'react';
-import UI from '../lib/ui';
+import {ViewController} from '../lib/ctr';
 import error from '../lib/handles';
 import {EventNoticer, Event} from 'nxkit/event';
 
@@ -125,7 +125,7 @@ class PrivPage extends Component<PrivPageProps> {
 
 	onShow(data = {}) {
 		try {
-			(this.refs.self as NavPage).triggerShow(data);
+			(this.refs.self as unknown as NavPage).triggerShow(data);
 		} catch(err) {
 			console.error(err);
 		}
@@ -133,7 +133,7 @@ class PrivPage extends Component<PrivPageProps> {
 
 	onHide() {
 		try {
-			(this.refs.self as NavPage).triggerHide();
+			(this.refs.self as unknown as NavPage).triggerHide();
 		} catch(err) {
 			console.error(err);
 		}
@@ -570,7 +570,7 @@ interface BaseProps<P> {
 	params: P;
 }
 
-export class NavPage<P = {}, S = {}, SS = any> extends UI<BaseProps<P>, S, SS> {
+export class NavPage<P = {}, S = {}> extends ViewController<BaseProps<P>, S> {
 	static platform = '';
 
 	mcls(cls = '') {

@@ -124,7 +124,7 @@ function setGlobalState(self: GlobalState | null, state: Dict) {
 /**
  * @class GlobalState
  */
-export default class GlobalState<P = {}, S = {}, SS = any> extends Component<P, S, SS> {
+export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
 	private __id: number;
 	private _global_state_key: string;
 

@@ -3,7 +3,7 @@
  * @date 2020-04-07
  */
 
-import UI from '../lib/ui';
+import {ViewController} from '../lib/ctr';
 
 export function getHorizontalDirection(angle: number) {
 	angle += 90;
@@ -67,7 +67,7 @@ export interface Event {
 	distance: number, instant_distance: number,
 }
 
-export default abstract class Gesture<P = {}, S = {}> extends UI<P, S> {
+export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, S> {
 	private _identifier = -1;
 	private _begin_x = 0;
 	private _begin_y = 0;

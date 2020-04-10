@@ -40,7 +40,7 @@ import * as ReactDom from 'react-dom';
 import * as React from 'react';
 import { Component } from 'react';
 import _404 from './404';
-import UI from '../lib/ui';
+import {ViewController} from '../lib/ctr';
 import {NavDataPage} from './page';
 
 export interface RootProps {
@@ -51,7 +51,7 @@ export interface RootProps {
 	notFound?: typeof NavPage;
 }
 
-export class Root<P extends RootProps = {}, S = {}> extends UI<P, S> {
+export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S> {
 	loadingText = 'Loading..';
 	protected startupPath: string = '/';
 

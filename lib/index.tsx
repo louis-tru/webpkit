@@ -41,7 +41,7 @@ import {Component} from 'react';
 import {Link} from 'react-router-dom';
 import * as _history from 'history';
 import * as dialog from './dialog';
-import UI from './ui';
+import {ViewController} from './ctr';
 
 var current: Root | null = null;
 
@@ -51,7 +51,7 @@ export interface RootProps {
 	notFound?: typeof Page;
 }
 
-export class Root<P extends RootProps = {}, S = {}> extends UI<P, S> {
+export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S> {
 	loadingText = 'Loading..';
 
 	protected async triggerLoad() {

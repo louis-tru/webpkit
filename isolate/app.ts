@@ -4,7 +4,7 @@
  */
 
 import utils from 'nxkit';
-import {Activity,Cover,Construction} from './ctr';
+import {Activity,Cover,WindowNew} from './ctr';
 import ApplicationLauncher from './sys';
 
 /**
@@ -13,20 +13,24 @@ import ApplicationLauncher from './sys';
 export default abstract class Application {
 	readonly abstract name: string;
 	readonly launcher: ApplicationLauncher;
-	private _cur: Activity | null = null; // current activity
+	private _cur = ''; // current activity id
 
 	get current(): Activity {
-		utils.assert(this._cur);
-		return this._cur as Activity;
+		var act = this.launcher.getWindow(this, this._cur) as Activity;
+		utils.assert(act);
+		return act;
+	}
+
+	get isActive() {
+		return !!this.launcher.getWindow(this, this._cur);
 	}
 
 	constructor(launcher: ApplicationLauncher) {
 		this.launcher = launcher;
 	}
-
-	abstract body(): Construction<Activity>;
-	top(): Construction<Cover> | null { return null; }
-	bottom(): Construction<Cover> | null { return null; }
+	abstract body(): WindowNew<Activity>;
+	top(): WindowNew<Cover> | null { return null; }
+	bottom(): WindowNew<Cover> | null { return null; }
 	protected triggerLoad() {}
 	protected triggerUnload() {}
 	protected triggerPause() {}
@@ -35,6 +39,6 @@ export default abstract class Application {
 	protected triggerForeground() {}
 }
 
-export interface ApplicationFactory {
-	(args?: any): Application;
+export interface ApplicationNew {
+	new(launcher: ApplicationLauncher): Application;
 }

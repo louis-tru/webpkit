@@ -31,7 +31,7 @@
 import * as React from 'react';
 import GlobalState from './state';
 
-export default class UI<P = {}, S = {}, SS = any> extends GlobalState<P, S, SS> {
+class _ViewController<P = {}, S = {}> extends GlobalState<P, S> {
 	private m_mounted?: boolean;
 	private m_loaded?: boolean;
 
@@ -54,9 +54,9 @@ export default class UI<P = {}, S = {}, SS = any> extends GlobalState<P, S, SS> 
 		return !!this.m_mounted;
 	}
 
-	async componentWillMount() {
+	componentWillMount() {
 		super.componentWillMount(); // call super
-		var r = this.triggerLoad() as any; // trigger event Load, private props visit
+		var r = this.triggerLoad() as any; // trigger event Load
 		if (r instanceof Promise) {
 			r.then(()=>{
 				this.m_loaded = true;
@@ -68,34 +68,59 @@ export default class UI<P = {}, S = {}, SS = any> extends GlobalState<P, S, SS> 
 		}
 	}
 
-	async componentDidMount() {
+	componentDidMount() {
 		this.m_mounted = true;
 		this.triggerMounted();
 	}
 
-	async componentWillUnmount() {
+	componentWillUnmount() {
 		super.componentWillUnmount(); // call super
 		this.triggerRemove();
 	}
 
-	async componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+	componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>): void {
+		this.triggerUpdate(prevProps, prevState);
+	}
+
+	componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
 		this.triggerError(error, errorInfo);
 	}
 
-	protected triggerLoad() {
-		// overwrite
-	}
+	protected triggerLoad() { /* overwrite */ }
+	protected triggerMounted(): void { /* overwrite */ }
+	protected triggerUpdate(prevProps: Readonly<P>, prevState: Readonly<S>) { /* overwrite */ }
+	protected triggerRemove() { /* overwrite */ }
+	protected triggerError(error: Error, errorInfo: React.ErrorInfo) { /* overwrite */ }
+}
 
-	protected triggerMounted() {
-		// overwrite
-	}
+exports.ViewController = _ViewController;
 
-	protected triggerRemove() {
-		// overwrite
-	}
+export interface ViewController<P = {}, S = {}> {
+	shouldComponentUpdate?(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean;
+}
 
-	protected triggerError(error: Error, errorInfo: React.ErrorInfo) {
-		// overwrite
-	}
-
+export declare class ViewController<P = {}, S = {}> {
+	static contextType?: React.Context<any>;
+	context: any;
+	constructor(props: Readonly<P>);
+	constructor(props: P, context?: any);
+	setState<K extends keyof S>(
+		state: ((prevState: Readonly<S>, props: Readonly<P>) => (Pick<S, K> | S | null)) | (Pick<S, K> | S | null),
+		callback?: () => void
+	): void;
+	forceUpdate(callback?: () => void): void;
+	render(): React.ReactNode;
+	readonly props: Readonly<P> & Readonly<{ children?: React.ReactNode }>;
+	state: Readonly<S>;
+	readonly refs: {
+		[key: string]: ViewController<any> | Element;
+	};
+	updateState<K extends keyof S>(state: Pick<S, K> | S): void;
+	protected readonly isLoaded: boolean;
+	protected readonly isMounted: boolean;
+	protected triggerLoad(): void;
+	protected triggerMounted(): void;
+	protected triggerUpdate(prevProps: Readonly<P>, prevState: Readonly<S>): void;
+	protected triggerRemove(): void;
+	protected triggerError(error: Error, errorInfo: React.ErrorInfo): void;
 }
