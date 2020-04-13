@@ -4,7 +4,7 @@
  */
 
 import utils from 'nxkit';
-import {Activity,Cover,WindowNew} from './ctr';
+import {Activity,Top,Bottom,WindowNew} from './ctr';
 import ApplicationLauncher from './sys';
 
 /**
@@ -21,16 +21,17 @@ export default abstract class Application {
 		return act;
 	}
 
-	get isActive() {
-		return !!this.launcher.getWindow(this, this._cur);
-	}
+	// get isActive() {
+	// 	return !!this.launcher.getWindow(this, this._cur);
+	// }
 
 	constructor(launcher: ApplicationLauncher) {
 		this.launcher = launcher;
 	}
+
 	abstract body(): WindowNew<Activity>;
-	top(): WindowNew<Cover> | null { return null; }
-	bottom(): WindowNew<Cover> | null { return null; }
+	top(): WindowNew<Top> | null { return null; }
+	bottom(): WindowNew<Bottom> | null { return null; }
 	protected triggerLoad() {}
 	protected triggerUnload() {}
 	protected triggerPause() {}

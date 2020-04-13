@@ -26,12 +26,12 @@ dev:
 
 pull:
 	@git pull; \
-	if [ ! -d ../cport-h5 ]; then \
-		cd .. && git clone http://gitlab.stars-mine.com/cport/cport-h5.git; \
+	if [ ! -d ../webpkit ]; then \
+		cd .. && git clone http://gitlab.stars-mine.com/cport/webpkit.git; \
 	else \
-		cd ../cport-h5 && git pull; \
+		cd ../webpkit && git pull; \
 	fi
 
 install: pull
 	@-npm install
-	@rm -rf ../node_modules && ln -s cport-h5/node_modules ../node_modules
+	@rm -rf ../node_modules && ln -s webpkit/node_modules ../node_modules

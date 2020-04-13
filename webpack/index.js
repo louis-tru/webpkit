@@ -63,13 +63,16 @@ const inputDir = ['views', 'app'].find(function(name) {
 
 const views = fs.readdirSync(inputDir)
 .filter(e=>['.jsx','.tsx','.ts','.js'].indexOf(path.extname(e))!=-1)
-.filter(e=fs.statSync(e).isFile())
+.filter(e=>fs.statSync(path.join(inputDir, e)).isFile())
 .map(e=>{
+	var ext = path.extname(e);
 	var name = e.substr(0, e.length - ext.length);
 	var path_ = './' + path.join(inputDir, name);
 	return { name, path: path_, html: path_ + '.html' };
 })
 .filter(e=>fs.existsSync(e.html)&&fs.statSync(e.html).isFile());
+
+// console.log('----------------------', views);
 
 // develop plugins
 const develop_plugins = [
@@ -146,7 +149,7 @@ const plugins = [
 var devClient = [];
 
 if (!isProd && config.dev.inline === false) {
-	devClient.push('cport-h5/webpack/dev-client');
+	devClient.push('webpkit/webpack/dev-client');
 	if (config.dev.hotOnly) {
 		devClient.push('webpack/hot/only-dev-server');
 	} else if (config.dev.hot) {
@@ -312,7 +315,7 @@ module.exports = {
 };
 
 views.forEach(({name,path})=>{
-	module.exports.entry[name] = ['cport-h5/webpack/low', ...devClient, path ];
+	module.exports.entry[name] = ['webpkit/webpack/low', ...devClient, path ];
 });
 
 // console.log(module.exports.entry)

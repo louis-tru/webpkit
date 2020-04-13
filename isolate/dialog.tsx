@@ -4,12 +4,12 @@
  */
 
 import * as React from 'react';
-import UI from '../lib/ui';
+import {ViewController} from '../lib/ctr';
 import './dialog.css';
 
-export default class Dialog<P = {}, S = {}> extends UI<P, S> {
+export default class Dialog<P = {}, S = {}> extends ViewController<P, S> {
 
-	state = { animation_name: 'show', animation_duration: '300ms' }
+	state = { animation_name: 'show', animation_duration: '300ms' } as any;
 
 	private get __dialog_style() {
 		return {

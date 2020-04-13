@@ -56,7 +56,7 @@ export default class Index extends Page {
 		}
 	}
 
-	onLoad() {
+	triggerLoad() {
 		this.showLog();
 	}
 

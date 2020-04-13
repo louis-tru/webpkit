@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import './utils.css';
+import './util.css';
 import './dialog.css';
 import { Component } from 'react';
 import * as React from 'react';

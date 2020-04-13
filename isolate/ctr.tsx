@@ -13,8 +13,7 @@ import './ctr.css';
 export enum Type {
 	ACTIVITY = 1,
 	WIDGET,
-	TOP,
-	BOTTOM,
+	TOP, BOTTOM,
 }
 
 export interface WindowNew<T extends Window> {
@@ -31,6 +30,16 @@ export class Window<P = {}> extends ViewController<P> {
 		this.app = props.__app__;
 		this.id = props.id;
 	}
+	// get isActive() {
+	// 	return true;
+	// }
+	// protected triggerMounted() {
+	// }
+	// protected triggerRemove() {
+		// if (this.isActive) {
+		// 	this.triggerPause();
+		// }
+	// }
 	protected triggerResume() {
 		// overwrite
 	}
@@ -42,6 +51,7 @@ export class Window<P = {}> extends ViewController<P> {
 export class Activity<P = {}> extends Window<P> {
 	static readonly type: Type = Type.ACTIVITY;
 	launch(activity: WindowNew<Activity>, args?: any) {
+		this.app.launcher.show(this.app, activity, args);
 	}
 	saveState(): any {
 		return null;
@@ -68,10 +78,10 @@ export class Widget<P = {}> extends Window<P> {
 export class Cover<P = {}> extends Window<P> {
 }
 
-export class Top<P = {}> extends Window<P> {
+export class Top<P = {}> extends Cover<P> {
 	static readonly type = Type.TOP;
 }
 
-export class Bottom<P = {}> extends Window<P> {
+export class Bottom<P = {}> extends Cover<P> {
 	static readonly type = Type.BOTTOM;
 }

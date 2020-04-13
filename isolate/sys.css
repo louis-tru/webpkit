@@ -14,14 +14,13 @@ body {
 	left: 0;
 }
 
-.iso_bodys, .iso_widgets, .iso_covers,
-.iso_bodys > *, .iso_covers > * {
+.iso_bodys, .iso_widgets, .iso_covers, .iso_bodys > *, .iso_covers > * {
 	position: absolute;
+	z-index: 1;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
-	z-index: 1;
 }
 
 .iso_bodys {
