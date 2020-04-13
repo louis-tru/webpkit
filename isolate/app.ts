@@ -3,8 +3,7 @@
  * @date 2020-04-07
  */
 
-import utils from 'nxkit';
-import {Activity,Top,Bottom,WindowNew} from './ctr';
+import {Activity,NewWindow,Cover} from './ctr';
 import ApplicationLauncher from './sys';
 
 /**
@@ -15,31 +14,25 @@ export default abstract class Application {
 	readonly launcher: ApplicationLauncher;
 	private _cur = ''; // current activity id
 
-	get current(): Activity {
-		var act = this.launcher.getWindow(this, this._cur) as Activity;
-		utils.assert(act);
-		return act;
+	get current(): Activity | null {
+		var act = this.launcher.getWindow(this, this._cur);
+		return act as Activity;
 	}
-
-	// get isActive() {
-	// 	return !!this.launcher.getWindow(this, this._cur);
-	// }
 
 	constructor(launcher: ApplicationLauncher) {
 		this.launcher = launcher;
 	}
 
-	abstract body(): WindowNew<Activity>;
-	top(): WindowNew<Top> | null { return null; }
-	bottom(): WindowNew<Bottom> | null { return null; }
-	protected triggerLoad() {}
-	protected triggerUnload() {}
-	protected triggerPause() {}
-	protected triggerResume() {}
-	protected triggerBackground() {}
-	protected triggerForeground() {}
+	triggerLaunch(args?: any) {}
+	triggerLoad() {}
+	triggerUnload() {}
+	triggerPause() {}
+	triggerResume() {}
+	triggerBackground() {}
+	triggerForeground() {}
 }
 
-export interface ApplicationNew {
-	new(launcher: ApplicationLauncher): Application;
+export abstract class ApplicationSystem extends Application {
+	abstract top(): NewWindow<Cover>;
+	abstract bottom(): NewWindow<Cover>;
 }

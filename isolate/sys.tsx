@@ -5,35 +5,39 @@
 
 import utils from 'nxkit';
 import {React} from '../lib';
-import {Type,Window,Activity,WindowNew} from './ctr';
-import Application, {ApplicationNew} from './app';
+import {Type,CoverType,Window,Activity,Widget,NewWindow,Cover} from './ctr';
+import Application, {ApplicationSystem} from './app';
 import Gesture, {Event} from './gesture';
 import './sys.css';
+import * as ReactDom from 'react-dom';
 import { DelayCall } from 'nxkit/delay_call';
 
-var _cur: ApplicationLauncher | null = null;
+var _launcher: ApplicationLauncher | null = null;
 
-enum Target {
-	ACTIVITY = 'activity',
-	WIDGET = 'widget',
-	TOP = 'top',
-	BOTTOM = 'bottom',
+export interface NewApplication {
+	new(launcher: ApplicationLauncher): Application;
 }
 
-interface WindowInfo {
-	args?: any;
-	app: Application;
-	Window: WindowNew<Window>;
+enum Target {
+	ACTIVITY,
+	WIDGET,
+	TOP,
+	BOTTOM,
+}
+
+interface Info<T extends Window> {
+	window: T;
+	panel: HTMLElement;
 	id: string;
 	target: Target;
-	key: boolean;
+	stack: Info<T>[];
 }
 
 function _get_full_id(app: Application, id: string) {
 	return app.name + '_' + id;
 }
 
-function getId<T extends Window>(window: WindowNew<T>) {
+function getId<T extends Window>(window: NewWindow<T>) {
 	utils.assert(window);
 	if (!(window as any).hasOwnProperty('__default_id')) {
 		(window as any).__default_id = String(utils.getId());
@@ -92,27 +96,48 @@ export default class ApplicationLauncher extends Gesture<{
 	disableTopGesture?: boolean;
 	disableBottomGesture?: boolean;
 }> {
-	public state = { __ch: 0 };
-	private _installed: Map<string, ()=>Promise<{default:ApplicationNew}>> = new Map();
+	private _installed: Map<string, ()=>Promise<{default:NewApplication}>> = new Map();
 	private _apps: Map<string, Application> = new Map(); // current run applications
-	private _sys: Application | null = null; // sys app
+	private _sys: ApplicationSystem | null = null; // sys app
 	private _cur = ''; // current activity id
-	private _IDs: Map<string, WindowInfo> = new Map();
-	private _activity = [] as WindowInfo[];
-	private _widget = [] as WindowInfo[];
-	private _top = [] as WindowInfo[];
-	private _bottom = [] as WindowInfo[];
+	private _activity = [] as Info<Activity>[];
+	private _widget = [] as Info<Widget>[];
+	private _top = [] as Info<Cover>[];
+	private _bottom = [] as Info<Cover>[];
+	private _IDs: Map<string, Info<Window>> = new Map();
 
 	protected triggerLoad() {
-		utils.assert(!_cur);
-		_cur = this;
+		utils.assert(!_launcher);
+		_launcher = this;
 	}
 
 	protected triggerRemove() {
-		_cur = null;
+		_launcher = null;
 	}
 
-	install(appName: string, app: ()=>Promise<{default:ApplicationNew}>) {
+	private _genPanel(target: Target): [HTMLElement, Info<Window>[]] {
+		if (target == Target.ACTIVITY) {
+			var div = document.createElement('div');
+			(this.refs.__activity as HTMLElement).appendChild(div);
+			return [div, this._activity];
+		} else if (target == Target.WIDGET) {
+			var div = document.createElement('div');
+			(this.refs.__widget as HTMLElement).appendChild(div);
+			return [div, this._widget];
+		} else if (target == Target.TOP) {
+			var div = document.createElement('div');
+			(this.refs.__top as HTMLElement).appendChild(div);
+			return [div, this._top];
+		}  else if (target == Target.BOTTOM) {
+			var div = document.createElement('div');
+			(this.refs.__bottom as HTMLElement).appendChild(div);
+			return [div, this._bottom];
+		} else {
+			throw new Error('Err');
+		}
+	}
+
+	install(appName: string, app: ()=>Promise<{default:NewApplication}>) {
 		utils.assert(!this._installed.has(appName));
 		this._installed.set(appName, app);
 	}
@@ -131,145 +156,135 @@ export default class ApplicationLauncher extends Gesture<{
 			if (!ff) return;
 			var App = await ff();
 			app = new App.default(this);
-			if (!this._sys)
+			if (!this._sys && app instanceof ApplicationSystem) {
 				this._sys = app;
+			}
 			isLoad = true;
 			this._apps.set(appName, app);
 		}
-		this.show(app, app.body(), args);
 		if (isLoad)
-			(app as any).triggerLoad();
+			app.triggerLoad();
+		app.triggerLaunch(args);
 	}
 
-	show<T extends Window>(app: Application, window: WindowNew<T>, args?: any) {
-		if (window.type == Type.ACTIVITY) { // activity
-			this._load(app, window, Target.ACTIVITY, args);
-		} else if (window.type == Type.WIDGET) { // widget
-			this._load(app, window, Target.WIDGET, args);
-		} /*else if (window.type == Type.TOP) {
-			// this._load(app, window, Target.TOP, args);
-		} else if (window.type == Type.BOTTOM) {
-			// this._load(app, window, Target.BOTTOM, args);
-		}*/
-	}
-
-	close<T extends Window>(app: Application, window: string | WindowNew<T>) {
-		this._destroy(app, window);
-	}
-
-	private _autoDestroyActivity() {
-		// TODO auto destroy
-		// this._activity.forEach(e=>this._destroy(e.app, e.id));
-	}
-
-	private _loadActivity(app: Application, id: string) {
-		this._autoDestroyActivity();
-		var fid = _get_full_id(app, id);
-		(app as any)._cur = id; // private visit
-		this._cur = fid;
-	}
-
-	private _destroyActivity(act: Activity) {
-		var app = act.app;
-		if (!this._activity.find(e=>e.app === app)) {
-			for ( var e of [...this._widget,...this._top,...this._bottom] ) {
-				if (e.app === app)
-					this._destroy(e.app, e.id);
-			}
-			(app as any).triggerUnload(); // private visit
+	async show<T extends Window>(app: Application, window: NewWindow<T>, args?: any, animate = true): Promise<T> {
+		if (window.type == Type.ACTIVITY) {
+			return await this._makeActivity(this._load(app, window, Target.ACTIVITY, args) as any, animate) as any;
+		} else if (window.type == Type.WIDGET) {
+			return await this._makeWidget(this._load(app, window, Target.WIDGET, args) as any, animate) as any;
+		} else {
+			throw new Error('Err');
 		}
 	}
 
-	private _load<T extends Window>(app: Application, 
-		window: WindowNew<T>, target: Target, args?: any)
-	{
+	async close<T extends Window>(app: Application, id: string | NewWindow<T>, animate = true) {
+		var info = this._getInfo(app, id);
+		if (info) {
+			if (info.target == Target.ACTIVITY) {
+				await this._unmakeActivity(info as any, animate);
+				this._unload(info);
+			} else if (info.target == Target.WIDGET) {
+				await this._unmakeWidget(info as any, animate);
+				this._unload(info);
+			}
+		}
+	}
+
+	async showCover(type: CoverType = CoverType.TOP, animate = true) {
+		utils.assert(this._sys);
+		var sys = this._sys as ApplicationSystem;
+		var window = type == CoverType.TOP ? sys.top(): sys.bottom();
+		if (type == CoverType.TOP) {
+			await this._makeTop(this._load(sys, window, Target.TOP) as any, animate);
+		} else if (type == CoverType.BOTTOM) {
+			await this._makeBottom(this._load(sys, window, Target.BOTTOM) as any, animate);
+		}
+	}
+
+	async closeCover(type: CoverType = CoverType.TOP, animate = true) {
+		var sys = this._sys as ApplicationSystem;
+		var info = this._getInfo(sys, type == CoverType.TOP ? sys.top(): sys.bottom()) as Info<Window>;
+		if (info) {
+			if (type == CoverType.TOP) {
+				await this._unmakeTop(info as any, animate);
+				this._unload(info);
+			} else if (type == CoverType.BOTTOM) {
+				await this._unmakeBottom(info as any, animate);
+				this._unload(info);
+			}
+		}
+	}
+
+	private async _makeActivity(info: Info<Activity>, animate: boolean) {
+		return info.window;
+	}
+	private async _makeTop(info: Info<Cover>, animate: boolean) {
+		return info.window;
+	}
+	private async _makeBottom(info: Info<Cover>, animate: boolean) {
+		return info.window;
+	}
+	private async _makeWidget(info: Info<Widget>, animate: boolean) {
+		return info.window;
+	}
+	private async _unmakeActivity(info: Info<Activity>, animate: boolean) {
+		// TODO ...
+	}
+	private async _unmakeTop(info: Info<Cover>, animate: boolean) {
+		// TODO ...
+	}
+	private async _unmakeBottom(info: Info<Cover>, animate: boolean) {
+		// TODO ...
+	}
+	private async _unmakeWidget(info: Info<Widget>, animate: boolean) {
+		// TODO ...
+	}
+
+	private _load<T extends Window>(app: Application, window: NewWindow<T>, target: Target, args?: any) {
 		utils.equalsClass(Window, window);
 		var id = args?.id ? String(args.id): getId(window);
 		var fid = _get_full_id(app, id);
-		var c = this._IDs.get(fid) as WindowInfo;
-
-		this._loadActivity(app, id);
-
-		((this as any)['_' + target] as WindowInfo[]).forEach(c=>{
-			c.key = false;
-		});
-		// console.log('----', id,fid);
-		if (c) {
-			c.key = true;
-		} else {
-			c = { app, args, Window: window, id, target, key: true };
-			((this as any)['_' + c.target] as any[]).push(c);
-			this._IDs.set(fid, c);
+		var info = this._IDs.get(fid) as Info<T>;
+		if (!info) {
+			var [panel, stack] = this._genPanel(target);
+			var New = window as any;
+			var win = ReactDom.render<{}>(<New {...args} __app__={app} id={id} />, panel) as Window;
+			var info = { window: win as T, panel, id, target, stack } as Info<T>;
+			stack.push(info);
+			this._IDs.set(fid, info);
 		}
-		this.setState({ __ch: this.state.__ch + 1 });
+		return info;
 	}
 
-	private _destroy<T extends Window>(app: Application, window: string | WindowNew<T>)
-	{
-		var id: string = typeof window == 'string' ? String(window): getId(window);
-		var fid = _get_full_id(app, id);
-		var c = this._IDs.get(fid);
-		if (c) {
-			((this as any)['_' + c.target] as WindowInfo[]).deleteOf(c);
-			this._IDs.delete(fid);
-			if (c.target == Target.ACTIVITY) {
-				if (this._cur == fid) { // clear ApplicationLauncher._cur
-					this._cur = '';
-				}
-				if ((c.app as any)._cur == id) { // clear Application._cur
-					(app as any)._cur = ''; // private visit
-				}
-				this._destroyActivity(this.refs[fid] as Activity);
-			}
-			this.setState({ __ch: this.state.__ch + 1 });
-		}
+	private _unload(info: Info<Window>) {
+		var id = info.id;
+		var fid = _get_full_id(info.window.app, id);
+		ReactDom.unmountComponentAtNode(info.panel);
+		(info.panel.parentElement as HTMLElement).removeChild(info.panel);
+		info.stack.deleteOf(info);
+		this._IDs.delete(fid);
 	}
 
-	getWindow(app: Application, id: string): Window | null {
-		return this.refs[_get_full_id(app, id)] as Window || null;
+	private _getInfo<T extends Window>(app: Application, id: string | NewWindow<T>): Info<T> | null {
+		utils.assert(app);
+		var _id: string = typeof id == 'string' ? String(window): getId(id);
+		var fid = _get_full_id(app, _id);
+		var info = this._IDs.get(fid);
+		return info as Info<T> || null;
+	}
+
+	getWindow<T extends Window>(app: Application, id: string | NewWindow<T>): Window | null {
+		var info = this._getInfo(app, id);
+		return info?.window || null;
 	}
 
 	render() {
-		var {_activity,_widget,_top,_bottom} = this;
-		var _id = _get_full_id;
 		return (
 			<div className="iso_sys" ref="__root">
-				<div className="iso_bodys" ref="__bodys">
-				{
-					_activity.map(({args,Window,app,id,key},j)=>
-						<div
-							key={_id(app,id)} 
-							style={{width: '100%', height: '100%', display: key?'block':'none'}}
-						>
-							<Window {...args} __app__={app} id={id} ref={_id(app,id)} />
-						</div>
-					)
-				}
-				</div>
-				<div className="iso_widgets" ref="__widgets" >
-				{
-					_widget.map(({args,Window,app,id})=>
-						<Window {...args} __app__={app} 
-							key={_id(app,id)} id={id} ref={_id(app,id)} />
-					)
-				}
-				</div>
-				<div className="iso_covers" style={{top: '-100%'}} ref="__tops" >
-				{
-					_top.map(({args,Window,app,id})=>
-						<Window {...args} __app__={app} 
-							key={_id(app,id)} id={id} ref={_id(app,id)} />
-					)
-				}
-				</div>
-				<div className="iso_covers" style={{top: '100%'}} ref="__bottoms">
-				{
-					_bottom.map(({args,Window,app,id})=>
-						<Window {...args} __app__={app} 
-							key={_id(app,id)} id={id} ref={_id(app,id)} />
-					)
-				}
-				</div>
+				<div className="iso_activitys" ref="__activity"></div>
+				<div className="iso_widgets" ref="__widget" ></div>
+				<div className="iso_covers" style={{top: '-100%'}} ref="__top" ></div>
+				<div className="iso_covers" style={{top: '100%'}} ref="__bottom"></div>
 			</div>
 		);
 	}
@@ -419,8 +434,8 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	static get current() {
-		utils.assert(_cur, 'No the ApplicationLauncher instance');
-		return _cur as ApplicationLauncher;
+		utils.assert(_launcher, 'No the ApplicationLauncher instance');
+		return _launcher as ApplicationLauncher;
 	}
 
 	static launch(appName: string, args?: any) {

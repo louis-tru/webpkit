@@ -13,10 +13,14 @@ import './ctr.css';
 export enum Type {
 	ACTIVITY = 1,
 	WIDGET,
+	COVER,
+}
+
+export enum CoverType {
 	TOP, BOTTOM,
 }
 
-export interface WindowNew<T extends Window> {
+export interface NewWindow<T extends Window> {
 	new(args?: any): T;
 	type: Type;
 }
@@ -30,27 +34,17 @@ export class Window<P = {}> extends ViewController<P> {
 		this.app = props.__app__;
 		this.id = props.id;
 	}
-	// get isActive() {
-	// 	return true;
-	// }
-	// protected triggerMounted() {
-	// }
-	// protected triggerRemove() {
-		// if (this.isActive) {
-		// 	this.triggerPause();
-		// }
-	// }
-	protected triggerResume() {
+	triggerResume() {
 		// overwrite
 	}
-	protected triggerPause() {
+	triggerPause() {
 		// overwrite
 	}
 }
 
 export class Activity<P = {}> extends Window<P> {
 	static readonly type: Type = Type.ACTIVITY;
-	launch(activity: WindowNew<Activity>, args?: any) {
+	launch(activity: NewWindow<Activity>, args?: any) {
 		this.app.launcher.show(this.app, activity, args);
 	}
 	saveState(): any {
@@ -64,7 +58,7 @@ export class Activity<P = {}> extends Window<P> {
 	}
 	render() {
 		return (
-			<div>
+			<div ref="dom">
 				Activity
 			</div>
 		);
@@ -76,12 +70,5 @@ export class Widget<P = {}> extends Window<P> {
 }
 
 export class Cover<P = {}> extends Window<P> {
-}
-
-export class Top<P = {}> extends Cover<P> {
-	static readonly type = Type.TOP;
-}
-
-export class Bottom<P = {}> extends Cover<P> {
-	static readonly type = Type.BOTTOM;
+	static readonly type = Type.COVER;
 }
