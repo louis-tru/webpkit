@@ -18,12 +18,11 @@ export default abstract class Application {
 		var act = this.launcher.getWindow(this, this._cur);
 		return act as Activity;
 	}
-
 	constructor(launcher: ApplicationLauncher) {
 		this.launcher = launcher;
 	}
 
-	triggerLaunch(args?: any) {}
+	abstract body(): NewWindow<Activity>;
 	triggerLoad() {}
 	triggerUnload() {}
 	triggerPause() {}

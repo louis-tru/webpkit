@@ -3,8 +3,8 @@
  * @date 2020-04-07
  */
 
-import * as React from 'react';
 import utils from 'nxkit';
+import * as React from 'react';
 import {ViewController} from '../lib/ctr';
 import Application from './app';
 import Dialog from './dialog';

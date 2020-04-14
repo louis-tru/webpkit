@@ -4,8 +4,9 @@
  */
 
 import utils from 'nxkit';
+import {List,ListItem} from 'nxkit/event';
 import {React} from '../lib';
-import {Type,CoverType,Window,Activity,Widget,NewWindow,Cover} from './ctr';
+import {Type,CoverType,Window,NewWindow,Activity,Widget,Cover} from './ctr';
 import Application, {ApplicationSystem} from './app';
 import Gesture, {Event} from './gesture';
 import './sys.css';
@@ -13,6 +14,7 @@ import * as ReactDom from 'react-dom';
 import { DelayCall } from 'nxkit/delay_call';
 
 var _launcher: ApplicationLauncher | null = null;
+var ANIMATE_TIME = 400;
 
 export interface NewApplication {
 	new(launcher: ApplicationLauncher): Application;
@@ -25,13 +27,14 @@ enum Target {
 	BOTTOM,
 }
 
-interface Info<T extends Window> {
-	window: T;
+interface Info {
+	window: Window;
 	panel: HTMLElement;
 	id: string;
 	target: Target;
-	stack: Info<T>[];
 }
+
+type Item = ListItem<Info>;
 
 function _get_full_id(app: Application, id: string) {
 	return app.name + '_' + id;
@@ -91,20 +94,18 @@ function set_cover_position(self: ApplicationLauncher/*, name, value, unit, dura
 }
 
 export default class ApplicationLauncher extends Gesture<{
-	width?: number|string;
-	height?: number|string;
 	disableTopGesture?: boolean;
 	disableBottomGesture?: boolean;
 }> {
 	private _installed: Map<string, ()=>Promise<{default:NewApplication}>> = new Map();
 	private _apps: Map<string, Application> = new Map(); // current run applications
 	private _sys: ApplicationSystem | null = null; // sys app
-	private _cur = ''; // current activity id
-	private _activity = [] as Info<Activity>[];
-	private _widget = [] as Info<Widget>[];
-	private _top = [] as Info<Cover>[];
-	private _bottom = [] as Info<Cover>[];
-	private _IDs: Map<string, Info<Window>> = new Map();
+	private _cur: Item | null = null;
+	private _IDs: Map<string, Item> = new Map();
+	private _activity = new List<Info>();
+	private _widget = new List<Info>();
+	private _top = new List<Info>();
+	private _bottom = new List<Info>();
 
 	protected triggerLoad() {
 		utils.assert(!_launcher);
@@ -115,7 +116,7 @@ export default class ApplicationLauncher extends Gesture<{
 		_launcher = null;
 	}
 
-	private _genPanel(target: Target): [HTMLElement, Info<Window>[]] {
+	private _genPanel(target: Target): [HTMLElement, List<Info>] {
 		if (target == Target.ACTIVITY) {
 			var div = document.createElement('div');
 			(this.refs.__activity as HTMLElement).appendChild(div);
@@ -164,28 +165,29 @@ export default class ApplicationLauncher extends Gesture<{
 		}
 		if (isLoad)
 			app.triggerLoad();
-		app.triggerLaunch(args);
+		this.show(app, app.body(), args);
 	}
 
 	async show<T extends Window>(app: Application, window: NewWindow<T>, args?: any, animate = true): Promise<T> {
 		if (window.type == Type.ACTIVITY) {
-			return await this._makeActivity(this._load(app, window, Target.ACTIVITY, args) as any, animate) as any;
+			return await this._makeActivity(this._load(app, window, Target.ACTIVITY, args), animate) as any;
 		} else if (window.type == Type.WIDGET) {
-			return await this._makeWidget(this._load(app, window, Target.WIDGET, args) as any, animate) as any;
+			return await this._makeWidget(this._load(app, window, Target.WIDGET, args), animate) as any;
 		} else {
 			throw new Error('Err');
 		}
 	}
 
 	async close<T extends Window>(app: Application, id: string | NewWindow<T>, animate = true) {
-		var info = this._getInfo(app, id);
-		if (info) {
+		var item = this._getInfo(app, id);
+		if (item) {
+			var info = item.value as Info;
 			if (info.target == Target.ACTIVITY) {
-				await this._unmakeActivity(info as any, animate);
-				this._unload(info);
+				await this._unmakeActivity(item, animate);
+				this._unload(item);
 			} else if (info.target == Target.WIDGET) {
-				await this._unmakeWidget(info as any, animate);
-				this._unload(info);
+				await this._unmakeWidget(item, animate);
+				this._unload(item);
 			}
 		}
 	}
@@ -195,48 +197,66 @@ export default class ApplicationLauncher extends Gesture<{
 		var sys = this._sys as ApplicationSystem;
 		var window = type == CoverType.TOP ? sys.top(): sys.bottom();
 		if (type == CoverType.TOP) {
-			await this._makeTop(this._load(sys, window, Target.TOP) as any, animate);
+			await this._makeTop(this._load(sys, window, Target.TOP), animate);
 		} else if (type == CoverType.BOTTOM) {
-			await this._makeBottom(this._load(sys, window, Target.BOTTOM) as any, animate);
+			await this._makeBottom(this._load(sys, window, Target.BOTTOM), animate);
 		}
 	}
 
 	async closeCover(type: CoverType = CoverType.TOP, animate = true) {
 		var sys = this._sys as ApplicationSystem;
-		var info = this._getInfo(sys, type == CoverType.TOP ? sys.top(): sys.bottom()) as Info<Window>;
-		if (info) {
+		var item = this._getInfo(sys, type == CoverType.TOP ? sys.top(): sys.bottom());
+		if (item) {
 			if (type == CoverType.TOP) {
-				await this._unmakeTop(info as any, animate);
-				this._unload(info);
+				await this._unmakeTop(item, animate);
+				this._unload(item);
 			} else if (type == CoverType.BOTTOM) {
-				await this._unmakeBottom(info as any, animate);
-				this._unload(info);
+				await this._unmakeBottom(item, animate);
+				this._unload(item);
 			}
 		}
 	}
 
-	private async _makeActivity(info: Info<Activity>, animate: boolean) {
+	private async _makeActivity(item: Item, animate: boolean) {
+		var info = item.value as Info;
+		var cur = this._cur;
+		this._cur = item;
+		if (cur) {
+			if (cur !== this._cur) {
+				//
+			}
+		}
 		return info.window;
 	}
-	private async _makeTop(info: Info<Cover>, animate: boolean) {
+	private async _makeTop(item: Item, animate: boolean) {
+		var info = item.value as Info;
+		// TODO ...
 		return info.window;
 	}
-	private async _makeBottom(info: Info<Cover>, animate: boolean) {
+	private async _makeBottom(item: Item, animate: boolean) {
+		var info = item.value as Info;
+		// TODO ...
 		return info.window;
 	}
-	private async _makeWidget(info: Info<Widget>, animate: boolean) {
+	private async _makeWidget(item: Item, animate: boolean) {
+		var info = item.value as Info;
+		// TODO ...
 		return info.window;
 	}
-	private async _unmakeActivity(info: Info<Activity>, animate: boolean) {
+	private async _unmakeActivity(item: Item, animate: boolean) {
+		var info = item.value as Info;
 		// TODO ...
 	}
-	private async _unmakeTop(info: Info<Cover>, animate: boolean) {
+	private async _unmakeTop(item: Item, animate: boolean) {
+		var info = item.value as Info;
 		// TODO ...
 	}
-	private async _unmakeBottom(info: Info<Cover>, animate: boolean) {
+	private async _unmakeBottom(item: Item, animate: boolean) {
+		var info = item.value as Info;
 		// TODO ...
 	}
-	private async _unmakeWidget(info: Info<Widget>, animate: boolean) {
+	private async _unmakeWidget(item: Item, animate: boolean) {
+		var info = item.value as Info;
 		// TODO ...
 	}
 
@@ -244,38 +264,37 @@ export default class ApplicationLauncher extends Gesture<{
 		utils.equalsClass(Window, window);
 		var id = args?.id ? String(args.id): getId(window);
 		var fid = _get_full_id(app, id);
-		var info = this._IDs.get(fid) as Info<T>;
-		if (!info) {
+		var item = this._IDs.get(fid);
+		if (!item) {
 			var [panel, stack] = this._genPanel(target);
 			var New = window as any;
 			var win = ReactDom.render<{}>(<New {...args} __app__={app} id={id} />, panel) as Window;
-			var info = { window: win as T, panel, id, target, stack } as Info<T>;
-			stack.push(info);
-			this._IDs.set(fid, info);
+			var info = { window: win, panel, id, target } as Info;
+			item = stack.push(info);
+			this._IDs.set(fid, item);
 		}
-		return info;
+		return item;
 	}
 
-	private _unload(info: Info<Window>) {
-		var id = info.id;
-		var fid = _get_full_id(info.window.app, id);
+	private _unload(item: ListItem<Info>) {
+		var info = item.value as Info;
+		var fid = _get_full_id(info.window.app, info.id);
 		ReactDom.unmountComponentAtNode(info.panel);
 		(info.panel.parentElement as HTMLElement).removeChild(info.panel);
-		info.stack.deleteOf(info);
+		(item.host as List<Info>).del(item);
 		this._IDs.delete(fid);
 	}
 
-	private _getInfo<T extends Window>(app: Application, id: string | NewWindow<T>): Info<T> | null {
+	private _getInfo(app: Application, id: string | NewWindow<Window>): ListItem<Info> | null {
 		utils.assert(app);
 		var _id: string = typeof id == 'string' ? String(window): getId(id);
 		var fid = _get_full_id(app, _id);
-		var info = this._IDs.get(fid);
-		return info as Info<T> || null;
+		var item = this._IDs.get(fid);
+		return item || null;
 	}
 
-	getWindow<T extends Window>(app: Application, id: string | NewWindow<T>): Window | null {
-		var info = this._getInfo(app, id);
-		return info?.window || null;
+	getWindow(app: Application, id: string | NewWindow<Window>): Window | null {
+		return this._getInfo(app, id)?.value?.window || null;
 	}
 
 	render() {
@@ -294,19 +313,19 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	protected triggerBeginMove(e: Event) {
-
-	// private _begin_move = false;
-	// private _cover_top_ok = false;
-	// private _cover_bottom_ok = false;
-	// private cover_top__ = false;
-	// private cover_bottom__ = false;
-	// private _cover_top_destroy = new DelayCall(e=>this.cover_top__=false, 1e3);
-	// private _cover_bottom_destroy = new DelayCall(e=>this.cover_bottom__=false, 1e3);
-	// private _disable_top_gesture = Number(this.props.disableTopGesture) ? true: false;
-	// private _disable_bottom_gesture = Number(this.props.disableBottomGesture) ? true: false;
-	// private _width = 0;
-	// private _height = 0;
-
+		//
+		// private _begin_move = false;
+		// private _cover_top_ok = false;
+		// private _cover_bottom_ok = false;
+		// private cover_top__ = false;
+		// private cover_bottom__ = false;
+		// private _cover_top_destroy = new DelayCall(e=>this.cover_top__=false, 1e3);
+		// private _cover_bottom_destroy = new DelayCall(e=>this.cover_bottom__=false, 1e3);
+		// private _disable_top_gesture = Number(this.props.disableTopGesture) ? true: false;
+		// private _disable_bottom_gesture = Number(this.props.disableBottomGesture) ? true: false;
+		// private _width = 0;
+		// private _height = 0;
+		// 
 		// if (has_can_action(this)) {
 		// 	this._begin_move = true;
 		// }
