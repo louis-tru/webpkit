@@ -31,7 +31,6 @@
 import utils from 'nxkit';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
-import { Component } from 'react';
 import {ViewController} from '../lib/ctr';
 import error from '../lib/handles';
 import {EventNoticer, Event} from 'nxkit/event';
