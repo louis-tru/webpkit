@@ -83,7 +83,7 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 	private _begin_direction = 0;
 	private _direction = 0;
 
-	private static select_touch(self: Gesture, e: TouchEvent) {
+	private static _selectTouch(self: Gesture, e: TouchEvent) {
 		if (self._identifier != -1) {
 			return Array.toArray(e.changedTouches).find(e=>{
 				if (e.identifier == self._identifier) {
@@ -93,55 +93,42 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 		}
 	}
 
-	// @private
-	private static handle_touchstart(self: Gesture, e: TouchEvent) {
-		if (self._identifier == -1) {
-	
-			var touch = e.changedTouches[0];
-			var x = touch.pageX;
-			var y = touch.pageY;
-			var time = Date.now();
-	
-			self._identifier = touch.identifier;
-			self._direction = 0;
-			self._begin_x = x;
-			self._begin_y = y;
-			self._x = x;
-			self._y = y;
-			self._time = time;
-			self._speed = 0;
-			self._begin = false;
-	
-			var ev: Event = {
-				begin: true,
-				time: time,
-				begin_x: x, begin_y: y,
-				prev_x: x, prev_y: x,
-				x: y, y: y,
-				speed: 0, instant_speed: 0,
-				begin_angle: 0, angle: 0, instant_angle: 0,
-				begin_direction: 0, direction: 0, // horizontal_direction: 0, vertical_direction: 0,
-				instant_direction: 0, // instant_horizontal_direction: 0, instant_vertical_direction: 0,
-				distance: 0, instant_distance: 0,
-			};
-	
-			self.triggerBeginMove(ev);
-		}
+	private static _handleBegin(self: Gesture, e: Point) {
+		var {x,y} = e;
+		var time = Date.now();
+
+		self._direction = 0;
+		self._begin_x = x;
+		self._begin_y = y;
+		self._x = x;
+		self._y = y;
+		self._time = time;
+		self._speed = 0;
+		self._begin = false;
+
+		var ev: Event = {
+			begin: true,
+			time: time,
+			begin_x: x, begin_y: y,
+			prev_x: x, prev_y: x,
+			x: y, y: y,
+			speed: 0, instant_speed: 0,
+			begin_angle: 0, angle: 0, instant_angle: 0,
+			begin_direction: 0, direction: 0, // horizontal_direction: 0, vertical_direction: 0,
+			instant_direction: 0, // instant_horizontal_direction: 0, instant_vertical_direction: 0,
+			distance: 0, instant_distance: 0,
+		};
+
+		self.triggerBeginMove(ev);
 	}
 
-	// @private
-	private static handle_touchmove(self: Gesture, e: TouchEvent) {
-	
-		var touch = Gesture.select_touch(self, e);
-		if (!touch) {
-			return;
-		}
+	private static _handleMove(self: Gesture, e: Point) {
+
+		var {x,y} = e;
 	
 		var prev_time = self._time;
 		var time = Date.now();
 	
-		var x = touch.pageX;
-		var y = touch.pageY;
 		var p1 = {x: self._begin_x , y: self._begin_y};
 		var p2 = {x: self._x, y: self._y};
 		var p3 = {x, y};
@@ -186,14 +173,8 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 		self.triggerMove(ev);
 	}
 
-	// @private
-	private static handle_touchend(self: Gesture, e: TouchEvent) {
-	
-		var touch = Gesture.select_touch(self, e);
-		if (!touch) {
-			return;
-		}
-	
+	private static _handleEnd(self: Gesture, e: Point) {
+
 		var ev = self._ev;
 		var time = Date.now();
 	
@@ -208,8 +189,7 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 			// direction, instant_direction,
 			// distance, instant_distance,
 		} else {
-			var x = touch.pageX;
-			var y = touch.pageY;
+			var {x,y} = e;
 			ev = {
 				begin: false,
 				time: time,
@@ -227,7 +207,6 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 
 		self.triggerEndMove(ev);
 	
-		self._identifier = -1;
 		self._time = 0;
 		self._speed = 0;
 		self._ev = null;
@@ -236,15 +215,64 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 		self._begin_x = self._begin_y = self._x = self._y = 0;
 	}
 
+	private static _handleTouchstart(self: Gesture, e: TouchEvent) {
+		if (self._identifier == -1) {
+			var touch = e.changedTouches[0];
+			self._identifier = touch.identifier;
+			Gesture._handleBegin(self, {x: touch.pageX,y: touch.pageY});
+		}
+	}
+
+	private static _handleTouchmove(self: Gesture, e: TouchEvent) {
+		var touch = Gesture._selectTouch(self, e);
+		if (touch) {
+			Gesture._handleMove(self, { x: touch.pageX, y: touch.pageY });
+		}
+	}
+
+	private static _handleTouchend(self: Gesture, e: TouchEvent) {
+		var touch = Gesture._selectTouch(self, e);
+		if (touch) {
+			Gesture._handleEnd(self, { x: touch.pageX, y: touch.pageY });
+			self._identifier = -1;
+		}
+	}
+
+	private static _handleMousedown(self: Gesture, e: MouseEvent) {
+		if (self._identifier == -1) {
+			self._identifier = 1;
+			Gesture._handleBegin(self, { x: e.pageX, y: e.pageY });
+		}
+	}
+
+	private static _handleMousemove(self: Gesture, e: MouseEvent) {
+		if (self._identifier == 1) {
+			Gesture._handleMove(self, { x: e.pageX, y: e.pageY });
+		}
+	}
+
+	private static _handleMouseup(self: Gesture, e: MouseEvent) {
+		if (self._identifier == 1) {
+			Gesture._handleEnd(self, { x: e.pageX, y: e.pageY });
+			self._identifier = -1;
+		}
+	}
+
 	protected abstract get $el(): HTMLElement;
 
 	triggerMounted() {
 		var el = this.$el;
-		el.addEventListener('touchstart', (e)=>Gesture.handle_touchstart(this, e));
-		el.addEventListener('touchmove', e=>Gesture.handle_touchmove(this, e));
-		el.addEventListener('touchend', e=>Gesture.handle_touchend(this, e));
 		this._width = el.clientWidth;
 		this._height = el.clientHeight;
+		if ('touchstart' in globalThis.document.body) {
+			el.addEventListener('touchstart', (e)=>Gesture._handleTouchstart(this, e));
+			el.addEventListener('touchmove', e=>Gesture._handleTouchmove(this, e));
+			el.addEventListener('touchend', e=>Gesture._handleTouchend(this, e));
+		} else {
+			el.addEventListener('mousedown', (e)=>Gesture._handleMousedown(this, e));
+			el.addEventListener('mousemove', (e)=>Gesture._handleMousemove(this, e));
+			el.addEventListener('mouseup', (e)=>Gesture._handleMouseup(this, e));
+		}
 	}
 
 	protected triggerBeginMove(e: Event) {}

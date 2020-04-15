@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import {Dialog,alert} from './dialog';
+import {alert,Dialog} from './dialog';
 
 const dialog_handles: Dict<Dialog> = {};
 

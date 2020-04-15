@@ -7,8 +7,7 @@ import utils from 'nxkit';
 import * as React from 'react';
 import {ViewController} from '../lib/ctr';
 import Application from './app';
-import Dialog from './dialog';
-import './ctr.css';
+import {Dialog,DialogStack} from '../lib/dialog';
 
 export enum Type {
 	ACTIVITY = 1,
@@ -40,29 +39,48 @@ export class Window<P = {}> extends ViewController<P> {
 	triggerPause() {
 		// overwrite
 	}
+	close(animate?: boolean) {
+		this.app.launcher.close(this.app, this.id, animate);
+	}
 }
 
-export class Activity<P = {}> extends Window<P> {
+export abstract class Activity<P = {}> extends Window<P> {
 	static readonly type: Type = Type.ACTIVITY;
+	private _dialogStack: DialogStack;
+
+	private get dialogStack() {
+		if (!this._dialogStack) {
+			this._dialogStack = new DialogStack(this.refs.dialog as HTMLElement);
+		}
+		return this._dialogStack;
+	}
+
+	triggerRemove() {
+		if (this._dialogStack)
+			this._dialogStack.closeAll();
+	}
+
 	launch(activity: NewWindow<Activity>, args?: any) {
 		this.app.launcher.show(this.app, activity, args);
 	}
-	saveState(): any {
-		return null;
+
+	showDialog(D: typeof Dialog, opts?: any) {
+		return this.dialogStack.show(D, opts);
 	}
-	show(dialog: typeof Dialog, opts?: any) {
-		// TODO ...
+
+	closeDialog(id: typeof Dialog | string) {
+		return this.dialogStack.close(id);
 	}
-	close(dialog: typeof Dialog | string) {
-		// TODO ...
-	}
+
 	render() {
 		return (
 			<div ref="dom">
-				Activity
+				{this.renderBody()}
+				<div ref="dialog"></div>
 			</div>
 		);
 	}
+	abstract renderBody(): React.ReactNode;
 }
 
 export class Widget<P = {}> extends Window<P> {

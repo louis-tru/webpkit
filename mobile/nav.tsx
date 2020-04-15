@@ -59,7 +59,7 @@ interface PrivPageProps extends ParseParams {
 	panel: HTMLDivElement;
 }
 
-class PrivPage extends Component<PrivPageProps> {
+class PrivPage extends ViewController<PrivPageProps> {
 	m_prev: any = null;
 	m_next: any = null;
 	m_status = -1;
@@ -119,7 +119,7 @@ class PrivPage extends Component<PrivPageProps> {
 		return this.m_index;
 	}
 
-	componentDidMount() {
+	triggerMounted() {
 		this.loader();
 	}
 
@@ -329,7 +329,7 @@ export interface NavProps {
 	onEnd?: ()=>void;
 }
 
-export class Nav extends Component<NavProps> {
+export class Nav extends ViewController<NavProps> {
 	private m_pages: PrivPage[] = [];
 	private m_current: PrivPage | null = null;
 	private m_routes: Dict<Route> = {};
@@ -352,7 +352,7 @@ export class Nav extends Component<NavProps> {
 		this.onEnd.trigger();
 	}
 
-	componentDidMount() {
+	triggerMounted() {
 		var routes = this.props.routes;
 		routes.forEach(e=>{
 			if (typeof e.path == 'string') {

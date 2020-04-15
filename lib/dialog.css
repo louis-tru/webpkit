@@ -8,21 +8,30 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background: rgba(0,0,0,0.75);
+	background: rgba(0,0,0,0.01);
+	transition-property: background;
 	top: 0;
 	position: fixed;
-	opacity: 0;
-	transition: opacity;
 	transition-duration: 300ms;
 	transform: translateZ(2px);
+	transform-style: preserve-3d;
+	display: none;
 }
 
 .dialog .core {
+	transform: scale(0.3);
+	opacity: 0;
+	transition-property: transform, opacity;
+	transform-style: preserve-3d;
+	transition-duration: 300ms;
+}
+
+.dialog .default {
 	width: 6.04rem;
 	/*height: 3.32rem;*/
 	border-radius: 0.3rem;
 	background: rgba(255,255,255,1);
-	margin-top: -1.65rem;
+	/* margin-top: -1.65rem; */
 	padding-top: 0.4rem;
 }
 

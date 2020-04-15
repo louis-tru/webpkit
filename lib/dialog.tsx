@@ -28,11 +28,162 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+import utils from 'nxkit';
 import './util.css';
 import './dialog.css';
-import { Component } from 'react';
+import { ViewController } from './ctr';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
+import {EventNoticer,Event} from 'nxkit/event';
+import {List,ListItem} from 'nxkit/event';
+
+var DEFAULT_SCALE = 1;
+
+export function getDefaultId(obj: any) {
+	utils.assert(obj);
+	if (!(obj as any).hasOwnProperty('__default_id')) {
+		(obj as any).__default_id = String(utils.getId());
+	}
+	return String((obj as any).__default_id);
+}
+
+export class DialogStack {
+	private _dialogStack = new List<Dialog>();
+	private _dialogIDs: Map<string, ListItem<Dialog>> = new Map();
+	private _panel: HTMLElement;
+
+	constructor(panel: HTMLElement = document.body) {
+		this._panel = panel;
+	}
+
+	show(D: typeof Dialog, opts?: any) {
+		var id = opts?.id ? String(opts.id): getDefaultId(D);
+		utils.assert(!this._dialogIDs.has(id), `Dialog already exists, "${id}"`);
+
+		var div = document.createElement('div');
+		(this._panel as HTMLElement).appendChild(div);
+		var dialog = ReactDom.render<{}, Dialog<any>>(<D {...opts} />, div);
+
+		var prev = this._dialogStack.last;
+		if (prev) {
+			(prev.value as Dialog).hide();
+		}
+
+		var item = this._dialogStack.push(dialog);
+		this._dialogIDs.set(id, item);
+
+		dialog.onClose.on(()=>{
+			this._dialogStack.del(item);
+			this._dialogIDs.delete(id);
+			utils.sleep(200).then(()=>{
+				var last = this._dialogStack.last;
+				if (last) {
+					(last.value as Dialog).show();
+				}
+			});
+		});
+
+		return dialog;
+	}
+
+	close(id: typeof Dialog | string) {
+		var _id: string = typeof id == 'string' ? String(id): getDefaultId(id);
+		utils.assert(this._dialogIDs.has(_id), `Dialog no exists, "${id}"`);
+		var item = this._dialogIDs.get(_id);
+		if (item) {
+			(item.value as Dialog).close();
+		}
+	}
+
+	closeAll() {
+		var item = this._dialogStack.first;
+		while(item) {
+			var next = item.next;
+			(item.value as Dialog).close(false);
+			item = next;
+		}
+	}
+}
+
+var _globaDialogStack: DialogStack | null;
+
+export class Dialog<P = {}> extends ViewController<P> {
+
+	readonly onClose = new EventNoticer<Event<void, Dialog>>('Close', this);
+
+	protected triggerMounted() {
+		this.show();
+	}
+
+	render() {
+		var style: Dict = {};
+		if (this.noMask) {
+			style.background = 'none';
+		}
+		return (
+			<div ref="root" className="dialog" style={style}>
+				<div className="core" ref="core">
+					{this.renderBody()}
+				</div>
+			</div>
+		)
+	}
+
+	private async _enableAnimate(animate: boolean) {
+		if (animate) {
+			(this.refs.root as HTMLElement).style.transitionDuration = '300ms';
+			(this.refs.core as HTMLElement).style.transitionDuration = '300ms';
+		} else {
+			(this.refs.root as HTMLElement).style.transitionDuration = '0ms';
+			(this.refs.core as HTMLElement).style.transitionDuration = '0ms';
+		}
+		(this.refs.root as HTMLElement).style.display = 'flex';
+		await utils.sleep(30);
+	}
+
+	async hide(animate = true) {
+		await this._enableAnimate(animate);
+		if (!this.noMask)
+			(this.refs.root as HTMLElement).style.background = 'rgba(0,0,0,0.01)';
+		(this.refs.core as HTMLElement).style.opacity = '0';
+		(this.refs.core as HTMLElement).style.transform = 'scale(0.3)';
+		await utils.sleep(300);
+		(this.refs.root as HTMLElement).style.display = 'none';
+	}
+
+	async show(animate = true) {
+		await this._enableAnimate(animate);
+		if (!this.noMask)
+			(this.refs.root as HTMLElement).style.background = 'rgba(0,0,0,0.75)';
+		(this.refs.core as HTMLElement).style.opacity = '1';
+		(this.refs.core as HTMLElement).style.transform = 'scale(1)';
+		await utils.sleep(300);
+	}
+
+	async close(animate?: boolean) {
+		var root = this.refs.root;
+		if (root) {
+			this.onClose.trigger();
+			await this.hide(animate);
+			var div = (this.refs.root as HTMLElement).parentNode as HTMLElement;
+			ReactDom.unmountComponentAtNode(div);
+			(div.parentNode as HTMLElement).removeChild(div);
+		}
+	}
+
+	get noMask() { return true }
+
+	protected renderBody(): React.ReactNode {
+		return null;
+	}
+
+	static get globaDialogStack() {
+		if (!_globaDialogStack) {
+			_globaDialogStack = new DialogStack();
+		}
+		return _globaDialogStack;
+	}
+}
 
 export interface Options {
 	title?: string,
@@ -43,121 +194,86 @@ export interface Options {
 		value?: string;
 		input?: InputConstructor;
 	},
-	nomask?: boolean,
+	noMask?: boolean;
 }
 
-export class Dialog extends Component<Options, {
-	opacity: number;
-	nomask: boolean
-}> {
+export default class DefaultDialog extends Dialog<Options> {
 
-	constructor(props: any) {
-		super(props);
-		this.state = { opacity: 0, nomask: props.nomask };
-	}
-
-	componentDidMount() {
-		setTimeout(e=>{
-			this.setState({ opacity: 1 });
-			if (this.refs.prompt) {
-				var props = this.props;
-				var input = this.refs.prompt as HTMLInputElement;
-				input.value = typeof props.prompt=='string'? props.prompt : '';
-			}
-		}, 50);
-	}
-
-	m_handleClick_1(cb: (s:any)=>void) {
-		this.setState({ opacity: 0 });
-		setTimeout(()=>{
-			var root = this.refs.root;
-			if (root) {
-				cb(this);
-				var div = (this.refs.root as HTMLDivElement).parentNode as HTMLDivElement;
-				ReactDom.unmountComponentAtNode(div);
-				document.body.removeChild(div);
-			}
-		}, 500);
-	}
-
-	m_handleChange_1 = ()=>{
-	}
-
-	render() {
-		var props = this.props;
-		var buttons = props.buttons || {};
-		var {nomask,opacity} = this.state
-		var style: Dict = { opacity };
-
-		if (nomask) {
-			style.background = 'none';
+	protected triggerMounted() {
+		if (this.refs.prompt) {
+			var props = this.props;
+			var input = this.refs.prompt as HTMLInputElement;
+			input.value = typeof props.prompt=='string'? props.prompt : '';
 		}
+		super.triggerMounted();
+	}
 
+	private _handleClick_1(cb: (s:any)=>void) {
+		var root = this.refs.root;
+		if (root) {
+			cb(this);
+			this.close();
+		}
+	}
+
+	get noMask() {
+		return !!this.props.noMask;
+	}
+
+	protected renderButtons() {
+		var buttons = this.props.buttons || { '确定': (e)=>{} };
+		var r = [];
+		for (var i in buttons) {
+			var t = i[0] == '@' ? i.substr(1) : i;
+			var cls = i[0] == '@' ? 'ok':'';
+			r.push(
+				<div key={i} className={cls} onClick={()=>this._handleClick_1(buttons[i])}>{t}</div>
+			);
+		}
+		return r;
+	}
+
+	protected renderBody() {
+		var props = this.props;
 		return (
-			<div ref="root" className="dialog" style={style}>
-				<div className="core">
-					<div className="a" dangerouslySetInnerHTML={{ __html: props.title || ''/*||'温馨提示'*/ }}></div>
-					{
-						props.prompt ?
-						<div className="b">
-							<div>{props.text}</div>
-							{	(()=>{
-								var Input = props.prompt.input;
-								var type = props.prompt.type || 'text';
-								var inputProps = {
-									ref: 'prompt',
-									style: {
-										border: 'solid 0.015rem #ccc',
-										width: '90%',
-										marginTop: '0.1rem',
-										height: '0.5rem',
-										padding: '0 2px',
-									} as React.CSSProperties,
-								}
-								return (
-									Input ? 
-									<Input {...inputProps} value={props.prompt.value} />: 
-									<input {...inputProps} defaultValue={props.prompt.value} type={type} />
-								);
-							})()}
-						</div>:
-						<div className="b" dangerouslySetInnerHTML={{ __html: props.text || ''}}></div>
-					}
-					<div className="btns">
-					{
-						(()=>{
-							var r = [];
-							for (var i in buttons) {
-								var t = i[0] == '@' ? i.substr(1) : i;
-								var cls = i[0] == '@' ? 'ok':'';
-								r.push(<div key={i} className={cls} 
-									onClick={this.m_handleClick_1.bind(this, buttons[i])}>{t}</div>);
+			<div className="default" style={{ transform: `scale(${DEFAULT_SCALE})` }}>
+				<div className="a" dangerouslySetInnerHTML={{ __html: props.title || ''/*||'温馨提示'*/ }}></div>
+				{
+					props.prompt ?
+					<div className="b">
+						<div>{props.text}</div>
+						{	(()=>{
+							var Input = props.prompt.input;
+							var type = props.prompt.type || 'text';
+							var inputProps = {
+								ref: 'prompt',
+								style: {
+									border: 'solid 0.015rem #ccc',
+									width: '90%',
+									marginTop: '0.1rem',
+									height: '0.5rem',
+									padding: '0 2px',
+								} as React.CSSProperties,
 							}
-							return r;
-						})()
-					}
-					</div>
+							return (
+								Input ? 
+								<Input {...inputProps} value={props.prompt.value} />: 
+								<input {...inputProps} defaultValue={props.prompt.value} type={type} />
+							);
+						})()}
+					</div>:
+					<div className="b" dangerouslySetInnerHTML={{ __html: props.text || ''}}></div>
+				}
+				<div className="btns">
+					{this.renderButtons()}
 				</div>
 			</div>
 		);
 	}
 
-	static show({title, text, buttons, prompt, nomask }: Options) {
-		var div = document.createElement('div');
-		document.body.appendChild(div);
-		return ReactDom.render<Options, Dialog>(
-			<Dialog 
-				title={title} 
-				buttons={buttons}
-				text={text}
-				prompt={prompt}
-				nomask={nomask}
-			/>, div);
+	static setScale(scale: number) {
+		DEFAULT_SCALE = Math.max(1, Math.min(4, scale));
 	}
-}
-
-export function show(opts: Options) {
-	return Dialog.show(opts);
 }
 
 export type DialogIn = string | {
@@ -165,11 +281,15 @@ export type DialogIn = string | {
 	title?: string;
 }
 
+export function show(opts: Options) {
+	return Dialog.globaDialogStack.show(DefaultDialog, Object.assign({ id: utils.getId() }, opts));
+}
+
 export function alert(In: DialogIn, cb?: ()=>void) {
 	var _cb = cb || function() {}
 	var o = typeof In == 'string' ? { text: In, title: '' }: In;
 	var { text, title } = o;
-	return Dialog.show({
+	return show({
 		title, text, buttons: {
 		'确定': e=>{ _cb() },
 	}});
@@ -179,7 +299,7 @@ export function confirm(In: DialogIn, cb?: (ok: boolean)=>void) {
 	var _cb = cb || function() {};
 	var o = typeof In == 'string' ? { text: In, title: '' } : In;
 	var { text, title } = o;
-	return Dialog.show({title, text, buttons: {
+	return show({title, text, buttons: {
 		'取消': e=>_cb(false),
 		'@确定': e=>_cb(true),
 	}});
@@ -195,7 +315,7 @@ export interface InputProps {
 }
 
 export interface InputConstructor {
-	new(props: InputProps): Component<InputProps>;
+	new(props: InputProps): ViewController<InputProps>;
 }
 
 export type PromptIn = string | {
@@ -210,7 +330,7 @@ export function prompt(In: PromptIn, cb?: (value: string, ok: boolean)=>void) {
 	var _cb = cb || function() {}
 	var o = typeof In == 'string' ? { text: In, title: '', value: '', type: 'text' }: In;
 	var { text, title, value, type, input } = o;
-	return Dialog.show({title, text, buttons: {
+	return show({title, text, buttons: {
 		'取消': e=> _cb(e.refs.prompt.value, false),
 		'@确定': e=> _cb(e.refs.prompt.value, true),
 	}, prompt: {value, type, input}});

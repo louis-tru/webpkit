@@ -6,15 +6,20 @@
 import utils from 'nxkit';
 import {List,ListItem} from 'nxkit/event';
 import {React} from '../lib';
-import {Type,CoverType,Window,NewWindow,Activity,Widget,Cover} from './ctr';
+import {getDefaultId} from '../lib/dialog';
+import {Type,CoverType,Window,NewWindow} from './ctr';
 import Application, {ApplicationSystem} from './app';
 import Gesture, {Event} from './gesture';
-import './sys.css';
 import * as ReactDom from 'react-dom';
 import { DelayCall } from 'nxkit/delay_call';
+import * as fastClick from 'fastclick';
+
+import './core.css'; // css
+
+(fastClick as any).attach(document.body);
 
 var _launcher: ApplicationLauncher | null = null;
-var ANIMATE_TIME = 400;
+var ACTIVITY_ANIMATE_TIME = 400;
 
 export interface NewApplication {
 	new(launcher: ApplicationLauncher): Application;
@@ -32,20 +37,14 @@ interface Info {
 	panel: HTMLElement;
 	id: string;
 	target: Target;
+	time: number;
+	permanent: boolean;
 }
 
 type Item = ListItem<Info>;
 
 function _get_full_id(app: Application, id: string) {
 	return app.name + '_' + id;
-}
-
-function getId<T extends Window>(window: NewWindow<T>) {
-	utils.assert(window);
-	if (!(window as any).hasOwnProperty('__default_id')) {
-		(window as any).__default_id = String(utils.getId());
-	}
-	return String((window as any).__default_id);
 }
 
 function has_can_action(self: ApplicationLauncher) {
@@ -165,7 +164,45 @@ export default class ApplicationLauncher extends Gesture<{
 		}
 		if (isLoad)
 			app.triggerLoad();
-		this.show(app, app.body(), args);
+		app.triggerLaunch(args);
+	}
+
+	private _exitApp(app: Application) {
+		app.triggerUnload();
+		this._apps.delete(app.name);
+	}
+
+	private async _autoClear() {
+		// TODO ... clear all activity
+
+		var appNames = new Set();
+		var item = this._activity.first;
+		while(item) {
+			var next = item.next;
+			var info = item.value as Info;
+			if (!info.permanent && this._cur !== item) {
+				this._unload(item);
+			} else {
+				appNames.add(info.window.app.name);
+			}
+			item = next;
+		}
+
+		for (var [,app] of this._apps) {
+			if (!appNames.has(app.name)) {
+				var item = this._widget.first;
+				while (item) {
+					var next = item.next;
+					var info = item.value as Info;
+					if (info.window.app === app) {
+						await this._unmakeWidget(item, false);
+						this._unload(item);
+					}
+					item = next;
+				}
+				this._exitApp(app); // exit app
+			}
+		}
 	}
 
 	async show<T extends Window>(app: Application, window: NewWindow<T>, args?: any, animate = true): Promise<T> {
@@ -218,58 +255,160 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	private async _makeActivity(item: Item, animate: boolean) {
-		var info = item.value as Info;
-		var cur = this._cur;
+		var currInfo = item.value as Info;
+		var prev = this._cur;
 		this._cur = item;
-		if (cur) {
-			if (cur !== this._cur) {
-				//
+		if (prev) {
+			if (prev !== this._cur) {
+				var prevInfo = prev.value as Info;
+				prevInfo.window.triggerPause();
+				currInfo.window.triggerResume();
+				if (animate) {
+					// init style
+					prevInfo.panel.style.zIndex = '1';
+					currInfo.panel.style.zIndex = '2';
+					prevInfo.panel.style.display = 'block';
+					currInfo.panel.style.display = 'block';
+					prevInfo.panel.style.transitionDuration = '0ms';
+					currInfo.panel.style.transitionDuration = '0ms';
+					prevInfo.panel.style.transform = 'translateX(0) scale(1,1)';
+					currInfo.panel.style.transform = 'translateX(100%) scale(1,1)';
+					await utils.sleep(100);
+					// ani
+					prevInfo.panel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
+					currInfo.panel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
+					prevInfo.panel.style.transform = 'translateX(-50%) scale(0.7,0.7)';
+					currInfo.panel.style.transform = 'translateX(0) scale(1,1)';
+					await utils.sleep(400);
+					prevInfo.panel.style.display = 'none';
+				} else {
+					prevInfo.panel.style.transitionDuration = '0ms';
+					currInfo.panel.style.transitionDuration = '0ms';
+					prevInfo.panel.style.transform = 'translateX(0) scale(1,1)';
+					currInfo.panel.style.transform = 'translateX(0) scale(1,1)';
+					prevInfo.panel.style.display = 'none';
+					currInfo.panel.style.display = 'block';
+				}
 			}
+		} else {
+			currInfo.window.triggerResume();
+		}
+
+		if (this._activity.length == 1 && this._activity.first === item) {
+			currInfo.permanent = true;
+		}
+
+		this._autoClear();
+		return currInfo.window;
+	}
+
+	private async _unmakeActivity(item: Item, animate: boolean) {
+		if (item === this._cur) {
+			var prev = item.prev;
+			if (prev) {
+				var nextInfo = item.value as Info;
+				var currInfo = prev.value as Info;
+				this._cur = prev;
+				nextInfo.window.triggerPause();
+				currInfo.window.triggerResume();
+				if (animate) {
+					// init style
+					currInfo.panel.style.zIndex = '2';
+					nextInfo.panel.style.zIndex = '1';
+					currInfo.panel.style.display = 'block';
+					nextInfo.panel.style.display = 'block';
+					currInfo.panel.style.transitionDuration = '0ms';
+					nextInfo.panel.style.transitionDuration = '0ms';
+					currInfo.panel.style.transform = 'translateX(-50%) scale(0.7,0.7)';
+					nextInfo.panel.style.transform = 'translateX(0) scale(1,1)';
+					await utils.sleep(100);
+					// ani
+					currInfo.panel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
+					nextInfo.panel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
+					currInfo.panel.style.transform = 'translateX(0) scale(1,1)';
+					nextInfo.panel.style.transform = 'translateX(100%) scale(1,1)';
+					await utils.sleep(400);
+					nextInfo.panel.style.display = 'none';
+				}
+			} else {
+				this._cur = null;
+				(item.value as Info).window.triggerPause();
+			}
+		}
+		utils.nextTick(()=>this._autoClear());
+	}
+
+	private async _makeTop(item: Item, animate: boolean) {
+		var info = item.value as Info;
+		if (animate) {
+			// TODO ...
 		}
 		return info.window;
 	}
-	private async _makeTop(item: Item, animate: boolean) {
-		var info = item.value as Info;
-		// TODO ...
-		return info.window;
-	}
+
 	private async _makeBottom(item: Item, animate: boolean) {
 		var info = item.value as Info;
-		// TODO ...
+		if (animate) {
+			// TODO ...
+		}
 		return info.window;
 	}
-	private async _makeWidget(item: Item, animate: boolean) {
-		var info = item.value as Info;
-		// TODO ...
-		return info.window;
-	}
-	private async _unmakeActivity(item: Item, animate: boolean) {
-		var info = item.value as Info;
-		// TODO ...
-	}
+
 	private async _unmakeTop(item: Item, animate: boolean) {
 		var info = item.value as Info;
-		// TODO ...
+		if (animate) {
+			// TODO ...
+		}
 	}
+
 	private async _unmakeBottom(item: Item, animate: boolean) {
 		var info = item.value as Info;
-		// TODO ...
+		if (animate) {
+			// TODO ...
+		}
 	}
+
+	private async _makeWidget(item: Item, animate: boolean) {
+		var info = item.value as Info;
+		info.window.triggerResume();
+		if (animate) {
+			info.panel.style.transitionDuration = '0';
+			info.panel.style.opacity = '0';
+			await utils.sleep(100);
+			info.panel.style.transitionDuration = `150ms`;
+			info.panel.style.opacity = '1';
+		} else {
+			info.panel.style.transitionDuration = '0';
+			info.panel.style.opacity = '1';
+		}
+		return info.window;
+	}
+
 	private async _unmakeWidget(item: Item, animate: boolean) {
 		var info = item.value as Info;
-		// TODO ...
+		info.window.triggerPause();
+		if (animate) {
+			info.panel.style.transitionDuration = '0';
+			info.panel.style.opacity = '1';
+			await utils.sleep(100);
+			info.panel.style.transitionDuration = `150ms`;
+			info.panel.style.opacity = '0';
+		} else {
+			info.panel.style.transitionDuration = '0';
+			info.panel.style.opacity = '0';
+		}
 	}
 
 	private _load<T extends Window>(app: Application, window: NewWindow<T>, target: Target, args?: any) {
 		utils.equalsClass(Window, window);
-		var id = args?.id ? String(args.id): getId(window);
+		var id = args?.id ? String(args.id): getDefaultId(window);
 		var fid = _get_full_id(app, id);
 		var item = this._IDs.get(fid);
 		if (!item) {
 			var [panel, stack] = this._genPanel(target);
 			var New = window as any;
 			var win = ReactDom.render<{}>(<New {...args} __app__={app} id={id} />, panel) as Window;
-			var info = { window: win, panel, id, target } as Info;
+			var info = { window: win, panel, id, target, time: Date.now(), permanent: false } as Info;
 			item = stack.push(info);
 			this._IDs.set(fid, item);
 		}
@@ -287,7 +426,7 @@ export default class ApplicationLauncher extends Gesture<{
 
 	private _getInfo(app: Application, id: string | NewWindow<Window>): ListItem<Info> | null {
 		utils.assert(app);
-		var _id: string = typeof id == 'string' ? String(window): getId(id);
+		var _id: string = typeof id == 'string' ? String(window): getDefaultId(id);
 		var fid = _get_full_id(app, _id);
 		var item = this._IDs.get(fid);
 		return item || null;
@@ -303,7 +442,7 @@ export default class ApplicationLauncher extends Gesture<{
 				<div className="iso_activitys" ref="__activity"></div>
 				<div className="iso_widgets" ref="__widget" ></div>
 				<div className="iso_covers" style={{top: '-100%'}} ref="__top" ></div>
-				<div className="iso_covers" style={{top: '100%'}} ref="__bottom"></div>
+				<div className="iso_covers" style={{top:  '100%'}} ref="__bottom"></div>
 			</div>
 		);
 	}
@@ -313,6 +452,7 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	protected triggerBeginMove(e: Event) {
+		console.log('triggerBeginMove 0');
 		//
 		// private _begin_move = false;
 		// private _cover_top_ok = false;
@@ -332,6 +472,7 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	protected triggerMove(e: Event) {
+		console.log('triggerMove 1');
 		// if (!this._begin_move || !has_can_action(this)) {
 		// 	return;
 		// }
@@ -376,6 +517,7 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	protected triggerEndMove(e: Event) {
+		console.log('triggerEndMove 2');
 		// if (!this._begin_move || !has_can_action(this)) {
 		// 	return;
 		// }
