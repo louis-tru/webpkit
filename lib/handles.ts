@@ -34,12 +34,13 @@ const dialog_handles: Dict<Dialog> = {};
 
 var _handle = function(e: any) {
 	var err = Error.new(e);
-	if (err.code) {
-		if ( !dialog_handles[err.code] ) {
+	var errno = err.errno as number;
+	if (errno) {
+		if ( !dialog_handles[errno] ) {
 			var dag = alert(err.message || 'An unknown exception', ()=>{
-				delete dialog_handles[err.code];
+				delete dialog_handles[errno];
 			});
-			dialog_handles[err.code] = dag;
+			dialog_handles[errno] = dag;
 		}
 	} else {
 		alert(err.message || 'An unknown exception');

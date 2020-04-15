@@ -55,12 +55,12 @@ export abstract class Activity<P = {}> extends Window<P> {
 		return this._dialogStack;
 	}
 
-	triggerRemove() {
+	protected triggerRemove() {
 		if (this._dialogStack)
 			this._dialogStack.closeAll();
 	}
 
-	launch(activity: NewWindow<Activity>, args?: any) {
+	present(activity: NewWindow<Activity>, args?: any) {
 		this.app.launcher.show(this.app, activity, args);
 	}
 
@@ -80,6 +80,7 @@ export abstract class Activity<P = {}> extends Window<P> {
 			</div>
 		);
 	}
+
 	abstract renderBody(): React.ReactNode;
 }
 

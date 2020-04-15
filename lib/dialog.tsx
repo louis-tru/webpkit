@@ -28,9 +28,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import utils from 'nxkit';
 import './util.css';
 import './dialog.css';
+import utils from 'nxkit';
 import { ViewController } from './ctr';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
@@ -53,6 +53,7 @@ export class DialogStack {
 	private _panel: HTMLElement;
 
 	constructor(panel: HTMLElement = document.body) {
+		utils.assert(panel, 'Panel cannot be empty');
 		this._panel = panel;
 	}
 
