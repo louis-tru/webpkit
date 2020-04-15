@@ -140,7 +140,7 @@ export class AForm extends GlobalState<{form: Form}> {
 		};
 	}
 
-};
+}
 
 export interface AFItemProps {
 	name: string;
