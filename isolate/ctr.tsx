@@ -65,6 +65,7 @@ export abstract class Activity<P = {}> extends Window<P> {
 	}
 
 	showDialog(D: typeof Dialog, opts?: any) {
+		this.app.launcher.closeCoverAll();
 		return this.dialogStack.show(D, opts);
 	}
 
