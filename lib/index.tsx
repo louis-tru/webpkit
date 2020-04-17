@@ -98,4 +98,5 @@ export {
 	Router,
 	Page, DataPage,
 	Link,
+	ViewController,
 };
