@@ -224,7 +224,7 @@ export default class DefaultDialog extends Dialog<Options> {
 	protected renderButtons() {
 		var buttons = this.props.buttons || { '确定': (e)=>{} };
 		var r = [];
-		for (var i in buttons) {
+		for (let i in buttons) {
 			var t = i[0] == '@' ? i.substr(1) : i;
 			var cls = i[0] == '@' ? 'ok':'';
 			r.push(

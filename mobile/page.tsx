@@ -29,6 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import utils from 'nxkit';
+import {ViewController} from '../lib/ctr';
 import { NavPage } from './nav';
 import { DataPage, IDataPage } from '../lib/page';
 
@@ -49,6 +50,6 @@ export declare class NavDataPage<P = {}, S = {}, Data = Dict> extends NavPage<P,
 
 class _NavDataPage extends NavPage {}
 
-utils.extendClass(_NavDataPage, DataPage);
+utils.extendClass(_NavDataPage, DataPage, ViewController.prototype);
 
 exports.NavDataPage = _NavDataPage
