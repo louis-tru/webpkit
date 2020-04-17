@@ -30,6 +30,7 @@
 
 const crypto = require('crypto-tx');
 const hash_js = require('hash.js');
+
 import buffer, { IBuffer, Zero } from 'nxkit/buffer';
 import { Signer } from 'nxkit/request';
 import storage from 'nxkit/storage';

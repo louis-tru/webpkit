@@ -3,18 +3,17 @@
  * @date 2020-04-07
  */
 
+import './core.css';
 import utils from 'nxkit';
 import {List,ListItem} from 'nxkit/event';
 import {React} from '../lib';
 import {getDefaultId} from '../lib/dialog';
-import {Type,CoverType,Window,NewWindow, Cover} from './ctr';
-import Application, {ApplicationSystem} from './app';
-import Gesture, {Event} from './gesture';
+import {Type,CoverType,Window,NewWindow} from './ctr';
+import {Application,ApplicationSystem} from './app';
+import Gesture, {Event} from '../lib/gesture';
 import * as ReactDom from 'react-dom';
 import { DelayCall } from 'nxkit/delay_call';
 import * as fastClick from 'fastclick';
-
-import './core.css'; // css
 
 (fastClick as any).attach(document.body);
 

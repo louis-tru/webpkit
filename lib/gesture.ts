@@ -3,7 +3,7 @@
  * @date 2020-04-07
  */
 
-import {ViewController} from '../lib/ctr';
+import {ViewController} from './ctr';
 
 export function getHorizontalDirection(angle: number) {
 	angle += 90;
@@ -64,7 +64,7 @@ export interface Event {
 	speed: number, instant_speed: number,
 	begin_angle: number, angle: number, instant_angle: number,
 	begin_direction: number, direction: number, instant_direction: number,
-	distance: number, instant_distance: number,
+	distance: number, instant_distance: number, cancelBubble: boolean,
 }
 
 export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, S> {
@@ -123,10 +123,12 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 			begin_angle: 0, angle: 0, instant_angle: 0,
 			begin_direction: 0, direction: 0, // horizontal_direction: 0, vertical_direction: 0,
 			instant_direction: 0, // instant_horizontal_direction: 0, instant_vertical_direction: 0,
-			distance: 0, instant_distance: 0,
+			distance: 0, instant_distance: 0, cancelBubble: false,
 		};
 
 		self.triggerBeginMove(ev);
+
+		return ev.cancelBubble;
 	}
 
 	private static _handleMove(self: Gesture, e: Point) {
@@ -172,12 +174,14 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 			speed, instant_speed,
 			begin_angle, angle, instant_angle,
 			begin_direction, direction, instant_direction,
-			distance, instant_distance,
+			distance, instant_distance, cancelBubble: false,
 		};
 		self._ev = { ...ev };
 		self._begin = true;
 	
 		self.triggerMove(ev);
+
+		return ev.cancelBubble;
 	}
 
 	private static _handleEnd(self: Gesture, e: Point) {
@@ -206,7 +210,7 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 				speed: 0, instant_speed: 0,
 				begin_angle: 0, angle: 0, instant_angle: 0,
 				begin_direction: 0, direction: 0, instant_direction: 0,
-				distance: 0, instant_distance: 0,
+				distance: 0, instant_distance: 0, cancelBubble: false,
 			};
 		}
 
@@ -220,27 +224,35 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 		self._begin = false;
 		self._begin_angle = 0;
 		self._begin_x = self._begin_y = self._x = self._y = 0;
+
+		return ev.cancelBubble;
 	}
 
 	private static _handleTouchstart(self: Gesture, e: TouchEvent) {
 		if (self._identifier == -1) {
 			var touch = e.changedTouches[0];
 			self._identifier = touch.identifier;
-			Gesture._handleBegin(self, {x: touch.pageX,y: touch.pageY});
+			if (Gesture._handleBegin(self, {x: touch.pageX,y: touch.pageY})) {
+				e.stopPropagation();
+			}
 		}
 	}
 
 	private static _handleTouchmove(self: Gesture, e: TouchEvent) {
 		var touch = Gesture._selectTouch(self, e);
 		if (touch) {
-			Gesture._handleMove(self, { x: touch.pageX, y: touch.pageY });
+			if (Gesture._handleMove(self, { x: touch.pageX, y: touch.pageY })) {
+				e.stopPropagation();
+			}
 		}
 	}
 
 	private static _handleTouchend(self: Gesture, e: TouchEvent) {
 		var touch = Gesture._selectTouch(self, e);
 		if (touch) {
-			Gesture._handleEnd(self, { x: touch.pageX, y: touch.pageY });
+			if (Gesture._handleEnd(self, { x: touch.pageX, y: touch.pageY })) {
+				e.stopPropagation();
+			}
 			self._identifier = -1;
 		}
 	}
@@ -248,19 +260,25 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 	private static _handleMousedown(self: Gesture, e: MouseEvent) {
 		if (self._identifier == -1) {
 			self._identifier = 1;
-			Gesture._handleBegin(self, { x: e.pageX, y: e.pageY });
+			if (Gesture._handleBegin(self, { x: e.pageX, y: e.pageY })) {
+				e.stopPropagation();
+			}
 		}
 	}
 
 	private static _handleMousemove(self: Gesture, e: MouseEvent) {
 		if (self._identifier == 1) {
-			Gesture._handleMove(self, { x: e.pageX, y: e.pageY });
+			if (Gesture._handleMove(self, { x: e.pageX, y: e.pageY })) {
+				e.stopPropagation();
+			}
 		}
 	}
 
 	private static _handleMouseup(self: Gesture, e: MouseEvent) {
 		if (self._identifier == 1) {
-			Gesture._handleEnd(self, { x: e.pageX, y: e.pageY });
+			if (Gesture._handleEnd(self, { x: e.pageX, y: e.pageY })) {
+				e.stopPropagation();
+			}
 			self._identifier = -1;
 		}
 	}

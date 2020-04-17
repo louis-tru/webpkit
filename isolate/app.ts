@@ -7,9 +7,9 @@ import {NewWindow,Cover} from './ctr';
 import ApplicationLauncher from './core';
 
 /**
- * @class Application isolate
+ * @class Application
  */
-export default abstract class Application {
+export abstract class Application {
 	readonly abstract name: string;
 	readonly launcher: ApplicationLauncher;
 	constructor(launcher: ApplicationLauncher) {

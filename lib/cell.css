@@ -1,5 +1,5 @@
 
-.iso_cells {
+._cells {
 	height: 100%;
 	display: flex;
 	flex-direction: row;
@@ -8,7 +8,7 @@
 	transition-duration: 0ms;
 }
 
-.iso_cell {
+._cell {
 	height: 100%;
 	flex: 1;
 	float: left;
@@ -16,7 +16,7 @@
 	z-index: 1;
 }
 
-.iso_cell > * {
+._cell > * {
 	width: 100%;
 	height: 100%;
 }
