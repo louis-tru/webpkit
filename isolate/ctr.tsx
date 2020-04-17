@@ -39,7 +39,7 @@ export class Window<P = {}> extends ViewController<P> {
 	triggerPause() {
 		// overwrite
 	}
-	close(animate?: boolean) {
+	close(animate: boolean = true) {
 		this.app.launcher.close(this.app, this.id, animate);
 	}
 }

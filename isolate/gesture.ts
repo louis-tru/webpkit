@@ -81,7 +81,14 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 	private _begin = false;
 	private _begin_angle = 0;
 	private _begin_direction = 0;
-	private _direction = 0;
+
+	get clientWidth() {
+		return this._width;
+	}
+
+	get clientHeight() {
+		return this._height;
+	}
 
 	private static _selectTouch(self: Gesture, e: TouchEvent) {
 		if (self._identifier != -1) {
@@ -97,7 +104,7 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 		var {x,y} = e;
 		var time = Date.now();
 
-		self._direction = 0;
+		// self._direction = 0;
 		self._begin_x = x;
 		self._begin_y = y;
 		self._x = x;

@@ -7,7 +7,7 @@ import utils from 'nxkit';
 import {List,ListItem} from 'nxkit/event';
 import {React} from '../lib';
 import {getDefaultId} from '../lib/dialog';
-import {Type,CoverType,Window,NewWindow} from './ctr';
+import {Type,CoverType,Window,NewWindow, Cover} from './ctr';
 import Application, {ApplicationSystem} from './app';
 import Gesture, {Event} from './gesture';
 import * as ReactDom from 'react-dom';
@@ -20,12 +20,14 @@ import './core.css'; // css
 
 var _launcher: ApplicationLauncher | null = null;
 var ACTIVITY_ANIMATE_TIME = 400;
-var CELLS_BLUR = 0;
 
-type CoverName = 'top' | 'bottom';
+enum CoverName {
+	TOP = 'top',
+	BOTTOM = 'bottom'
+}
 
 function getCoverName(type: CoverType): CoverName {
-	return type == CoverType.TOP ? 'top': 'bottom'
+	return type == CoverType.TOP ? CoverName.TOP: CoverName.BOTTOM;
 }
 
 export interface NewApplication {
@@ -118,8 +120,9 @@ export default class ApplicationLauncher extends Gesture<{
 			if (!ff) return;
 			var App = await ff();
 			app = new App.default(this);
-			if (!this._sys && app instanceof ApplicationSystem) {
-				this._sys = app;
+			if (!this._sys) {
+				if (app instanceof ApplicationSystem)
+					this._sys = app;
 			}
 			isLoad = true;
 			this._apps.set(appName, app);
@@ -130,6 +133,11 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	private _exitApp(app: Application) {
+		if (app === this._sys) {
+			this.closeCover(CoverType.TOP, false);
+			this.closeCover(CoverType.BOTTOM, false);
+			this._sys = null;
+		}
 		app.triggerUnload();
 		this._apps.delete(app.name);
 	}
@@ -167,8 +175,8 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	async show<T extends Window>(app: Application, window: NewWindow<T>, args?: any, animate = true): Promise<T> {
-		this.closeCoverAll();
 		if (window.type == Type.ACTIVITY) {
+			this.closeCoverAll();
 			return await this._makeActivity(this._load(app, window, Target.ACTIVITY, args), animate) as any;
 		} else if (window.type == Type.WIDGET) {
 			return await this._makeWidget(this._load(app, window, Target.WIDGET, args), animate) as any;
@@ -191,29 +199,33 @@ export default class ApplicationLauncher extends Gesture<{
 		}
 	}
 
-	async showCover(type: CoverType = CoverType.TOP, animate = true) {
-		utils.assert(this._sys);
+	private _getCoverConstructor(type: CoverType) {
+		utils.assert(this._sys, 'non sys');
 		var sys = this._sys as ApplicationSystem;
-		var window = type == CoverType.TOP ? sys.top(): sys.bottom();
+		return {app: sys, window: type == CoverType.TOP ? sys.top(): sys.bottom()};
+	}
+
+	async showCover(type: CoverType = CoverType.TOP, animate = true) {
+		var {app,window} = this._getCoverConstructor(type);
 		if (type == CoverType.TOP) {
 			this.closeCover(CoverType.BOTTOM);
-			await this._makeTop(this._load(sys, window, Target.TOP), animate);
+			await this._makeTop(this._load(app, window, Target.TOP), animate);
 		} else if (type == CoverType.BOTTOM) {
 			this.closeCover(CoverType.TOP);
-			await this._makeBottom(this._load(sys, window, Target.BOTTOM), animate);
+			await this._makeBottom(this._load(app, window, Target.BOTTOM), animate);
 		}
 	}
 
 	async closeCover(type: CoverType = CoverType.TOP, animate = true) {
-		var sys = this._sys as ApplicationSystem;
-		var item = this._getInfo(sys, type == CoverType.TOP ? sys.top(): sys.bottom());
+		var {app,window} = this._getCoverConstructor(type);
+		var item = this._getInfo(app, window);
 		if (item) {
 			if (type == CoverType.TOP) {
 				await this._unmakeTop(item, animate);
-				this._unload(item);
-			} else if (type == CoverType.BOTTOM) {
+				// this._unload(item);
+			} else {
 				await this._unmakeBottom(item, animate);
-				this._unload(item);
+				// this._unload(item);
 			}
 		}
 	}
@@ -310,7 +322,10 @@ export default class ApplicationLauncher extends Gesture<{
 	private async _makeTop(item: Item, animate: boolean) {
 		var info = item.value as Info;
 		if (animate) {
-			// TODO ...
+			this._setCoverPosition(CoverType.TOP, 100, '%', 350);
+			await utils.sleep(350);
+		} else {
+			this._setCoverPosition(CoverType.TOP, 100, '%', 0);
 		}
 		return info.window;
 	}
@@ -318,7 +333,10 @@ export default class ApplicationLauncher extends Gesture<{
 	private async _makeBottom(item: Item, animate: boolean) {
 		var info = item.value as Info;
 		if (animate) {
-			// TODO ...
+			this._setCoverPosition(CoverType.BOTTOM, 100, '%', 350);
+			await utils.sleep(350);
+		} else {
+			this._setCoverPosition(CoverType.BOTTOM, 100, '%', 0);
 		}
 		return info.window;
 	}
@@ -326,14 +344,20 @@ export default class ApplicationLauncher extends Gesture<{
 	private async _unmakeTop(item: Item, animate: boolean) {
 		var info = item.value as Info;
 		if (animate) {
-			// TODO ...
+			this._setCoverPosition(CoverType.TOP, 0, '%', 350);
+			await utils.sleep(350);
+		} else {
+			this._setCoverPosition(CoverType.TOP, 0, '%', 0);
 		}
 	}
 
 	private async _unmakeBottom(item: Item, animate: boolean) {
 		var info = item.value as Info;
 		if (animate) {
-			// TODO ...
+			this._setCoverPosition(CoverType.BOTTOM, 0, '%', 350);
+			await utils.sleep(350);
+		} else {
+			this._setCoverPosition(CoverType.BOTTOM, 0, '%', 0);
 		}
 	}
 
@@ -385,6 +409,7 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	private _unload(item: ListItem<Info>) {
+		if (!item.host) return;
 		var info = item.value as Info;
 		var fid = _get_full_id(info.window.app, info.id);
 		ReactDom.unmountComponentAtNode(info.panel);
@@ -409,8 +434,8 @@ export default class ApplicationLauncher extends Gesture<{
 		return (
 			<div className="iso_sys" ref="__root">
 				<div className="iso_activitys" ref="__activity"></div>
-				<div className="iso_widgets" ref="__widget" ></div>
-				<div className="iso_covers" style={{top: '-100%'}} ref="__top" ></div>
+				<div className="iso_widgets" ref="__widget"></div>
+				<div className="iso_covers" style={{top: '-100%'}} ref="__top"></div>
 				<div className="iso_covers" style={{top:  '100%'}} ref="__bottom"></div>
 			</div>
 		);
@@ -420,49 +445,45 @@ export default class ApplicationLauncher extends Gesture<{
 		return this.refs.__root as HTMLElement;
 	}
 
-	// cover handle
-
-	private _begin_move = false;
-	private _cover_top_ok = false;
-	private _cover_bottom_ok = false;
-	private _cover_top = false;
-	private _cover_bottom = false;
-	private _cover_top_destroy = new DelayCall(e=>this._cover_top=false, 1e3);
-	private _cover_bottom_destroy = new DelayCall(e=>this._cover_bottom=false, 1e3);
+	private _beginMove = false;
+	private _top_full_open = false;
+	private _bottom_full_open = false;
 	private _disable_top_gesture = Number(this.props.disableTopGesture) ? true: false;
 	private _disable_bottom_gesture = Number(this.props.disableBottomGesture) ? true: false;
-	private _cells_blur = 0;
 
-	private static _hasCanAction(self: ApplicationLauncher) {
-		// return (
-		// 	// !self._top_cover_ok && 
-		// 	// !self._bottom_cover_ok && 
-		// 	self._layers.length === 0 && 
-		// 	self._dialogs.length === 0
-		// );
-		return true;
-	}
+	private _top_unload = new DelayCall(()=>{
+		var sys = this._sys as ApplicationSystem;
+		var item = this._getInfo(sys, sys.top());
+		if (item) {
+			this._unload(item);
+		}
+	}, 1e3);
 
-	private static _hasCanHorizontal(self: ApplicationLauncher) {
-		return !self._cover_top_ok && !self._cover_bottom_ok;
-	}
+	private _bottom_unload = new DelayCall(()=>{
+		var sys = this._sys as ApplicationSystem;
+		var item = this._getInfo(sys, sys.bottom());
+		if (item) {
+			this._unload(item);
+		}
+	}, 1e3);
 
-	private static _setCoverOk(self: ApplicationLauncher, type: CoverType, value: boolean) {
-		var name = getCoverName(type);
-		if (self[`_cover_${name}_ok`] != value) {
-			self[`_cover_${name}_ok`] = value;
-			var ctrl = self[`_${name}`];
-			if (ctrl) {
+	private _setCoverFullOpen(name: CoverName, value: boolean) {
+		var self = this as any;
+		if (self[`_${name}_full_open`] != value) {
+			self[`_${name}_full_open`] = value;
+			var item = self[`_${name}`].first as Item;
+			if (item) {
 				if (value) {
-					ctrl.triggerResume();
+					(item.value as Info).window.triggerResume();
 				} else {
-					ctrl.triggerPause();
+					(item.value as Info).window.triggerPause();
 				}
 			}
 		}
 	}
-	
-	private static _setCoverPosition(self: ApplicationLauncher, type: CoverType, value: number, unit: string, duration: number) {
+
+	private _setCoverPosition(type: CoverType, value: number, unit: string, duration: number) {
+		var self: ApplicationLauncher = this;
 		var __top = self.refs.__top as HTMLElement;
 		var __bottom = self.refs.__bottom as HTMLElement;
 		var name = getCoverName(type);
@@ -477,101 +498,116 @@ export default class ApplicationLauncher extends Gesture<{
 
 		// console.log('set_cover_position', value)
 		if (value > 0) {
-			if (value == 100 && unit == '%') {
-				ApplicationLauncher._setCoverOk(self, type, true);
+			if (value == 100 && unit == '%')
+				this._setCoverFullOpen(name, true);
+			if (type == CoverType.TOP) {
+				self[`_top_unload`].clear();
+			} else {
+				self[`_bottom_unload`].clear();
 			}
-			self[`_cover_${name}`] = true;
-			self[`_cover_${name}_destroy`].clear();
 		} else { // destroy
-			ApplicationLauncher._setCoverOk(self, type, false);
-			self[`_cover_${name}_destroy`].notice();
+			this._setCoverFullOpen(name, false);
+			if (type == CoverType.TOP) {
+				self[`_top_unload`].call();
+			} else {
+				self[`_bottom_unload`].call();
+			}
 		}
-		if (unit  == 'px') { // px
-			var blur = Math.max(0, value / self._height);
-			self._cells_blur = Math.round(blur * CELLS_BLUR);
-		} else { // %
-			var blur = Math.max(0, value / 100);
-			self._cells_blur = Math.round(blur * CELLS_BLUR);
+	}
+
+	private _setCoverPositionNoAnimate(type: CoverType, value: number) {
+		if (type == CoverType.TOP) {
+			if (this._top.length === 0) {
+				var {app,window} = this._getCoverConstructor(type);
+				this._load(app, window, Target.TOP);
+			}
+		} else {
+			if (this._bottom.length === 0) {
+				var {app,window} = this._getCoverConstructor(type);
+				this._load(app, window, Target.BOTTOM);
+			}
 		}
+		this._setCoverPosition(type, value, 'px', 0);
 	}
 
 	protected triggerBeginMove(e: Event) {
-		// console.log('triggerBeginMove 0');
-		if (ApplicationLauncher._hasCanAction(this)) {
-			this._begin_move = true;
-		}
+		// console.log('triggerBeginMove');
+		this._beginMove = true;
 	}
 
 	protected triggerMove(e: Event) {
-		// console.log('triggerMove 1');
-		// if (!this._begin_move || !has_can_action(this)) {
-		// 	return;
-		// }
-		// if (e.begin_direction == 2) { // up
-		// 	if (this._cover_top_ok) { // close top
-		// 		// console.log(this._height - (e.begin_y - e.y), this._height)
-		// 		if (!this._disable_top_gesture)
-		// 			set_cover_position(this, 'top', this._height - Math.max(e.begin_y - e.y, 0), 'px', 0);
-		// 	} else if (!this._cover_bottom_ok) { // open bottom
-		// 		if (!this._disable_bottom_gesture)
-		// 			set_cover_position(this, 'bottom', e.begin_y - e.y, 'px', 0);
-		// 	}
-		// } else if (e.begin_direction == 4) { // down
-		// 	if (this._cover_bottom_ok) { // close bottom
-		// 		if (!this._disable_bottom_gesture)
-		// 			set_cover_position(this, 'bottom', this._height - Math.max(e.y - e.begin_y, 0), 'px', 0);
-		// 	} else if (!this._cover_top_ok) { // open top
-		// 		if (!this._disable_top_gesture) {
-		// 			// console.log(e.y - e.begin_y, this._height)
-		// 			set_cover_position(this, 'top', e.y - e.begin_y, 'px', 0);
-		// 		}
-		// 	}
-		// }
+		if (!this._beginMove) {
+			return;
+		}
+		// console.log('triggerMove', e.begin_direction);
+
+		if (e.begin_direction == 2) { // up
+			if (this._top_full_open) { // close top
+				// console.log(this.height - (e.begin_y - e.y), this.height)
+				if (!this._disable_top_gesture)
+					this._setCoverPositionNoAnimate(CoverType.TOP, this.clientHeight - Math.max(e.begin_y - e.y, 0));
+			} else if (!this._bottom_full_open) { // open bottom
+				if (!this._disable_bottom_gesture)
+					this._setCoverPositionNoAnimate(CoverType.BOTTOM, e.begin_y - e.y);
+			}
+		} else if (e.begin_direction == 4) { // down
+			if (this._bottom_full_open) { // close bottom
+				if (!this._disable_bottom_gesture)
+					this._setCoverPositionNoAnimate(CoverType.BOTTOM, this.clientHeight - Math.max(e.y - e.begin_y, 0));
+			} else if (!this._top_full_open) { // open top
+				if (!this._disable_top_gesture) {
+					// console.log(e.y - e.begin_y, this.height)
+					this._setCoverPositionNoAnimate(CoverType.TOP, e.y - e.begin_y);
+				}
+			}
+		}
 	}
 
 	protected triggerEndMove(e: Event) {
-		// console.log('triggerEndMove 2');
-		if (!this._begin_move || !has_can_action(this)) {
+		if (!this._beginMove) {
 			return;
 		}
-		this._begin_move = false;
+		this._beginMove = false;
+		// console.log('triggerEndMove');
+
 		if (e.begin_direction == 2 || e.begin_direction == 4) { // top / bottom
-			var y = 0, el;
+			// var y = 0, el;
 			// console.log('e.speed', e.speed);
-			var action = e.speed > 500 && e.begin_direction == e.instant_direction;
+			var ok = e.speed > 500 && e.begin_direction == e.instant_direction;
+			// console.log('e.speed', e.speed, e.begin_direction == e.instant_direction);
 			if (e.begin_direction == 2) { // up, top => bottom
-				if (this._top_cover_ok) { // close top
+				if (this._top_full_open) { // close top
 					if (!this._disable_top_gesture) {
-						if (action) {
-							this.closeCover('top');
+						if (ok) {
+							this.closeCover(CoverType.TOP);
 						} else { // recovery
-							this.showCover('top');
+							this.showCover(CoverType.TOP);
 						}
 					}
-				} else if (!this._bottom_cover_ok) { // open bottom
+				} else if (!this._bottom_full_open) { // open bottom
 					if (!this._disable_bottom_gesture) { // not disable
-						if (action) {
-							this.showCover('bottom');
+						if (ok) {
+							this.showCover(CoverType.BOTTOM);
 						} else { // recovery
-							this.closeCover('bottom');
+							this.closeCover(CoverType.BOTTOM);
 						}
 					}
 				}
 			} else { // down, bottom => top
-				if (this._bottom_cover_ok) { // close bottom
+				if (this._bottom_full_open) { // close bottom
 					if (!this._disable_bottom_gesture) {
-						if (action) {
-							this.closeCover('bottom');
+						if (ok) {
+							this.closeCover(CoverType.BOTTOM);
 						} else { // recovery
-							this.showCover('bottom');
+							this.showCover(CoverType.BOTTOM);
 						}
 					}
-				} else if (!this._top_cover_ok) { // open top
+				} else if (!this._top_full_open) { // open top
 					if (!this._disable_top_gesture) { // not disable
-						if (action) {
-							this.showCover('top');
+						if (ok) {
+							this.showCover(CoverType.TOP);
 						} else { // recovery
-							this.closeCover('top');
+							this.closeCover(CoverType.TOP);
 						}
 					}
 				}
