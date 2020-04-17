@@ -50,7 +50,7 @@ export abstract class Activity<P = {}> extends Window<P> {
 
 	private get dialogStack() {
 		if (!this._dialogStack) {
-			this._dialogStack = new DialogStack(this.refs.dialog as HTMLElement);
+			this._dialogStack = new DialogStack(this.refs.__dialog as HTMLElement);
 		}
 		return this._dialogStack;
 	}
@@ -75,14 +75,14 @@ export abstract class Activity<P = {}> extends Window<P> {
 
 	render() {
 		return (
-			<div ref="dom">
+			<div ref="__dom">
 				{this.renderBody()}
-				<div ref="dialog"></div>
+				<div ref="__dialog"></div>
 			</div>
 		);
 	}
 
-	abstract renderBody(): React.ReactNode;
+	protected abstract renderBody(): React.ReactNode;
 }
 
 export class Widget<P = {}> extends Window<P> {

@@ -1,4 +1,9 @@
 
+._cells_panel {
+	height: 100%;
+	width: 100%;
+}
+
 ._cells {
 	height: 100%;
 	display: flex;
@@ -10,13 +15,10 @@
 
 ._cell {
 	height: 100%;
+	width: 100%;
 	flex: 1;
 	float: left;
 	position: relative;
 	z-index: 1;
-}
-
-._cell > * {
-	width: 100%;
-	height: 100%;
+	align-items: center;
 }

@@ -161,7 +161,7 @@ export class Dialog<P = {}> extends ViewController<P> {
 		await utils.sleep(300);
 	}
 
-	async close(animate?: boolean) {
+	async close(animate = true) {
 		var root = this.refs.root;
 		if (root) {
 			this.onClose.trigger();
@@ -292,7 +292,7 @@ export function alert(In: DialogIn, cb?: ()=>void) {
 	var { text, title } = o;
 	return show({
 		title, text, buttons: {
-		'确定': e=>{ _cb() },
+		'确定': ()=>{ _cb() },
 	}});
 }
 
@@ -301,8 +301,8 @@ export function confirm(In: DialogIn, cb?: (ok: boolean)=>void) {
 	var o = typeof In == 'string' ? { text: In, title: '' } : In;
 	var { text, title } = o;
 	return show({title, text, buttons: {
-		'取消': e=>_cb(false),
-		'@确定': e=>_cb(true),
+		'取消': ()=>_cb(false),
+		'@确定': ()=>_cb(true),
 	}});
 }
 

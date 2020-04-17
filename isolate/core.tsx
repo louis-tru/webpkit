@@ -572,7 +572,7 @@ export default class ApplicationLauncher extends Gesture<{
 		if (e.begin_direction == 2 || e.begin_direction == 4) { // top / bottom
 			// var y = 0, el;
 			// console.log('e.speed', e.speed);
-			var ok = e.speed > 500 && e.begin_direction == e.instant_direction;
+			var ok = e.speed > 200 && e.begin_direction == e.instant_direction;
 			// console.log('e.speed', e.speed, e.begin_direction == e.instant_direction);
 			if (e.begin_direction == 2) { // up, top => bottom
 				if (this._top_full_open) { // close top
