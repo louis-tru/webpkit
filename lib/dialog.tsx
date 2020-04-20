@@ -47,9 +47,13 @@ export function getDefaultId(obj: any) {
 	return String((obj as any).__default_id);
 }
 
+export interface Options extends Dict {
+	id?: string;
+}
+
 export class DialogStack {
 	private _dialogStack = new List<Dialog>();
-	private _dialogIDs: Map<string, ListItem<Dialog>> = new Map();
+	private _IDs: Map<string, ListItem<Dialog>> = new Map();
 	private _panel: HTMLElement;
 
 	constructor(panel: HTMLElement = document.body) {
@@ -57,42 +61,44 @@ export class DialogStack {
 		this._panel = panel;
 	}
 
-	show(D: typeof Dialog, opts?: any) {
+	show(D: typeof Dialog, opts?: Options, animate = true) {
 		var id = opts?.id ? String(opts.id): getDefaultId(D);
-		utils.assert(!this._dialogIDs.has(id), `Dialog already exists, "${id}"`);
+		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id}"`);
 
 		var div = document.createElement('div');
 		(this._panel as HTMLElement).appendChild(div);
-		var dialog = ReactDom.render<{}, Dialog<any>>(<D {...opts} />, div);
+		var instance = ReactDom.render<{}, Dialog<any>>(<D {...opts} />, div);
 
 		var prev = this._dialogStack.last;
 		if (prev) {
 			(prev.value as Dialog).hide();
 		}
 
-		var item = this._dialogStack.push(dialog);
-		this._dialogIDs.set(id, item);
+		var item = this._dialogStack.push(instance);
+		this._IDs.set(id, item);
 
-		dialog.onClose.on(()=>{
+		instance.onClose.on(({data})=>{
 			this._dialogStack.del(item);
-			this._dialogIDs.delete(id);
+			this._IDs.delete(id);
 			utils.sleep(200).then(()=>{
 				var last = this._dialogStack.last;
 				if (last) {
-					(last.value as Dialog).show();
+					(last.value as Dialog).show(data.animate);
 				}
 			});
 		});
 
-		return dialog;
+		instance.show(animate);
+
+		return instance;
 	}
 
-	close(id: typeof Dialog | string) {
+	close(id: typeof Dialog | string, animate = true) {
 		var _id: string = typeof id == 'string' ? String(id): getDefaultId(id);
-		utils.assert(this._dialogIDs.has(_id), `Dialog no exists, "${id}"`);
-		var item = this._dialogIDs.get(_id);
+		utils.assert(this._IDs.has(_id), `Dialog no exists, "${id}"`);
+		var item = this._IDs.get(_id);
 		if (item) {
-			(item.value as Dialog).close();
+			(item.value as Dialog).close(animate);
 		}
 	}
 
@@ -108,13 +114,9 @@ export class DialogStack {
 
 var _globaDialogStack: DialogStack | null;
 
-export class Dialog<P = {}> extends ViewController<P> {
+export abstract class Dialog<P = {}> extends ViewController<P> {
 
-	readonly onClose = new EventNoticer<Event<void, Dialog>>('Close', this);
-
-	protected triggerMounted() {
-		this.show();
-	}
+	readonly onClose = new EventNoticer<Event<any, Dialog>>('Close', this);
 
 	render() {
 		var style: Dict = {};
@@ -162,21 +164,21 @@ export class Dialog<P = {}> extends ViewController<P> {
 	}
 
 	async close(animate = true) {
-		var root = this.refs.root;
+		var root = this.refs.root as HTMLElement;
 		if (root) {
-			this.onClose.trigger();
+			this.onClose.trigger({animate});
 			await this.hide(animate);
-			var div = (this.refs.root as HTMLElement).parentNode as HTMLElement;
+			var div = root.parentNode as HTMLElement;
 			ReactDom.unmountComponentAtNode(div);
 			(div.parentNode as HTMLElement).removeChild(div);
 		}
 	}
 
-	get noMask() { return true }
-
-	protected renderBody(): React.ReactNode {
-		return null;
+	get noMask() {
+		return true;
 	}
+
+	protected abstract renderBody(): React.ReactNode;
 
 	static get globaDialogStack() {
 		if (!_globaDialogStack) {
@@ -186,7 +188,7 @@ export class Dialog<P = {}> extends ViewController<P> {
 	}
 }
 
-export interface Options {
+export interface DefaultOptions extends Options {
 	title?: string,
 	text?: string,
 	buttons?: Dict<(e:any)=>void>,
@@ -198,7 +200,7 @@ export interface Options {
 	noMask?: boolean;
 }
 
-export default class DefaultDialog extends Dialog<Options> {
+export default class DefaultDialog extends Dialog<DefaultOptions> {
 
 	protected triggerMounted() {
 		if (this.refs.prompt) {
@@ -282,7 +284,7 @@ export type DialogIn = string | {
 	title?: string;
 }
 
-export function show(opts: Options) {
+export function show(opts: DefaultOptions) {
 	return Dialog.globaDialogStack.show(DefaultDialog, Object.assign({ id: utils.getId() }, opts));
 }
 

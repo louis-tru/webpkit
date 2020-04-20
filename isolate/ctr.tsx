@@ -7,7 +7,8 @@ import utils from 'nxkit';
 import * as React from 'react';
 import {ViewController} from '../lib/ctr';
 import {Application} from './app';
-import {Dialog,DialogStack} from '../lib/dialog';
+import {Dialog, DialogStack, Options } from '../lib/dialog';
+import {Layer, LayerGroup} from '../lib/layer';
 
 export enum Type {
 	ACTIVITY = 1,
@@ -47,12 +48,20 @@ export class Window<P = {}> extends ViewController<P> {
 export abstract class Activity<P = {}> extends Window<P> {
 	static readonly type: Type = Type.ACTIVITY;
 	private _dialogStack: DialogStack;
+	private _layerGroup: LayerGroup;
 
 	private get dialogStack() {
 		if (!this._dialogStack) {
-			this._dialogStack = new DialogStack(this.refs.__dialog as HTMLElement);
+			this._dialogStack = new DialogStack(this.refs.__layers as HTMLElement);
 		}
 		return this._dialogStack;
+	}
+
+	private get layerGroup() {
+		if (!this._layerGroup) {
+			this._layerGroup = new LayerGroup(this.refs.__layers as HTMLElement);
+		}
+		return this._layerGroup;
 	}
 
 	protected triggerRemove() {
@@ -60,24 +69,34 @@ export abstract class Activity<P = {}> extends Window<P> {
 			this._dialogStack.closeAll();
 	}
 
-	present(activity: NewWindow<Activity>, args?: any) {
+	present(activity: NewWindow<Activity>, args?: Options) {
 		this.app.launcher.show(this.app, activity, args);
 	}
 
-	showDialog(D: typeof Dialog, opts?: any) {
+	showDialog(D: typeof Dialog, opts?: Options, animate = true) {
 		this.app.launcher.closeCoverAll();
-		return this.dialogStack.show(D, opts);
+		return this.dialogStack.show(D, opts, animate);
 	}
 
-	closeDialog(id: typeof Dialog | string) {
-		return this.dialogStack.close(id);
+	closeDialog(id: typeof Dialog | string, animate = true) {
+		return this.dialogStack.close(id, animate);
+	}
+
+	showLayer(L: typeof Layer, opts?: Options, animate = true, delay = 0) {
+		this.app.launcher.closeCoverAll();
+		return this.layerGroup.show(L, opts, animate, delay);
+	}
+
+	closeLayer(id: typeof Layer | string, animate = true) {
+		return this.layerGroup.close(id, animate);
 	}
 
 	render() {
 		return (
 			<div ref="__dom">
 				{this.renderBody()}
-				<div ref="__dialog"></div>
+				<div ref="__layers">
+				</div>
 			</div>
 		);
 	}

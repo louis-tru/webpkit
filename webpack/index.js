@@ -54,7 +54,7 @@ const sourceMapEnabled = isProd ?
 
 const HOST = config.dev.host;
 const PORT = config.dev.port;
-const inputDir = ['views', 'app'].find(function(name) {
+const inputDir = ['.', 'views', 'app'].find(function(name) {
 	if (fs.existsSync(`${config.source}/${name}`) &&
 		fs.statSync(`${config.source}/${name}`).isDirectory())
 		return true;
@@ -182,7 +182,7 @@ module.exports = {
 		publicPath: config.publicPath,
 	},
 	resolve: {
-		extensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.css', '.sass'],
+		extensions: ['.js', '.jsx', '.ts', '.tsx', '.json',/* '.css', '.sass'*/],
 		alias: {
 			'static': utils.resolve('static'),
 			'nifty': path.join(__dirname, '../nifty'),

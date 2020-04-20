@@ -1,7 +1,7 @@
 
 body {
 	background: none;
-	overflow: hidden;
+	/* overflow: hidden; */
 	margin: 0;
 	padding: 0;
 }
@@ -12,31 +12,34 @@ body {
 	height: 100vh;
 	top: 0;
 	left: 0;
+	overflow: hidden;
 }
 
-.iso_activitys,
-.iso_covers {
+.iso_activitys, .iso_covers {
 	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
-}
-
-.iso_activitys {
-	z-index: 2;
+	z-index: 1;
 }
 
 .iso_covers {
 	z-index: 3;
-	/* transform: scale(0.8,0.8); */
 	transform-style: preserve-3d;
 	transition-property: transform;
 	transition-duration: 0ms;
 }
 
-.iso_activitys > div,
-.iso_covers > div {
+.iso_widgets {
+	position: absolute;
+	pointer-events: none;
+	z-index: 2;
+	top: 0;
+	left: 0;
+}
+
+.iso_activitys > div, .iso_covers > div {
 	position: absolute;
 	z-index: 1;
 	top: 0;
@@ -52,16 +55,6 @@ body {
 }
 
 .iso_activitys > div > div {
-	width: 100%;
-	height: 100%;
-}
-
-.iso_widgets {
-	position: absolute;
-	z-index: 2;
-	pointer-events: none;
-	top: 0;
-	left: 0;
 	width: 100%;
 	height: 100%;
 }

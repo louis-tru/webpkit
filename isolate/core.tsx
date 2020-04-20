@@ -33,11 +33,8 @@ export interface NewApplication {
 	new(launcher: ApplicationLauncher): Application;
 }
 
-enum Target {
-	ACTIVITY,
-	WIDGET,
-	TOP,
-	BOTTOM,
+export interface Options extends Dict {
+	id?: any;
 }
 
 interface Info {
@@ -47,6 +44,13 @@ interface Info {
 	target: Target;
 	time: number;
 	permanent: boolean;
+}
+
+enum Target {
+	ACTIVITY,
+	WIDGET,
+	TOP,
+	BOTTOM,
 }
 
 type Item = ListItem<Info>;
@@ -173,7 +177,7 @@ export default class ApplicationLauncher extends Gesture<{
 		}
 	}
 
-	async show<T extends Window>(app: Application, window: NewWindow<T>, args?: any, animate = true): Promise<T> {
+	async show<T extends Window>(app: Application, window: NewWindow<T>, args?: Options, animate = true): Promise<T> {
 		if (window.type == Type.ACTIVITY) {
 			this.closeCoverAll();
 			return await this._makeActivity(this._load(app, window, Target.ACTIVITY, args), animate) as any;
@@ -293,8 +297,8 @@ export default class ApplicationLauncher extends Gesture<{
 				currInfo.window.triggerResume();
 				if (animate) {
 					// init style
-					currInfo.panel.style.zIndex = '2';
-					nextInfo.panel.style.zIndex = '1';
+					currInfo.panel.style.zIndex = '1';
+					nextInfo.panel.style.zIndex = '2';
 					currInfo.panel.style.display = 'block';
 					nextInfo.panel.style.display = 'block';
 					currInfo.panel.style.transitionDuration = '0ms';
@@ -391,7 +395,7 @@ export default class ApplicationLauncher extends Gesture<{
 		}
 	}
 
-	private _load<T extends Window>(app: Application, window: NewWindow<T>, target: Target, args?: any) {
+	private _load<T extends Window>(app: Application, window: NewWindow<T>, target: Target, args?: Options) {
 		utils.equalsClass(Window, window);
 		var id = args?.id ? String(args.id): getDefaultId(window);
 		var fid = _get_full_id(app, id);
@@ -419,7 +423,7 @@ export default class ApplicationLauncher extends Gesture<{
 
 	private _getInfo(app: Application, id: string | NewWindow<Window>): ListItem<Info> | null {
 		utils.assert(app);
-		var _id: string = typeof id == 'string' ? String(window): getDefaultId(id);
+		var _id: string = typeof id == 'string' ? String(id): getDefaultId(id);
 		var fid = _get_full_id(app, _id);
 		var item = this._IDs.get(fid);
 		return item || null;

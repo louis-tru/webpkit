@@ -59,3 +59,10 @@ window.requestAnimationFrame =
 	window.msRequestAnimationFrame ||
 	window.mozRequestAnimationFrame ||
 	window.webkitRequestAnimationFrame;
+
+window.cancelAnimationFrame =
+	window.cancelAnimationFrame ||
+	window.oCancelAnimationFrame ||
+	window.msCancelAnimationFrame ||
+	window.mozCancelAnimationFrame ||
+	window.webkitCancelAnimationFrame;	

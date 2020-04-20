@@ -95,6 +95,8 @@ class _ViewController<P = {}, S = {}> extends GlobalState<P, S> {
 
 exports.ViewController = _ViewController;
 
+export { React };
+
 export interface ViewController<P = {}, S = {}> {
 	shouldComponentUpdate?(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean;
 }
