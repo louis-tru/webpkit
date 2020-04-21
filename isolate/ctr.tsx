@@ -25,6 +25,13 @@ export interface NewWindow<T extends Window> {
 	type: Type;
 }
 
+export interface ActivityOptions extends Options {
+	callback?: {
+		app: string;
+		args?: any;
+	};
+}
+
 export class Window<P = {}> extends ViewController<P> {
 	readonly app: Application;
 	readonly id: string;
@@ -50,6 +57,8 @@ export abstract class Activity<P = {}> extends Window<P> {
 	private _dialogStack: DialogStack;
 	private _layerGroup: LayerGroup;
 
+	permanent = 0;
+
 	private get dialogStack() {
 		if (!this._dialogStack) {
 			this._dialogStack = new DialogStack(this.refs.__layers as HTMLElement);
@@ -69,22 +78,31 @@ export abstract class Activity<P = {}> extends Window<P> {
 			this._dialogStack.closeAll();
 	}
 
-	present(activity: NewWindow<Activity>, args?: Options) {
-		this.app.launcher.show(this.app, activity, args);
+	exit(rc?: any, animate = true) {
+		var cb = (this.props as ActivityOptions).callback;
+		if (cb) {
+			this.app.launcher.launch(cb.app, {animate, ...cb.args, ...rc});
+		} else {
+			this.close(animate);
+		}
 	}
 
-	showDialog(D: typeof Dialog, opts?: Options, animate = true) {
+	present(activity: NewWindow<Activity>, args?: ActivityOptions, animate = true) {
+		this.app.launcher.show(this.app, activity, args, animate);
+	}
+
+	showDialog(D: typeof Dialog, opts?: Options, animate = true): Dialog {
 		this.app.launcher.closeCoverAll();
-		return this.dialogStack.show(D, opts, animate);
+		return this.dialogStack.show(D, opts, animate, this);
 	}
 
 	closeDialog(id: typeof Dialog | string, animate = true) {
 		return this.dialogStack.close(id, animate);
 	}
 
-	showLayer(L: typeof Layer, opts?: Options, animate = true, delay = 0) {
+	showLayer(L: typeof Layer, opts?: Options, animate = true, delay = 0): Layer {
 		this.app.launcher.closeCoverAll();
-		return this.layerGroup.show(L, opts, animate, delay);
+		return this.layerGroup.show(L, opts, animate, delay, this);
 	}
 
 	closeLayer(id: typeof Layer | string, animate = true) {

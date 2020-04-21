@@ -36,6 +36,7 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import {EventNoticer,Event} from 'nxkit/event';
 import {List,ListItem} from 'nxkit/event';
+import {Activity} from '../isolate/ctr';
 
 var DEFAULT_SCALE = 1;
 
@@ -61,13 +62,13 @@ export class DialogStack {
 		this._panel = panel;
 	}
 
-	show(D: typeof Dialog, opts?: Options, animate = true) {
+	show(D: typeof Dialog, opts?: Options, animate = true, act?: Activity) {
 		var id = opts?.id ? String(opts.id): getDefaultId(D);
 		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id}"`);
 
 		var div = document.createElement('div');
 		(this._panel as HTMLElement).appendChild(div);
-		var instance = ReactDom.render<{}, Dialog<any>>(<D {...opts} />, div);
+		var instance = ReactDom.render<{}, Dialog<any>>(<D {...opts} __activity={act} />, div);
 
 		var prev = this._dialogStack.last;
 		if (prev) {
@@ -117,6 +118,12 @@ var _globaDialogStack: DialogStack | null;
 export abstract class Dialog<P = {}> extends ViewController<P> {
 
 	readonly onClose = new EventNoticer<Event<any, Dialog>>('Close', this);
+
+	private __activity: Activity | null = (this.props as any).__activity || null;
+
+	get activity() {
+		return this.__activity;
+	}
 
 	render() {
 		var style: Dict = {};

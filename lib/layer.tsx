@@ -35,6 +35,7 @@ import * as ReactDom from 'react-dom';
 import { ViewController } from './ctr';
 import {EventNoticer,Event} from 'nxkit/event';
 import {getDefaultId,Options} from './dialog';
+import {Activity} from '../isolate/ctr';
 
 export class LayerGroup {
 	private _IDs: Map<string, Layer> = new Map();
@@ -45,13 +46,13 @@ export class LayerGroup {
 		this._panel = panel;
 	}
 
-	show(D: typeof Layer, opts?: Options, animate = true, delay = 0) {
+	show(D: typeof Layer, opts?: Options, animate = true, delay = 0, act?: Activity) {
 		var id = opts?.id ? String(opts.id): getDefaultId(D);
 		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id}"`);
 
 		var div = document.createElement('div');
 		(this._panel as HTMLElement).appendChild(div);
-		var instance = ReactDom.render<{}, Layer<any>>(<D {...opts} />, div);
+		var instance = ReactDom.render<{}, Layer<any>>(<D {...opts} __activity={act} />, div);
 
 		this._IDs.set(id, instance);
 
@@ -85,8 +86,14 @@ var _globaLayerGroup: LayerGroup | null;
 export abstract class Layer<P = {}, S = {}> extends ViewController<P, S> {
 
 	readonly onClose = new EventNoticer<Event<any, Layer>>('Close', this);
+
 	private __show = false;
 	private __close = false;
+	private __activity: Activity | null = (this.props as any).__activity || null;
+
+	get activity() {
+		return this.__activity;
+	}
 
 	render() {
 		return this.__show ? (

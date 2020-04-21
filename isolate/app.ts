@@ -15,12 +15,13 @@ export abstract class Application {
 	constructor(launcher: ApplicationLauncher) {
 		this.launcher = launcher;
 	}
-	triggerLaunch(args?: any) {}
+	triggerLaunch(args: Dict) {}
 	triggerLoad() {}
 	triggerUnload() {}
-}
-
-export abstract class ApplicationSystem extends Application {
-	abstract top(): NewWindow<Cover>;
-	abstract bottom(): NewWindow<Cover>;
+	top(): NewWindow<Cover> | null {
+		return null;
+	}
+	bottom(): NewWindow<Cover> | null {
+		return null;
+	}
 }

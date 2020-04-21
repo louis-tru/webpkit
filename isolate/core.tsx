@@ -8,8 +8,8 @@ import utils from 'nxkit';
 import {List,ListItem} from 'nxkit/event';
 import {React} from '../lib';
 import {getDefaultId} from '../lib/dialog';
-import {Type,CoverType,Window,NewWindow} from './ctr';
-import {Application,ApplicationSystem} from './app';
+import {Type,CoverType,Window,NewWindow, Cover, Activity} from './ctr';
+import {Application} from './app';
 import Gesture, {Event} from '../lib/gesture';
 import * as ReactDom from 'react-dom';
 import { DelayCall } from 'nxkit/delay_call';
@@ -44,6 +44,7 @@ interface Info {
 	target: Target;
 	time: number;
 	permanent: boolean;
+	args?: Options;
 }
 
 enum Target {
@@ -65,8 +66,8 @@ export default class ApplicationLauncher extends Gesture<{
 }> {
 	private _installed: Map<string, ()=>Promise<{default:NewApplication}>> = new Map();
 	private _apps: Map<string, Application> = new Map(); // current run applications
-	private _sys: ApplicationSystem | null = null; // sys app
-	private _cur: Item | null = null;
+	private _sys: Application | null = null; // sys app
+	private _cur: Item | null = null; // cur activity
 	private _IDs: Map<string, Item> = new Map();
 	private _activity = new List<Info>();
 	private _widget = new List<Info>();
@@ -124,15 +125,15 @@ export default class ApplicationLauncher extends Gesture<{
 			var App = await ff();
 			app = new App.default(this);
 			if (!this._sys) {
-				if (app instanceof ApplicationSystem)
-					this._sys = app;
+				this._sys = app;
 			}
 			isLoad = true;
 			this._apps.set(appName, app);
 		}
-		if (isLoad)
+		if (isLoad){
 			app.triggerLoad();
-		app.triggerLaunch(args);
+		}
+		app.triggerLaunch({...args});
 	}
 
 	private _exitApp(app: Application) {
@@ -147,6 +148,7 @@ export default class ApplicationLauncher extends Gesture<{
 
 	private async _autoClear() {
 		// TODO ... clear all activity
+
 		var appNames = new Set();
 		var item = this._activity.first;
 		while(item) {
@@ -203,32 +205,45 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	private _getCoverConstructor(type: CoverType) {
-		utils.assert(this._sys, 'non sys');
-		var sys = this._sys as ApplicationSystem;
-		return {app: sys, window: type == CoverType.TOP ? sys.top(): sys.bottom()};
+		if (this._disableCover)
+			return { app: this._sys as Application, win: null };
+		var win: NewWindow<Cover> | null = null;
+		var app = this._sys as Application;
+		if (this._cur) {
+			app = (this._cur.value as Info).window.app;
+			win = type == CoverType.TOP ? app.top(): app.bottom();
+		}
+		if (!win) {
+			var app = this._sys;
+			win = type == CoverType.TOP ? app.top(): app.bottom();
+		}
+		return { app, win };
 	}
 
+	private _disableCover = false;
+
 	async showCover(type: CoverType = CoverType.TOP, animate = true) {
-		var {app,window} = this._getCoverConstructor(type);
+		var {app,win} = this._getCoverConstructor(type);
+		if (!win) return;
 		if (type == CoverType.TOP) {
 			this.closeCover(CoverType.BOTTOM);
-			await this._makeTop(this._load(app, window, Target.TOP), animate);
+			await this._makeTop(this._load(app, win, Target.TOP), animate);
 		} else if (type == CoverType.BOTTOM) {
 			this.closeCover(CoverType.TOP);
-			await this._makeBottom(this._load(app, window, Target.BOTTOM), animate);
+			await this._makeBottom(this._load(app, win, Target.BOTTOM), animate);
 		}
 	}
 
 	async closeCover(type: CoverType = CoverType.TOP, animate = true) {
-		var {app,window} = this._getCoverConstructor(type);
-		var item = this._getInfo(app, window);
-		if (item) {
-			if (type == CoverType.TOP) {
+		if (type == CoverType.TOP) {
+			var item = this._top.first;
+			if (item) {
 				await this._unmakeTop(item, animate);
-				// this._unload(item);
-			} else {
+			}
+		} else {
+			var item = this._bottom.first;
+			if (item) {
 				await this._unmakeBottom(item, animate);
-				// this._unload(item);
 			}
 		}
 	}
@@ -278,7 +293,8 @@ export default class ApplicationLauncher extends Gesture<{
 			currInfo.window.triggerResume();
 		}
 
-		if (this._activity.length == 1 && this._activity.first === item) {
+		var act = currInfo.window as Activity;
+		if (act.permanent >= 1) {
 			currInfo.permanent = true;
 		}
 
@@ -345,7 +361,7 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	private async _unmakeTop(item: Item, animate: boolean) {
-		var info = item.value as Info;
+		// var info = item.value as Info;
 		if (animate) {
 			this._setCoverPosition(CoverType.TOP, 0, '%', 350);
 			await utils.sleep(350);
@@ -355,7 +371,7 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	private async _unmakeBottom(item: Item, animate: boolean) {
-		var info = item.value as Info;
+		// var info = item.value as Info;
 		if (animate) {
 			this._setCoverPosition(CoverType.BOTTOM, 0, '%', 350);
 			await utils.sleep(350);
@@ -404,7 +420,7 @@ export default class ApplicationLauncher extends Gesture<{
 			var [panel, stack] = this._genPanel(target);
 			var New = window as any;
 			var win = ReactDom.render<{}>(<New {...args} __app__={app} id={id} />, panel) as Window;
-			var info = { window: win, panel, id, target, time: Date.now(), permanent: false } as Info;
+			var info = { window: win, panel, id, target, time: Date.now(), permanent: false, args } as Info;
 			item = stack.push(info);
 			this._IDs.set(fid, item);
 		}
@@ -455,19 +471,15 @@ export default class ApplicationLauncher extends Gesture<{
 	private _disable_bottom_gesture = Number(this.props.disableBottomGesture) ? true: false;
 
 	private _top_unload = new DelayCall(()=>{
-		var sys = this._sys as ApplicationSystem;
-		var item = this._getInfo(sys, sys.top());
-		if (item) {
+		var item = this._top.first;
+		if (item)
 			this._unload(item);
-		}
 	}, 1e3);
 
 	private _bottom_unload = new DelayCall(()=>{
-		var sys = this._sys as ApplicationSystem;
-		var item = this._getInfo(sys, sys.bottom());
-		if (item) {
+		var item = this._bottom.first;
+		if (item)
 			this._unload(item);
-		}
 	}, 1e3);
 
 	private _setCoverFullOpen(name: CoverName, value: boolean) {
@@ -521,15 +533,18 @@ export default class ApplicationLauncher extends Gesture<{
 	private _setCoverPositionNoAnimate(type: CoverType, value: number) {
 		if (type == CoverType.TOP) {
 			if (this._top.length === 0) {
-				var {app,window} = this._getCoverConstructor(type);
-				this._load(app, window, Target.TOP);
+				var {app,win} = this._getCoverConstructor(type);
+				if (!win) return;
+				this._load(app, win, Target.TOP);
 			}
 		} else {
 			if (this._bottom.length === 0) {
-				var {app,window} = this._getCoverConstructor(type);
-				this._load(app, window, Target.BOTTOM);
+				var {app,win} = this._getCoverConstructor(type);
+				if (!win) return;
+				this._load(app, win, Target.BOTTOM);
 			}
 		}
+
 		this._setCoverPosition(type, value, 'px', 0);
 	}
 
