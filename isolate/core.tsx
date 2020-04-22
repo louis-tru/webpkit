@@ -281,7 +281,8 @@ export default class ApplicationLauncher extends Gesture<{
 					// ani
 					prevInfo.panel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
 					currInfo.panel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
-					prevInfo.panel.style.transform = 'translateX(-50%) scale(0.7,0.7)';
+					// prevInfo.panel.style.transform = 'translateX(-50%) scale(0.7,0.7)';
+					prevInfo.panel.style.transform = 'translateX(-50%) scale(1,1)';
 					currInfo.panel.style.transform = 'translateX(0) scale(1,1)';
 					await utils.sleep(400);
 					prevInfo.panel.style.display = 'none';
@@ -318,13 +319,14 @@ export default class ApplicationLauncher extends Gesture<{
 				currInfo.window.triggerResume();
 				if (animate) {
 					// init style
-					currInfo.panel.style.zIndex = '1';
-					nextInfo.panel.style.zIndex = '2';
+					currInfo.panel.style.zIndex = '2';
+					nextInfo.panel.style.zIndex = '1';
 					currInfo.panel.style.display = 'block';
 					nextInfo.panel.style.display = 'block';
 					currInfo.panel.style.transitionDuration = '0ms';
 					nextInfo.panel.style.transitionDuration = '0ms';
-					currInfo.panel.style.transform = 'translateX(-50%) scale(0.7,0.7)';
+					// currInfo.panel.style.transform = 'translateX(-50%) scale(0.7,0.7)';
+					currInfo.panel.style.transform = 'translateX(-50%) scale(1,1)';
 					nextInfo.panel.style.transform = 'translateX(0) scale(1,1)';
 					await utils.sleep(100);
 					// ani

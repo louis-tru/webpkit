@@ -28,64 +28,30 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import * as _qrcode from './_qrcode';
+import {CountUp, CountUpOptions} from './_count_up';
 import {ViewController,React} from './ctr';
 
-exports.QRCode = _qrcode.default;
+export * from './_count_up';
 
-export interface Options {
-	width?: number;
-	height?: number;
-	typeNumber?: number;
-	colorDark?: string;
-	colorLight?: string;
-	correctLevel?: number;
-	text?: string;
-}
-
-export declare class QRCode {
-	constructor(el: string | HTMLElement, opts?: Options);
-	makeCode(sText: string): void;
-	makeImage(): void;
-	clear(): void;
-	static CorrectLevel: {
-		L: number;
-		M: number;
-		Q: number;
-		H: number;
-	};
-}
-
-export default class extends ViewController<Options & { 
+export default class extends ViewController<CountUpOptions & { 
 	className?: string;
 	style?: React.CSSProperties;
-	logoSrc?: string;
+	endVal: number;
 }> {
 
-	private _qr?: QRCode;
-
-	private get opts() {
-		return {
-			width: 256,
-			height: 256,
-			typeNumber: 4,
-			colorDark: "#000000",
-			colorLight: "#ffffff",
-			correctLevel: (_qrcode.default as typeof QRCode).CorrectLevel.H,
-			...this.props,
-		};
-	}
+	private _cup?: CountUp;
 
 	triggerMounted() {
-		this._qr = new _qrcode.default(this.refs.dom as HTMLElement, this.opts);
+		this._cup = new CountUp(this.refs.dom as HTMLElement, this.props.endVal, this.props);
+		this._cup.start();
 	}
 
 	triggerUpdate() {
-		(this._qr as QRCode).makeCode(this.props.text || '');
+		(this._cup as CountUp).update(this.props.endVal || 0);
 	}
 
 	triggerRemove() {
-		(this._qr as QRCode).clear();
+		(this._cup as CountUp).reset();
 	}
 
 	render() {
