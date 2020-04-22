@@ -7,16 +7,41 @@ import './cell.css';
 import utils from 'nxkit';
 import {React} from '.';
 import {ViewController} from './ctr';
-import Gesture,{Event} from './gesture';
+import Gesture,{Event as GE} from './gesture';
+import {EventNoticer, Event} from 'nxkit/event';
 
-interface CellDom { type: CellConstructor; props: any, key?: any; ref?: any }
+interface CellDom { type: CellConstructor; props: any, key?: any; ref?: any; }
 
-export class CellPanel<P extends {index?: number, bounce?: boolean, preloading?: number} = {}> extends Gesture<P> {
+export class CellPanel<P = {}> extends Gesture<P & {
+	index?: number;
+	bounce?: boolean;
+	preloading?: number;
+}> {
 
-	private _index = Number(this.props.index) || 0;
+	private __index = Number(this.props.index) || 0;
 	private _bounce = !!Number(this.props.bounce);
 	private _preloading = Math.max(1, Number(this.props.preloading) || 1);
-	private _cells: Cell[] = [];
+	private _cells = new Set<Cell>();
+
+	private get _index() {
+		return this.__index;
+	}
+
+	private set _index(index: number) {
+		if (index !== this.__index || !this.isMounted) {
+			this.__index = index;
+			utils.nextTick(()=>{
+				for (var cell of this._cells) {
+					if (cell.index == index) {
+						(cell as any)._remove(); // private visit
+					} else {
+						(cell as any)._pause(); // private visit
+					}
+				}
+				this.onSwitch.trigger(index);
+			});
+		}
+	}
 
 	private _cellsDom() {
 		var cells = [] as CellDom[];
@@ -34,12 +59,11 @@ export class CellPanel<P extends {index?: number, bounce?: boolean, preloading?:
 	private _renderChild() {
 		var cells = this._cellsDom();
 		var index = this._index;
-		this._index = index = Math.min(Math.max(0, index), this._count - this._preloading); // fix index value
-
+		this._index = index = Math.min(Math.max(0, index), cells.length - this._preloading); // fix index value
 		var width = 100 / cells.length + '%';
 		return cells.map((e,j)=>{
 			utils.assert( utils.equalsClass(Cell, e.type), 'CellPanel.props.children type error' );
-			var E = {...e, /*ref: `_cell_${j}`,*/ props: {...e.props, index: j, panel: this} };
+			var E = {...e, props: {...e.props, panel: this, __index: j } };
 			return (
 				<div key={e.key} style={{width}}>
 					{ Math.abs(j - index) <= 1 ? E: null }
@@ -47,6 +71,8 @@ export class CellPanel<P extends {index?: number, bounce?: boolean, preloading?:
 			);
 		});
 	}
+
+	readonly onSwitch = new EventNoticer<Event<number, CellPanel<P>>>('Switch', this);
 
 	get index() {
 		return this._index;
@@ -61,7 +87,12 @@ export class CellPanel<P extends {index?: number, bounce?: boolean, preloading?:
 	}
 
 	cellAt(index: number) {
-		return (this._cells[index] as Cell | null) || null;
+		for (var cell of this._cells) {
+			if (cell.index == index) {
+				return cell;
+			}
+		}
+		return null;
 	}
 
 	switchAt(index: number, animate = true) {
@@ -95,7 +126,7 @@ export class CellPanel<P extends {index?: number, bounce?: boolean, preloading?:
 		return this.refs.root as HTMLElement;
 	}
 
-	protected triggerMove(e: Event) {
+	protected triggerMove(e: GE) {
 		if (e.begin_direction == 1 || e.begin_direction == 3) { // left / rigjt
 			e.cancelBubble = true;
 			var move_x = e.begin_x - e.x;
@@ -116,7 +147,7 @@ export class CellPanel<P extends {index?: number, bounce?: boolean, preloading?:
 		}
 	}
 
-	protected triggerEndMove(e: Event) {
+	protected triggerEndMove(e: GE) {
 		if (e.begin_direction == 1 || e.begin_direction == 3) { // left / rigjt
 			if (e.speed > 100 && e.begin_direction == e.instant_direction) {
 				if (e.begin_direction == 1) { // right
@@ -137,35 +168,62 @@ interface CellConstructor {
 	new(props: any): Cell;
 }
 
-export class Cell<P extends { style?: React.CSSProperties } = {}, S = {}> extends ViewController<P, S> {
+export class Cell<P = {}, S = {}> extends ViewController<P & { style?: React.CSSProperties; className?: string }, S> {
 
-	private _index: number;
 	private _panel: CellPanel;
+	private _isPause = true;
+
+	readonly onResume = new EventNoticer<Event<void, Cell<P>>>('Resume', this);
+	readonly onPause = new EventNoticer<Event<void, Cell<P>>>('Pause', this);
 
 	constructor(props: any) {
 		super(props);
-		this._index = props.index;
 		this._panel = props.panel;
-		(this._panel as any)._cells[this._index] = this;
+		((this._panel as any)._cells as Set<Cell>).add(this);
 	}
 
 	get index() {
-		return this._index;
+		return (this.props as any).__index as number;
 	}
 
 	get panel() {
 		return this._panel;
 	}
 
-	triggerRemove() {
-		if ((this._panel as any)._cells[this._index] === this) {
-			delete (this._panel as any)._cells[this._index];
+	triggerResume() {
+		this.onResume.trigger();
+	}
+
+	triggerPause() {
+		this.onPause.trigger();
+	}
+
+	private _resume() {
+		if (this._isPause) {
+			this._isPause = false;
+			this.triggerResume();
 		}
+	}
+
+	private _pause() {
+		if (!this._isPause) {
+			this._isPause = true;
+			this.triggerPause();
+		}
+	}
+
+	triggerMounted() {
+		this._resume();
+	}
+
+	triggerRemove() {
+		((this._panel as any)._cells as Set<Cell>).delete(this);
+		this._pause();
 	}
 
 	render() {
 		return (
-			<div className="_cell" style={this.props.style}>
+			<div className={`_cell ${this.props.className||''}`} style={this.props.style}>
 				{this.props.children}
 			</div>
 		);

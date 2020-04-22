@@ -43,7 +43,8 @@ export interface TableProps {
 }
 
 export default class extends CMSPage<TableProps> {
-	async onLoad() {
+
+	async triggerLoad() {
 		const flag = this.props.initial === undefined ? true : this.props.initial
 
 		// await import('cport-nifty/plugins/datatables/media/js/jquery.dataTables.min.js');
@@ -59,8 +60,9 @@ export default class extends CMSPage<TableProps> {
 			})
 		}
 	}
+
 	renderHeader() {
-		let { operating, header } = this.props
+		let { operating, header } = this.props;
 		
 		if (operating && header.indexReverse(0) !== '操作' ) {
 			header.push('操作')
@@ -74,11 +76,13 @@ export default class extends CMSPage<TableProps> {
 		}
 		return headArr
 	}
+
 	renderLists() {
 		let { lists, header, operating, renderLists } = this.props
 		// debugger
 		return renderLists(header, lists, operating);
 	}
+
 	render() {
 		return (
 			<table id="demo-dt-basic" className="table table-striped table-bordered" cellSpacing="0" style={{textAlign: 'center',width:'100%'}}>
@@ -93,4 +97,5 @@ export default class extends CMSPage<TableProps> {
 			</table>
 		);
 	}
+
 }

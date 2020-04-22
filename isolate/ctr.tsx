@@ -54,8 +54,8 @@ export class Window<P = {}> extends ViewController<P> {
 
 export abstract class Activity<P = {}> extends Window<P> {
 	static readonly type: Type = Type.ACTIVITY;
-	private _dialogStack: DialogStack;
-	private _layerGroup: LayerGroup;
+	private _dialogStack?: DialogStack;
+	private _layerGroup?: LayerGroup;
 
 	permanent = 0;
 

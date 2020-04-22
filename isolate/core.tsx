@@ -56,6 +56,11 @@ enum Target {
 
 type Item = ListItem<Info>;
 
+interface LItem {
+	item: Item;
+	load: boolean;
+}
+
 function _get_full_id(app: Application, id: string) {
 	return app.name + '_' + id;
 }
@@ -253,7 +258,7 @@ export default class ApplicationLauncher extends Gesture<{
 		this.closeCover(CoverType.BOTTOM);
 	}
 
-	private async _makeActivity(item: Item, animate: boolean) {
+	private async _makeActivity({item}: LItem, animate: boolean) {
 		var currInfo = item.value as Info;
 		var prev = this._cur;
 		this._cur = item;
@@ -338,7 +343,7 @@ export default class ApplicationLauncher extends Gesture<{
 		utils.nextTick(()=>this._autoClear());
 	}
 
-	private async _makeTop(item: Item, animate: boolean) {
+	private async _makeTop({item}: LItem, animate: boolean) {
 		var info = item.value as Info;
 		if (animate) {
 			this._setCoverPosition(CoverType.TOP, 100, '%', 350);
@@ -349,7 +354,7 @@ export default class ApplicationLauncher extends Gesture<{
 		return info.window;
 	}
 
-	private async _makeBottom(item: Item, animate: boolean) {
+	private async _makeBottom({item}: LItem, animate: boolean) {
 		var info = item.value as Info;
 		if (animate) {
 			this._setCoverPosition(CoverType.BOTTOM, 100, '%', 350);
@@ -380,8 +385,9 @@ export default class ApplicationLauncher extends Gesture<{
 		}
 	}
 
-	private async _makeWidget(item: Item, animate: boolean) {
+	private async _makeWidget({item,load}: LItem, animate: boolean) {
 		var info = item.value as Info;
+		if (!load) return info.window;
 		info.window.triggerResume();
 		if (animate) {
 			info.panel.style.transitionDuration = '0';
@@ -415,7 +421,7 @@ export default class ApplicationLauncher extends Gesture<{
 		utils.equalsClass(Window, window);
 		var id = args?.id ? String(args.id): getDefaultId(window);
 		var fid = _get_full_id(app, id);
-		var item = this._IDs.get(fid);
+		var item = this._IDs.get(fid), load = false;
 		if (!item) {
 			var [panel, stack] = this._genPanel(target);
 			var New = window as any;
@@ -423,8 +429,9 @@ export default class ApplicationLauncher extends Gesture<{
 			var info = { window: win, panel, id, target, time: Date.now(), permanent: false, args } as Info;
 			item = stack.push(info);
 			this._IDs.set(fid, item);
+			load = true;
 		}
-		return item;
+		return {item, load} as LItem;
 	}
 
 	private _unload(item: ListItem<Info>) {

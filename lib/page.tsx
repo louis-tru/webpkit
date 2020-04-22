@@ -46,12 +46,12 @@ export interface PageProps {
 	match: match;
 }
 
-export default class Page<P = {}, S = {}, PP = {}> extends ViewController<PageProps & PP, S> {
+export default class Page<P = {}, S = {}> extends ViewController<PageProps & P, S> {
 	private _url = '';
 	private _params: P;
 	private _router: Router;
 
-	constructor(props: PP & PageProps) {
+	constructor(props: P & PageProps) {
 		super(props);
 		utils.assert(this.props.router, 'no router');
 		this._url = this.props.location.pathname + this.props.location.search;
@@ -137,7 +137,7 @@ export default class Page<P = {}, S = {}, PP = {}> extends ViewController<PagePr
 
 }
 
-export class Loading extends Page<{}, {}, {content?:string}> {
+export class Loading extends Page<{content?:string}, {}> {
 	render() {
 		return <div> {this.props.content||''} </div>
 	}
@@ -193,7 +193,7 @@ export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements
 
 	get data(): Data[] {
 		var name = `${this.name}_data`;
-		return (this as any).state[name] || GlobalState.getGlobalState()[name] || [];
+		return (this as any).state[name] || GlobalState.getGlobalState(name) || [];
 	}
 
 	set data(value: Data[]) {
