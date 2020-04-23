@@ -37,6 +37,7 @@ import * as ReactDom from 'react-dom';
 import {EventNoticer,Event} from 'nxkit/event';
 import {List,ListItem} from 'nxkit/event';
 import {Activity} from '../isolate/ctr';
+import {InputProps,Input} from './keyboard';
 
 var DEFAULT_SCALE = 1;
 
@@ -315,17 +316,8 @@ export function confirm(In: DialogIn, cb?: (ok: boolean)=>void) {
 	}});
 }
 
-export interface InputProps {
-	onChange?: ()=>void;
-	onDone?: ()=>void;
-	value?: string;
-	className?: string;
-	style?: Dict;
-	type?: string;
-}
-
 export interface InputConstructor {
-	new(props: InputProps): ViewController<InputProps>;
+	new(props: InputProps): Input;
 }
 
 export type PromptIn = string | {

@@ -32,7 +32,7 @@ export interface ActivityOptions extends Options {
 	};
 }
 
-export class Window<P = {}> extends ViewController<P> {
+export class Window<P = {}, S = {}> extends ViewController<P, S> {
 	readonly app: Application;
 	readonly id: string;
 	constructor(props: any) {
@@ -52,7 +52,7 @@ export class Window<P = {}> extends ViewController<P> {
 	}
 }
 
-export abstract class Activity<P = {}> extends Window<P> {
+export abstract class Activity<P = {}, S = {}> extends Window<P, S> {
 	static readonly type: Type = Type.ACTIVITY;
 	private _dialogStack?: DialogStack;
 	private _layerGroup?: LayerGroup;

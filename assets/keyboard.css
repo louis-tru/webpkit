@@ -1,0 +1,67 @@
+.kb {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100vw;
+	height: 4rem;
+	background: #d0d3dc;
+	z-index: 1001;
+}
+
+.kb .test {
+	position: absolute;
+	top: -2200px;
+	width: 100%;
+}
+
+.kb .row {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 25%;
+}
+
+.kb .row > view {
+	min-width: 8.5%;
+	height: 80%;
+	background-color: #fff;
+	border-radius: 0.1rem;
+	box-shadow: 1px 2px 2px #000;
+	margin: 0.05rem;
+	text-align: center;
+	font-size: 0.3rem;
+	align-items: center;
+	justify-content: center;
+	white-space: pre;
+	display: flex;
+	box-sizing: border-box;
+	padding: 0.09rem;
+}
+
+.kb .row > view:active {
+	background-color: #aaa;
+}
+
+.kb .row > view.grey {
+	background-color: #a8aebf;
+}
+
+.kb .row > view.grey:active {
+	background-color: #ddd;
+}
+
+.kb .row > view.blue {
+	background-color: #00b3e1;
+}
+
+.kb .row > view.blue:active {
+	background-color: #0083a5;
+}
+
+.kb .row > view.space {
+	width: 53%;
+}
+
+.kbi {
+	border: solid 1px #aaa;
+}

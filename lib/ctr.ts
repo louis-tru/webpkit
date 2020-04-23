@@ -101,21 +101,23 @@ export interface ViewController<P = {}, S = {}> {
 	shouldComponentUpdate?(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean;
 }
 
-export declare class ViewController<P = {}, S = {}> {
+export declare class ViewController<P, S> {
 	static contextType?: React.Context<any>;
 	readonly context: any;
 	constructor(props: Readonly<P>);
 	constructor(props: P, context?: any);
+
 	setState<K extends keyof S>(
 		state: ((prevState: Readonly<S>, props: Readonly<P>) => (Pick<S, K> | S | null)) | (Pick<S, K> | S | null),
-		callback?: () => void
+			callback?: () => void
 	): void;
+
 	forceUpdate(callback?: () => void): void;
 	render(): React.ReactNode;
 	readonly props: Readonly<P> & Readonly<{ children?: React.ReactNode }>;
 	state: Readonly<S>;
 	readonly refs: {
-		[key: string]: ViewController<any> | Element;
+		[key: string]: ViewController<any,any> | Element;
 	};
 	updateState<K extends keyof S>(state: Pick<S, K> | S): void;
 	readonly isLoaded: boolean;
