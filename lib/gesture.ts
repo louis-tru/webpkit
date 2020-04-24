@@ -289,7 +289,7 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 		var el = this.$el;
 		this._width = el.clientWidth;
 		this._height = el.clientHeight;
-		if ('touchstart' in globalThis.document.body) {
+		if ('ontouchstart' in globalThis.document.body) {
 			el.addEventListener('touchstart', (e)=>Gesture._handleTouchstart(this, e));
 			el.addEventListener('touchmove', e=>Gesture._handleTouchmove(this, e));
 			el.addEventListener('touchend', e=>Gesture._handleTouchend(this, e));

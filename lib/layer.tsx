@@ -46,6 +46,14 @@ export class LayerGroup {
 		this._panel = panel;
 	}
 
+	get preventCover() {
+		for (var [,l] of this._IDs) {
+			if (l.preventCover)
+				return true;
+		}
+		return false;
+	}
+
 	show(D: typeof Layer, opts?: Options, animate = true, delay = 0, act?: Activity) {
 		var id = opts?.id ? String(opts.id): getDefaultId(D);
 		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id}"`);
@@ -90,6 +98,10 @@ export abstract class Layer<P = {}, S = {}> extends ViewController<P, S> {
 	private __show = false;
 	private __close = false;
 	private __activity: Activity | null = (this.props as any).__activity || null;
+
+	get preventCover() {
+		return true;
+	}
 
 	get activity() {
 		return this.__activity;

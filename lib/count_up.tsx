@@ -56,7 +56,7 @@ export default class extends ViewController<CountUpOptions & {
 
 	render() {
 		return (
-			<div className={this.props.className} style={this.props.style} ref="dom"></div>
+			<span className={this.props.className} style={this.props.style} ref="dom"></span>
 		);
 	}
 }

@@ -33,7 +33,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 			utils.nextTick(()=>{
 				for (var cell of this._cells) {
 					if (cell.index == index) {
-						(cell as any)._remove(); // private visit
+						(cell as any)._resume(); // private visit
 					} else {
 						(cell as any)._pause(); // private visit
 					}
@@ -105,7 +105,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	}
 
 	get current() {
-		var cell = this.refs[`_cell_${this._index}`] as Cell;
+		var cell = this.cellAt(this._index) as Cell;
 		utils.assert(cell);
 		return cell;
 	}
@@ -214,6 +214,7 @@ export class Cell<P = {}, S = {}> extends ViewController<P & { style?: React.CSS
 
 	triggerMounted() {
 		this._resume();
+		super.triggerMounted();
 	}
 
 	triggerRemove() {

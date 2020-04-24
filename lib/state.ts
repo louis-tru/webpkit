@@ -77,6 +77,8 @@ export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
 		return set;
 	}
 
+	private _is_global?: boolean;
+
 	state = {} as any;
 
 	setState(state: S, callback?: ()=>void) {
@@ -88,12 +90,14 @@ export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
 			var set = this._fill_global_state_value();
 			if (set.size) {
 				global_state_components.set(this, set);
+				this._is_global = true;
 			}
 		}
 	}
 
 	componentWillUnmount() {
-		global_state_components.delete(this);
+		if (this._is_global)
+			global_state_components.delete(this);
 	}
 
 	static getGlobalState(name: string) {

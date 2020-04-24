@@ -63,6 +63,10 @@ export class DialogStack {
 		this._panel = panel;
 	}
 
+	get preventCover() {
+		return this._dialogStack?.last?.value?.preventCover || false;
+	}
+
 	show(D: typeof Dialog, opts?: Options, animate = true, act?: Activity) {
 		var id = opts?.id ? String(opts.id): getDefaultId(D);
 		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id}"`);
@@ -121,6 +125,10 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 	readonly onClose = new EventNoticer<Event<any, Dialog>>('Close', this);
 
 	private __activity: Activity | null = (this.props as any).__activity || null;
+
+	get preventCover() {
+		return true;
+	}
 
 	get activity() {
 		return this.__activity;
@@ -183,7 +191,7 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 	}
 
 	get noMask() {
-		return true;
+		return false;
 	}
 
 	protected abstract renderBody(): React.ReactNode;

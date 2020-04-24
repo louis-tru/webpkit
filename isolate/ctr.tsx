@@ -59,6 +59,10 @@ export abstract class Activity<P = {}, S = {}> extends Window<P, S> {
 
 	permanent = 0;
 
+	get preventCover() {
+		return this._dialogStack?.preventCover || this._layerGroup?.preventCover || false;
+	}
+
 	private get dialogStack() {
 		if (!this._dialogStack) {
 			this._dialogStack = new DialogStack(this.refs.__layers as HTMLElement);

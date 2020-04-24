@@ -37,14 +37,24 @@ export interface Options extends Dict {
 	id?: any;
 }
 
+export const MAX_ACTIVITY_RETAIN_COUNT = 1;
+
 interface Info {
-	window: Window;
-	panel: HTMLElement;
+	window?: Window;
+	panel?: HTMLElement;
+	app: Application;
+	New: NewWindow<Window>;
+	appName: string;
 	id: string;
 	target: Target;
 	time: number;
 	permanent: boolean;
 	args?: Options;
+}
+
+interface Info2 extends Info {
+	window: Window;
+	panel: HTMLElement;
 }
 
 enum Target {
@@ -65,6 +75,10 @@ function _get_full_id(app: Application, id: string) {
 	return app.name + '_' + id;
 }
 
+function _get_full_id_by_info(info: Info) {
+	return info.appName + '_' + info.id;
+}
+
 export default class ApplicationLauncher extends Gesture<{
 	disableTopGesture?: boolean;
 	disableBottomGesture?: boolean;
@@ -75,9 +89,9 @@ export default class ApplicationLauncher extends Gesture<{
 	private _cur: Item | null = null; // cur activity
 	private _IDs: Map<string, Item> = new Map();
 	private _activity = new List<Info>();
-	private _widget = new List<Info>();
-	private _top = new List<Info>();
-	private _bottom = new List<Info>();
+	private _widget = new List<Info2>();
+	private _top = new List<Info2>();
+	private _bottom = new List<Info2>();
 
 	protected triggerLoad() {
 		utils.assert(!_launcher);
@@ -152,33 +166,61 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	private async _autoClear() {
-		// TODO ... clear all activity
 
-		var appNames = new Set();
+		var retainActivityCount = 0;
+		var retainApps = new Set();
 		var item = this._activity.first;
+
+		// TODO ... auto clear activitys
 		while(item) {
 			var next = item.next;
 			var info = item.value as Info;
-			if (!info.permanent && this._cur !== item) {
-				this._unload(item);
-			} else {
-				appNames.add(info.window.app.name);
+			if (info.window) {
+				retainActivityCount++;
+				if (!info.permanent && this._cur !== item) {
+					if (retainActivityCount >= MAX_ACTIVITY_RETAIN_COUNT) {
+						// this._unload(item);
+						this._unloadInstance(item);
+					}
+				}
 			}
 			item = next;
 		}
 
+		if (this._sys) {
+			retainApps.add(this._sys.name);
+		}
+		for (item = this._activity.first; item; item = item.next) {
+			var info = item.value as Info;
+			retainApps.add(info.appName);
+		}
+
 		for (var [,app] of this._apps) {
-			if (!appNames.has(app.name)) {
-				var item = this._widget.first;
+			if (!retainApps.has(app.name)) {
+
+				let item = this._widget.first;
 				while (item) {
-					var next = item.next;
-					var info = item.value as Info;
+					let next = item.next;
+					let info = item.value as Info2;
 					if (info.window.app === app) {
 						await this._unmakeWidget(item, false);
 						this._unload(item);
 					}
 					item = next;
 				}
+
+				for(let item of [this._top.first, this._bottom.first]) {
+					if (item) {
+						let info = item.value as Info2;
+						if (info.window.app === app) {
+							if (info.target == Target.TOP)
+								await this._unmakeTop(item, false);
+							else
+								await this._unmakeBottom(item, false);
+						}
+					}
+				}
+
 				this._exitApp(app); // exit app
 			}
 		}
@@ -200,6 +242,7 @@ export default class ApplicationLauncher extends Gesture<{
 		if (item) {
 			var info = item.value as Info;
 			if (info.target == Target.ACTIVITY) {
+				this.closeCoverAll();
 				await this._unmakeActivity(item, animate);
 				this._unload(item);
 			} else if (info.target == Target.WIDGET) {
@@ -215,8 +258,10 @@ export default class ApplicationLauncher extends Gesture<{
 		var win: NewWindow<Cover> | null = null;
 		var app = this._sys as Application;
 		if (this._cur) {
-			app = (this._cur.value as Info).window.app;
-			win = type == CoverType.TOP ? app.top(): app.bottom();
+			var act = (this._cur.value as Info).window as Activity;
+			if (act) {
+				win = type == CoverType.TOP ? act.app.top(): act.app.bottom();
+			}
 		}
 		if (!win) {
 			var app = this._sys;
@@ -226,6 +271,10 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	private _disableCover = false;
+
+	// setDisableCover(disable: boolean) {
+	// 	this._disableCover = disable;
+	// }
 
 	async showCover(type: CoverType = CoverType.TOP, animate = true) {
 		var {app,win} = this._getCoverConstructor(type);
@@ -259,12 +308,12 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	private async _makeActivity({item}: LItem, animate: boolean) {
-		var currInfo = item.value as Info;
+		var currInfo = item.value as Info2;
 		var prev = this._cur;
 		this._cur = item;
 		if (prev) {
 			if (prev !== this._cur) {
-				var prevInfo = prev.value as Info;
+				var prevInfo = prev.value as Info2;
 				prevInfo.window.triggerPause();
 				currInfo.window.triggerResume();
 				if (animate) {
@@ -277,7 +326,7 @@ export default class ApplicationLauncher extends Gesture<{
 					currInfo.panel.style.transitionDuration = '0ms';
 					prevInfo.panel.style.transform = 'translateX(0) scale(1,1)';
 					currInfo.panel.style.transform = 'translateX(100%) scale(1,1)';
-					await utils.sleep(100);
+					await utils.sleep(50);
 					// ani
 					prevInfo.panel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
 					currInfo.panel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
@@ -312,34 +361,43 @@ export default class ApplicationLauncher extends Gesture<{
 		if (item === this._cur) {
 			var prev = item.prev;
 			if (prev) {
-				var nextInfo = item.value as Info;
-				var currInfo = prev.value as Info;
-				this._cur = prev;
+				var cur = prev;
+				var nextInfo = item.value as Info2;
+				var currInfo = cur.value as Info2;
+				if (!currInfo.window) { // reload
+					prev = cur.prev;
+					this._unload(cur);
+					cur = this._load(currInfo.app, currInfo.New, Target.ACTIVITY, currInfo.args, prev || item).item;
+					currInfo = cur.value as Info2;
+				}
+				this._cur = cur;
 				nextInfo.window.triggerPause();
 				currInfo.window.triggerResume();
 				if (animate) {
 					// init style
-					currInfo.panel.style.zIndex = '2';
-					nextInfo.panel.style.zIndex = '1';
-					currInfo.panel.style.display = 'block';
-					nextInfo.panel.style.display = 'block';
-					currInfo.panel.style.transitionDuration = '0ms';
-					nextInfo.panel.style.transitionDuration = '0ms';
-					// currInfo.panel.style.transform = 'translateX(-50%) scale(0.7,0.7)';
-					currInfo.panel.style.transform = 'translateX(-50%) scale(1,1)';
-					nextInfo.panel.style.transform = 'translateX(0) scale(1,1)';
-					await utils.sleep(100);
+					var currPanel = currInfo.panel;
+					var nextPanel = nextInfo.panel;
+					currPanel.style.zIndex = '1';
+					nextPanel.style.zIndex = '2';
+					currPanel.style.display = 'block';
+					nextPanel.style.display = 'block';
+					currPanel.style.transitionDuration = '0ms';
+					nextPanel.style.transitionDuration = '0ms';
+					// currPanel.style.transform = 'translateX(-50%) scale(0.7,0.7)';
+					currPanel.style.transform = 'translateX(-50%) scale(1,1)';
+					nextPanel.style.transform = 'translateX(0) scale(1,1)';
+					await utils.sleep(50);
 					// ani
-					currInfo.panel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
-					nextInfo.panel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
-					currInfo.panel.style.transform = 'translateX(0) scale(1,1)';
-					nextInfo.panel.style.transform = 'translateX(100%) scale(1,1)';
+					currPanel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
+					nextPanel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
+					currPanel.style.transform = 'translateX(0) scale(1,1)';
+					nextPanel.style.transform = 'translateX(100%) scale(1,1)';
 					await utils.sleep(400);
-					nextInfo.panel.style.display = 'none';
+					nextPanel.style.display = 'none';
 				}
 			} else {
 				this._cur = null;
-				(item.value as Info).window.triggerPause();
+				(item.value as Info2).window.triggerPause();
 			}
 		}
 		utils.nextTick(()=>this._autoClear());
@@ -388,14 +446,14 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	private async _makeWidget({item,load}: LItem, animate: boolean) {
-		var info = item.value as Info;
+		var info = item.value as Info2;
 		if (!load) return info.window;
 		info.window.triggerResume();
 		if (animate) {
 			info.panel.style.transitionDuration = '0';
 			info.panel.style.opacity = '0';
-			await utils.sleep(100);
-			info.panel.style.transitionDuration = `150ms`;
+			await utils.sleep(50);
+			info.panel.style.transitionDuration = `200ms`;
 			info.panel.style.opacity = '1';
 		} else {
 			info.panel.style.transitionDuration = '0';
@@ -405,21 +463,22 @@ export default class ApplicationLauncher extends Gesture<{
 	}
 
 	private async _unmakeWidget(item: Item, animate: boolean) {
-		var info = item.value as Info;
+		var info = item.value as Info2;
 		info.window.triggerPause();
 		if (animate) {
 			info.panel.style.transitionDuration = '0';
 			info.panel.style.opacity = '1';
-			await utils.sleep(100);
-			info.panel.style.transitionDuration = `150ms`;
+			await utils.sleep(50);
+			info.panel.style.transitionDuration = `200ms`;
 			info.panel.style.opacity = '0';
+			await utils.sleep(200);
 		} else {
 			info.panel.style.transitionDuration = '0';
 			info.panel.style.opacity = '0';
 		}
 	}
 
-	private _load<T extends Window>(app: Application, window: NewWindow<T>, target: Target, args?: Options) {
+	private _load<T extends Window>(app: Application, window: NewWindow<T>, target: Target, args?: Options, prev?: Item | null) {
 		utils.equalsClass(Window, window);
 		var id = args?.id ? String(args.id): getDefaultId(window);
 		var fid = _get_full_id(app, id);
@@ -428,22 +487,38 @@ export default class ApplicationLauncher extends Gesture<{
 			var [panel, stack] = this._genPanel(target);
 			var New = window as any;
 			var win = ReactDom.render<{}>(<New {...args} __app__={app} id={id} />, panel) as Window;
-			var info = { window: win, panel, id, target, time: Date.now(), permanent: false, args } as Info;
-			item = stack.push(info);
+			var info: Info = { 
+				window: win, panel, id, target, time: Date.now(),
+				permanent: false, args, appName: app.name, New, app,
+			};
+			if (prev) {
+				item = stack.insert(prev, info);
+			} else {
+				item = stack.push(info);
+			}
 			this._IDs.set(fid, item);
 			load = true;
 		}
 		return {item, load} as LItem;
 	}
 
+	private _unloadInstance(item: ListItem<Info>) {
+		var info = item.value as Info;
+		if (info.window) {
+			var panel = info.panel as HTMLElement;
+			ReactDom.unmountComponentAtNode(panel);
+			(panel.parentElement as HTMLElement).removeChild(panel);
+			info.window = undefined;
+			info.panel = undefined;
+		}
+	}
+
 	private _unload(item: ListItem<Info>) {
 		if (!item.host) return;
 		var info = item.value as Info;
-		var fid = _get_full_id(info.window.app, info.id);
-		ReactDom.unmountComponentAtNode(info.panel);
-		(info.panel.parentElement as HTMLElement).removeChild(info.panel);
+		this._unloadInstance(item);
 		(item.host as List<Info>).del(item);
-		this._IDs.delete(fid);
+		this._IDs.delete(_get_full_id_by_info(info));
 	}
 
 	private _getInfo(app: Application, id: string | NewWindow<Window>): ListItem<Info> | null {
@@ -498,9 +573,9 @@ export default class ApplicationLauncher extends Gesture<{
 			var item = self[`_${name}`].first as Item;
 			if (item) {
 				if (value) {
-					(item.value as Info).window.triggerResume();
+					(item.value as Info2).window.triggerResume();
 				} else {
-					(item.value as Info).window.triggerPause();
+					(item.value as Info2).window.triggerPause();
 				}
 			}
 		}
@@ -541,15 +616,15 @@ export default class ApplicationLauncher extends Gesture<{
 
 	private _setCoverPositionNoAnimate(type: CoverType, value: number) {
 		if (type == CoverType.TOP) {
+			var {app,win} = this._getCoverConstructor(type);
+			if (!win) return;
 			if (this._top.length === 0) {
-				var {app,win} = this._getCoverConstructor(type);
-				if (!win) return;
 				this._load(app, win, Target.TOP);
 			}
 		} else {
+			var {app,win} = this._getCoverConstructor(type);
+			if (!win) return;
 			if (this._bottom.length === 0) {
-				var {app,win} = this._getCoverConstructor(type);
-				if (!win) return;
 				this._load(app, win, Target.BOTTOM);
 			}
 		}
@@ -559,6 +634,13 @@ export default class ApplicationLauncher extends Gesture<{
 
 	protected triggerBeginMove(e: Event) {
 		// console.log('triggerBeginMove');
+		if (this._cur) {
+			var info = this._cur.value as Info;
+			var act = (info.window as Activity);
+			if (act.preventCover) {
+				return;
+			}
+		}
 		this._beginMove = true;
 	}
 

@@ -8,6 +8,10 @@ export abstract class Keyboard<P = {}, S = {}> extends ViewController<P, S> {
 	private m_recipient: Input | null = null;
 	private _hasPresskeyCycle = false;
 
+	get isActive() {
+		return !!this.m_recipient;
+	}
+
 	get recipient() {
 		return this.m_recipient;
 	}
@@ -339,14 +343,22 @@ export interface InputProps {
 	style?: React.CSSProperties;
 	type?: string;
 	placeholder?: string;
+	initFocus?: boolean;
 }
 
 export class Input extends ViewController<InputProps> {
 
 	private _focus = false;
 
-	triggerLoad() {
+	triggerMounted() {
 		// keyboardInstance().setRecipient(this);
+		if (this.props.initFocus) {
+			setTimeout(e=>{
+				var input = this._dom;
+				if (input)
+					input.focus();
+			}, 100);
+		}
 	}
 
 	triggerRemove() {
@@ -394,6 +406,7 @@ export class Input extends ViewController<InputProps> {
 	}
 
 	private _handleFocus = ()=>{
+		// console.log('_handleFocus');
 		if (!this._focus) {
 			this._focus = true;
 			keyboardInstance().setRecipient(this);
@@ -404,6 +417,7 @@ export class Input extends ViewController<InputProps> {
 	}
 
 	private _handleBlur = (event: React.FocusEvent<HTMLInputElement>)=>{
+		// console.log('_handleBlur');
 		var keyboard = keyboardInstance();
 		if (keyboard.hasPresskeyCycle) {
 			event.preventDefault();
@@ -418,10 +432,19 @@ export class Input extends ViewController<InputProps> {
 		}
 	}
 
+	focus() {
+		this._dom.focus();
+	}
+
+	blur() {
+		this._dom.blur();
+	}
+
 	render() {
-		var {value,className,type,style} = this.props;
+		var {value,className,type,style,placeholder} = this.props;
 		return (
 			<input 
+				placeholder={placeholder}
 				className={className} 
 				defaultValue={value} 
 				ref="input" 

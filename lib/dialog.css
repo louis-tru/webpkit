@@ -13,7 +13,7 @@
 	top: 0;
 	position: fixed;
 	transition-duration: 300ms;
-	transform: translateZ(2px);
+	/* transform: translateZ(2px); */
 	transform-style: preserve-3d;
 	display: none;
 }

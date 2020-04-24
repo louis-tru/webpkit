@@ -183,10 +183,9 @@ module.exports = {
 	},
 	resolve: {
 		extensions: ['.js', '.jsx', '.ts', '.tsx', '.json',/* '.css', '.sass'*/],
-		alias: {
-			'static': utils.resolve('static'),
-			'nifty': path.join(__dirname, '../nifty'),
-		}
+		// alias: {
+			// 'nifty': path.join(__dirname, '../nifty'),
+		// }
 	},
 	module: {
 		rules: [
