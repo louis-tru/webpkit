@@ -47,8 +47,8 @@ require('nifty/plugins/pace/pace.css');
 require('nifty/plugins/pace/pace.js');
 require('nifty/plugins/morris-js/morris.css');
 require('nifty/plugins/morris-js/morris.js');
-// require('nifty/css/demo/nifty-demo-icons.css');
-// require('nifty/css/demo/nifty-demo.css');
+require('nifty/css/demo/nifty-demo-icons.css');
+require('nifty/css/demo/nifty-demo.css');
 
 import { initialize, error, Router as MyRouter, Root } from '..';
 import {Router, Route, Switch} from 'react-router-dom';
