@@ -28,4 +28,4 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import '..';
+import '../index';
