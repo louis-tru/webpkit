@@ -40,7 +40,7 @@ const assetsPublicPath = process.env.VIRTUAL || '';
 const source = path.resolve(process.env.ROOT_DIR || process.cwd());
 const output = path.resolve(process.env.OUTPUT ||  'out/public', assetsPublicPath);
 const sourceMap = process.env.MAP === 'false' ? false: true;
-const minimizer = process.env.MINI === 'false' ? false: true;
+const minimizer = process.env.MINIM === 'false' ? false: true;
 
 try {
 	var publicPath = process.env.PUBLIC_PATH || '';
