@@ -251,7 +251,6 @@ module.exports = {
 			// automaticNameDelimiter: '~',
 			cacheGroups: {
 				vendors: {
-					// test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
 					test: /node_modules/,
 					name: "vendors",
 					chunks: "all",
