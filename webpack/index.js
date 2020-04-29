@@ -144,7 +144,7 @@ const plugins = [
 			filename: name + '.html',
 			template: path + '.html',
 			inject: true,
-			chunks: ['low', 'vendors', 'common', name, 'manifest'],
+			chunks: ['manifest', 'low', 'vendors', 'common', name],
 		}),
 	),
 	...(isProd ? prod_plugins: develop_plugins),
@@ -180,9 +180,12 @@ module.exports = {
 	entry: {/**/},
 	output: {
 		path: config.output, // build output dir
-		filename: isProd ? utils.assetsPath('js/[name].min.js?[chunkhash]'): '[name].js',
-			...(isProd ? {
-		chunkFilename: utils.assetsPath('js/[name].chunk.min.js?[chunkhash]') }: {}),
+		filename: isProd ? utils.assetsPath('js/[name].js?[chunkhash]'): '[name].js',
+		// filename: (state)=>{
+		// 	return utils.assetsPath('js/[name].js?[chunkhash]');
+		// },
+		// ...(isProd ? {
+		// chunkFilename: utils.assetsPath('js/[name].min.js?[chunkhash]') }: {}),
 		publicPath: config.publicPath,
 	},
 	resolve: {
@@ -217,7 +220,7 @@ module.exports = {
 				test: /\.(png|jpe?g|gif|svg|mp4|webm|ogg|mp3|wav|flac|aac|woff2?|eot|ttf|otf)(\?.*)?$/,
 				loader: 'url-loader',
 				options: {
-					limit: 10000,
+					limit: 10240,
 					name: utils.assetsPath('res/[name].[hash:7].[ext]')
 				}
 			},

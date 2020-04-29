@@ -12,6 +12,8 @@ import {EventNoticer, Event} from 'nxkit/event';
 
 interface CellDom { type: CellConstructor; props: any, key?: any; ref?: any; }
 
+const transitionDuration = 500;
+
 export class CellPanel<P = {}> extends Gesture<P & {
 	index?: number;
 	bounce?: boolean;
@@ -60,7 +62,8 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	private _renderChild() {
 		var cells = this._cellsDom();
 		var index = this._index;
-		this._index = index = Math.min(Math.max(0, index), cells.length - this._preloading); // fix index value
+		// console.log('_preloading', this._preloading);
+		this._index = index = Math.min(Math.max(0, index), cells.length - 1); // fix index value
 		this.__count = cells.length;
 		var width = 100 / cells.length + '%';
 		return cells.map((e,j)=>{
@@ -68,7 +71,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 			var E = {...e, props: {...e.props, panel: this, __index: j } };
 			return (
 				<div key={e.key || j} style={{width}}>
-					{ Math.abs(j - index) <= 1 ? E: null }
+					{ Math.abs(j - index) <= this._preloading ? E: null }
 				</div>
 			);
 		});
@@ -105,7 +108,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		index = Math.min(Math.max(0, index), this._count - 1);
 		if (this._index != index) {
 			this._index = index;
-			(this.refs.cells as HTMLElement).style.transitionDuration = animate ? '350ms' : '0ms';
+			(this.refs.cells as HTMLElement).style.transitionDuration = animate ? `${transitionDuration}ms` : '0ms';
 			this.forceUpdate();
 		}
 	}
@@ -132,11 +135,22 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		return this.refs.root as HTMLElement;
 	}
 
+	private _beginX = 0;
+
+	protected triggerBeginMove(e: GE) {
+		var cells = this.refs.cells as HTMLElement;
+		var style = getComputedStyle(cells);
+		this._beginX = Math.abs(parseInt(style.transform.split(',')[4]));
+		cells.style.transform = `translateX(${-this._beginX}px)`;
+		cells.style.transitionDuration = `0ms`;
+	}
+
 	protected triggerMove(e: GE) {
 		if (e.begin_direction == 1 || e.begin_direction == 3) { // left / rigjt
 			e.cancelBubble = true;
 			var move_x = e.begin_x - e.x;
-			var x = this._index * this.clientWidth + move_x;
+			// var x = this._index * this.clientWidth + move_x;
+			var x = this._beginX + move_x;
 			if (this._bounce) {
 				if (this._max_x < x) {
 					x -= ((x - this._max_x) / 1.5);
@@ -161,11 +175,10 @@ export class CellPanel<P = {}> extends Gesture<P & {
 				} else { // left
 					this._index = Math.min(Math.max(0, this._count - 1), this._index + 1);
 				}
-				this.forceUpdate();
 			}
 			var cells = this.refs.cells as HTMLElement;
 			cells.style.transform = `translateX(-${this._index/this._count*100}%)`;
-			cells.style.transitionDuration = `350ms`;
+			cells.style.transitionDuration = `${transitionDuration}ms`;
 		}
 	}
 }
