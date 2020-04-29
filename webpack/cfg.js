@@ -39,6 +39,8 @@ const prot = Number(process.env.PORT) || 8080;
 const assetsPublicPath = process.env.VIRTUAL || '';
 const source = path.resolve(process.env.ROOT_DIR || process.cwd());
 const output = path.resolve(process.env.OUTPUT ||  'out/public', assetsPublicPath);
+const sourceMap = process.env.MAP === 'false' ? false: true;
+const minimizer = process.env.MINI === 'false' ? false: true;
 
 try {
 	var publicPath = process.env.PUBLIC_PATH || '';
@@ -68,6 +70,7 @@ module.exports = {
 	assetsPublicPath: assetsPublicPath,
 	staticAssets: staticAssets,
 	publicPath: publicPath,
+	minimizer: minimizer,
 
 	dev: {
 
@@ -105,7 +108,7 @@ module.exports = {
 		// https://vue-loader.vuejs.org/en/options.html#cachebusting
 		cacheBusting: true,
 
-		cssSourceMap: true,
+		cssSourceMap: sourceMap,
 
 	},
 
@@ -115,7 +118,7 @@ module.exports = {
 		 * Source Maps
 		 */
 
-		productionSourceMap: true,
+		productionSourceMap: sourceMap,
 		// https://webpack.js.org/configuration/devtool/#production
 		devtool: '#source-map',
 

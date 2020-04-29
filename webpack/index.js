@@ -41,6 +41,7 @@ const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin") ;
 const os = require('os');
+const ManifestPlugin = require('./manifest').ManifestPlugin;
 
 const NODE_ENV = 
 	process.env.NODE_ENV == 'prod' ? 'production': 
@@ -122,6 +123,7 @@ const prod_plugins = [
 	...(config.build.bundleAnalyzerReport ? [
 		new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin)() ]:[]
 	),
+	new ManifestPlugin(),
 ];
 
 const plugins = [
@@ -142,7 +144,7 @@ const plugins = [
 			filename: name + '.html',
 			template: path + '.html',
 			inject: true,
-			chunks: ['low', 'vendors', 'common', name],
+			chunks: ['low', 'vendors', 'common', name, 'manifest'],
 		}),
 	),
 	...(isProd ? prod_plugins: develop_plugins),
@@ -180,13 +182,13 @@ module.exports = {
 		path: config.output, // build output dir
 		filename: isProd ? utils.assetsPath('js/[name].min.js?[chunkhash]'): '[name].js',
 			...(isProd ? {
-		chunkFilename: utils.assetsPath('js/[name].min.js?[chunkhash]') }: {}),
+		chunkFilename: utils.assetsPath('js/[name].chunk.min.js?[chunkhash]') }: {}),
 		publicPath: config.publicPath,
 	},
 	resolve: {
 		extensions: ['.js', '.jsx', '.ts', '.tsx', '.json',/* '.css', '.sass'*/],
 		// alias: {
-			// 'nifty': path.join(__dirname, '../nifty'),
+		// 	'nifty': path.join(__dirname, '../nifty'),
 		// }
 	},
 	module: {
@@ -232,15 +234,21 @@ module.exports = {
 				terserOptions: {
 					// https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
 				},
-				exclude: /nxkit_bigint/,
+				exclude: config.minimizer ? /nxkit_bigint/: /.*/,
 			}),
 		],
+		// runtimeChunk: 'single',
+		runtimeChunk: {
+			name: 'manifest'
+		},
 		splitChunks: {
 			// chunks: 'all'|'async'|'initial', //同时分割同步和异步代码,推荐。
 			// maxAsyncRequests: 5,  // 异步加载chunk的并发请求数量<=5
 			// maxInitialRequests: 3, // 一个入口并发加载的chunk数量<=3
 			// minSize: 30000, // 模块超过30k自动被抽离成公共模块
 			// minChunks: 1, // 模块被引用>=1次，便分割
+			// name: true,
+			// automaticNameDelimiter: '~',
 			cacheGroups: {
 				vendors: {
 					// test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
@@ -272,7 +280,7 @@ module.exports = {
 					priority: 6,
 				},
 			}
-	 }
+		},
 	},
 	// cheap-module-eval-source-map is faster for development
 	devtool: isProd 
