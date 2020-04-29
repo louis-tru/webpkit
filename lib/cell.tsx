@@ -22,6 +22,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	private _bounce = !!Number(this.props.bounce);
 	private _preloading = Math.max(1, Number(this.props.preloading) || 1);
 	private _cells = new Set<Cell>();
+	private __count = 0;
 
 	private get _index() {
 		return this.__index;
@@ -60,12 +61,13 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		var cells = this._cellsDom();
 		var index = this._index;
 		this._index = index = Math.min(Math.max(0, index), cells.length - this._preloading); // fix index value
+		this.__count = cells.length;
 		var width = 100 / cells.length + '%';
 		return cells.map((e,j)=>{
 			utils.assert( utils.equalsClass(Cell, e.type), 'CellPanel.props.children type error' );
 			var E = {...e, props: {...e.props, panel: this, __index: j } };
 			return (
-				<div key={e.key} style={{width}}>
+				<div key={e.key || j} style={{width}}>
 					{ Math.abs(j - index) <= 1 ? E: null }
 				</div>
 			);
@@ -73,6 +75,10 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	}
 
 	readonly onSwitch = new EventNoticer<Event<number, CellPanel<P>>>('Switch', this);
+
+	get count() {
+		return this.__count;
+	}
 
 	get index() {
 		return this._index;
