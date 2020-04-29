@@ -135,18 +135,20 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		return this.refs.root as HTMLElement;
 	}
 
-	private _beginX = 0;
-
-	protected triggerBeginMove(e: GE) {
-		var cells = this.refs.cells as HTMLElement;
-		var style = getComputedStyle(cells);
-		this._beginX = Math.abs(parseInt(style.transform.split(',')[4]));
-		cells.style.transform = `translateX(${-this._beginX}px)`;
-		cells.style.transitionDuration = `0ms`;
-	}
+	private _beginX = -1;
 
 	protected triggerMove(e: GE) {
 		if (e.begin_direction == 1 || e.begin_direction == 3) { // left / rigjt
+
+			var cells = this.refs.cells as HTMLElement;
+
+			if (this._beginX == -1) {
+				var style = getComputedStyle(cells);
+				this._beginX = Math.abs(parseInt(style.transform.split(',')[4]));
+				cells.style.transform = `translateX(${-this._beginX}px)`;
+				cells.style.transitionDuration = `0ms`;
+			}
+
 			e.cancelBubble = true;
 			var move_x = e.begin_x - e.x;
 			// var x = this._index * this.clientWidth + move_x;
@@ -161,7 +163,6 @@ export class CellPanel<P = {}> extends Gesture<P & {
 				x = Math.min(this._max_x, x);
 				x = Math.max(0, x);
 			}
-			var cells = this.refs.cells as HTMLElement;
 			cells.style.transform = `translateX(${-x}px)`;
 			cells.style.transitionDuration = `0ms`;
 		}
@@ -179,6 +180,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 			var cells = this.refs.cells as HTMLElement;
 			cells.style.transform = `translateX(-${this._index/this._count*100}%)`;
 			cells.style.transitionDuration = `${transitionDuration}ms`;
+			this._beginX = -1;
 		}
 	}
 }

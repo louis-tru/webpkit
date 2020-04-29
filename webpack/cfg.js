@@ -40,7 +40,13 @@ const assetsPublicPath = process.env.VIRTUAL || '';
 const source = path.resolve(process.env.ROOT_DIR || process.cwd());
 const output = path.resolve(process.env.OUTPUT ||  'out/public', assetsPublicPath);
 const sourceMap = process.env.MAP === 'false' ? false: true;
-const minimizer = process.env.MINIM === 'false' ? false: true;
+const isMinimizer = process.env.MINIM === 'false' ? false: true;
+
+const NODE_ENV = 
+	process.env.NODE_ENV == 'prod' ? 'production': 
+	process.env.NODE_ENV == 'dev' ? 'development': process.env.NODE_ENV || 'development';
+
+const isProd = NODE_ENV == 'production';
 
 try {
 	var publicPath = process.env.PUBLIC_PATH || '';
@@ -70,10 +76,11 @@ module.exports = {
 	assetsPublicPath: assetsPublicPath,
 	staticAssets: staticAssets,
 	publicPath: publicPath,
-	minimizer: minimizer,
+	isMinimizer: isMinimizer,
+	isProd: isProd,
+	NODE_ENV: NODE_ENV,
 
 	dev: {
-
 		inline: devinline,
 
 		hotOnly: false,
