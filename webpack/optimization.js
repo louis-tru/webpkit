@@ -15,9 +15,8 @@ module.exports = {
 			exclude: config.isMinimizer ? /nxkit_bigint/: /.*/,
 		}),
 	],
-	// runtimeChunk: 'single',
 	runtimeChunk: {
-		name: 'manifest'
+		name: 'runtime',
 	},
 	splitChunks: {
 		// chunks: 'all'|'async'|'initial', //同时分割同步和异步代码,推荐。
@@ -29,19 +28,19 @@ module.exports = {
 		// automaticNameDelimiter: '~',
 		cacheGroups: {
 			vendors: {
-				test: /node_modules/,
+				test: /node_modules|webpkit/,
 				name: "vendors",
 				chunks: "all",
 				priority: 3,
 				enforce: true,
 			},
-			common: {
-				name: "common",
-				chunks: "all",
-				priority: 2,
-				enforce: true,
-				minChunks: 2,
-			},
+			// common: {
+			// 	name: "common",
+			// 	chunks: "all",
+			// 	priority: 2,
+			// 	enforce: true,
+			// 	minChunks: 2,
+			// },
 			nxkit_bigint: {
 				test: /nxkit\/_bigint/,
 				name: "nxkit_bigint",
@@ -56,6 +55,6 @@ module.exports = {
 				enforce: true,
 				priority: 6,
 			},
-		}
+		},
 	},
 };

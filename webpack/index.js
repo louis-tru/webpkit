@@ -36,8 +36,8 @@ module.exports = {
 	output: {
 		path: config.output, // build output dir
 		filename: isProd ? utils.assetsPath('js/[name].js?[chunkhash]'): '[name].js',
-		// ...(isProd ? {
-		// chunkFilename: utils.assetsPath('js/[name].chunk.js?[chunkhash]') }: {}),
+		...(isProd ? {
+		chunkFilename: utils.assetsPath('js/[name].js?[chunkhash]') }: {}),
 		publicPath: config.publicPath,
 	},
 	resolve: {

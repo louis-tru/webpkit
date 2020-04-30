@@ -81,7 +81,7 @@ const plugins = [
 			filename: name + '.html',
 			template: path + '.html',
 			inject: true,
-			chunks: ['manifest', 'low', 'vendors', 'common', name],
+			chunks: ['runtime', 'low', 'vendors', name],
 		}),
 	),
 	...(isProd ? prod_plugins: develop_plugins),
