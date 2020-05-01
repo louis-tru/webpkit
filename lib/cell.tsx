@@ -33,6 +33,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	private set _index(index: number) {
 		if (index !== this.__index || !this.isMounted) {
 			this.__index = index;
+			this.forceUpdate();
 			utils.nextTick(()=>{
 				for (var cell of this._cells) {
 					if (cell.index == index) {
