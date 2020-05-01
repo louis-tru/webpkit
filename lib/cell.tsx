@@ -33,8 +33,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	private set _index(index: number) {
 		if (index !== this.__index || !this.isMounted) {
 			this.__index = index;
-			this.forceUpdate();
-			utils.nextTick(()=>{
+			utils.nextTick(()=>this.forceUpdate(()=>{
 				for (var cell of this._cells) {
 					if (cell.index == index) {
 						(cell as any)._resume(); // private visit
@@ -43,7 +42,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 					}
 				}
 				this.onSwitch.trigger(index);
-			});
+			}));
 		}
 	}
 

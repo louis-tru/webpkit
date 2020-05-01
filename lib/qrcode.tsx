@@ -28,10 +28,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import * as _qrcode from './_qrcode';
 import {ViewController,React} from './ctr';
+// import * as _qrcode from './_qrcode';
+var _Qrcode = require('./_qrcode').default;
 
-exports.QRCode = _qrcode.default;
+exports.QRCode = _Qrcode;
 
 export interface Options {
 	width?: number;
@@ -71,13 +72,13 @@ export default class extends ViewController<Options & {
 			typeNumber: 4,
 			colorDark: "#000000",
 			colorLight: "#ffffff",
-			correctLevel: (_qrcode.default as typeof QRCode).CorrectLevel.H,
+			correctLevel: (_Qrcode as typeof QRCode).CorrectLevel.H,
 			...this.props,
 		};
 	}
 
 	triggerMounted() {
-		this._qr = new _qrcode.default(this.refs.dom as HTMLElement, this.opts);
+		this._qr = new _Qrcode(this.refs.dom as HTMLElement, this.opts);
 	}
 
 	triggerUpdate() {

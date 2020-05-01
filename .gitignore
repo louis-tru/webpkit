@@ -4,6 +4,7 @@ out
 .DS_Store
 *.DS_Store
 node_modules*
+.node_modules
 config.js
 .config.js
 package-lock.json

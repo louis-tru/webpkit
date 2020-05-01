@@ -20,6 +20,6 @@ const views = ['.', 'views', 'app'].map(inputDir=>{
 		if (r.length)
 			return r;
 	}
-}).find(e=>e);
+}).find(e=>e) || [];
 
 module.exports = views;

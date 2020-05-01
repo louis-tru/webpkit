@@ -76,10 +76,10 @@ const plugins = [
 	// you can customize output by editing /index.html
 	// see https://github.com/ampedandwired/html-webpack-plugin
 	
-	...views.map(({name,path})=>
+	...views.map(({name,html})=>
 		new HtmlWebpackPlugin({
 			filename: name + '.html',
-			template: path + '.html',
+			template: html,
 			inject: true,
 			chunks: ['runtime', 'low', 'vendors', name],
 		}),
