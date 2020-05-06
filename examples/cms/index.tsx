@@ -28,13 +28,20 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { Root,ReactDom,React } from 'webpkit';
+import { ReactDom, React, CMSRoot } from 'webpkit/cms';
 import router from './src/router';
+import Login from './src/login';
+import Menu from './src/menu';
+import Header from './src/header';
+import Footer from './src/footer';
 
 ReactDom.render(
-	<Root 
-		initSDK={false} 
+	<CMSRoot 
 		routes={router}
+		login={<Login />}
+		menu={<Menu />}
+		header={<Header/>}
+		footer={<Footer/>}
 	/>,
 	document.querySelector('#app')
 );

@@ -28,13 +28,26 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { Root,ReactDom,React } from 'webpkit';
-import router from './src/router';
+import {React,Root,ReactDom,dialog} from 'webpkit/mobile';
+import store from 'webpkit/lib/store';
+import _404 from './src/pages/404';
+import routes from './src/router';
+import path from 'nxkit/path';
+import * as config from './config';
+import './src/css/util.css';
 
-ReactDom.render(
-	<Root 
-		initSDK={false} 
-		routes={router}
-	/>,
-	document.querySelector('#app')
-);
+class MyRoot<P> extends Root<P> {
+
+	protected startupPath: string = path.getParam('init_url') || '/';
+
+	async triggerLoad() {
+		await super.triggerLoad();
+		store.message.addEventListener('BluetoothPairRequest', e=>{
+			dialog.confirm(e.data.mobile + ',请求蓝牙配对', e=>{
+				store.device.methods.agreeBluetoothPair({ isAgree: e }).catch(console.error);
+			});
+		});
+	}
+}
+
+ReactDom.render(<MyRoot config={config} routes={routes} notFound={_404} />, document.querySelector('#app'));

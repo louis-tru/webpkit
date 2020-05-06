@@ -48,15 +48,17 @@ export interface PageProps {
 
 export default class Page<P = {}, S = {}> extends ViewController<PageProps & P, S> {
 	private _url = '';
-	private _params: P;
-	private _router: Router;
+	private _params: P = {} as P;
+	private _router?: Router;
 
 	constructor(props: P & PageProps) {
 		super(props);
-		utils.assert(this.props.router, 'no router');
+		// utils.assert(this.props.router, 'no router');
+		if (!this.props.router)
+			return;
+		this._router = this.props.router;
 		this._url = this.props.location.pathname + this.props.location.search;
 		this._params = Object.assign({}, this.props.match && this.props.match.params) as P;
-		this._router = this.props.router;
 		var search = this.props.location.search.substr(1);
 		if (search) {
 			search.split('&').forEach(e=>{

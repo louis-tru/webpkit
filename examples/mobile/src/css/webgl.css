@@ -1,0 +1,28 @@
+
+.webgl .img_close {
+	color: rgba(255,255,255,0.4);
+	position: fixed;
+	z-index: 3;
+	top: 0.15rem;
+	right: 0.15rem;
+	border: solid 0.01rem #aaa;
+	border-radius: 1rem;
+	width: 0.6rem;
+	height: 0.6rem;
+	background: rgba(0,0,0,0.4);
+	text-align: center;
+	line-height: 0.6rem;
+}
+
+.webgl .img_close:active {
+	opacity: 0.5;
+}
+
+.webgl .content {
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	z-index: 2;
+	top: 0;
+	left: 0;
+}

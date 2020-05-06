@@ -1,0 +1,17 @@
+
+.index {
+	
+}
+
+.index2 {
+	padding-top: 0;
+}
+
+.index2 .scroll {
+	width: 100%;
+	height: 100%;
+	padding: 10rem;
+	box-sizing: content-box;
+	background: -webkit-repeating-linear-gradient(red, yellow 10%, green 20%);
+	background: -webkit-radial-gradient(left, red, orange, yellow, green, blue, indigo, violet);
+}

@@ -28,10 +28,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { React } from '../lib';
-import GlobalState from '../lib/state';
+import { React, ViewController } from '../lib';
 
-export default class extends GlobalState<{text?: string}> {
+export default class extends ViewController<{text?: string}> {
 	
 	renderText() {
 		if (this.props.text) {

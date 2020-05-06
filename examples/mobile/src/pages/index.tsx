@@ -1,74 +1,109 @@
-/* ***** BEGIN LICENSE BLOCK *****
- * Distributed under the BSD license:
- *
- * Copyright (c) 2019, hardchain
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of hardchain nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL hardchain BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * ***** END LICENSE BLOCK ***** */
 
+import { React, NavPage,dialog } from 'webpkit/mobile';
+import sdk from 'webpkit/lib/store';
 import utils from 'nxkit';
-import req from 'nxkit/request';
-import path from 'nxkit/path';
-import {Page,React,Link} from 'webpkit';
-import './index.css';
+import '../css/index.css';
 
-const LINES = 100;
+export default class extends NavPage {
 
-export default class Index extends Page {
-	
-	state = { logs: [], color: path.getParam('color') || '0f0' };
+	state = { details: {} };
+	private m_auto_test = false;
+	private m_auto_test_step = 0;
+	private m_auto_test_tables = [
+		'network?auto=1',
+		'media?auto=1',
+		'led?auto=1',
+		'iframe?auto=1',
+	];
 
-	async showLog() {
-		var {data:text} = await req.get(`./static/${path.getParam('log')||'log'}.txt`);
-		var logsAll = (text + '').split(/\n/);
-		var index = 0, len = logsAll.length;
-		var logs = [];
-		while (true) {
-			logs.push(logsAll[index]);
-			if (logs.length > LINES) {
-				logs.shift();
+	async triggerLoad() {
+		this.nav.onNav.on(e=>{
+			if (this.m_auto_test && e.data.action == 'pop') {
+				this.m_auto_test_step++;
+				if (this.m_auto_test_step < this.m_auto_test_tables.length) {
+					setTimeout(e=>this.pushPage(this.m_auto_test_tables[this.m_auto_test_step], true), 1000);
+				} else {
+					this.m_auto_test = false;
+					setTimeout(e=>dialog.alert('测试完成'), 1000);
+				}
 			}
-			this.setState({ logs });
-			await utils.sleep(utils.random(50, 1000));
-			index = (index + 1) % len;
-		}
+		});
+		var details = await sdk.device.methods.details();
+		this.setState({ details });
+		(this.refs.scroll as HTMLDivElement).scrollTop = 949;
+		(this.refs.scroll as HTMLDivElement).scrollLeft = 953;
 	}
 
-	triggerLoad() {
-		this.showLog();
+	m_handle_audo_test = ()=>{
+		dialog.confirm('要开始测试？', e=>{
+			if (e) {
+				this.m_auto_test = true;
+				this.m_auto_test_step = 0;
+				this.pushPage(this.m_auto_test_tables[0], true);
+			}
+		});
+	}
+
+	m_handle_reset_device = ()=>{
+		dialog.confirm('是否要重置设备？', e=>{
+			if (e) {
+				// fs.rm_r_sync('/mnt/dphotos/dphoto-magic-sdk/var/db.db');
+				// if (fs.existsSync('/mnt/dphotos/dphoto-hw/var/wpa_supplicant.conf')) {
+				// 	fs.writeFileSync('/mnt/dphotos/dphoto-hw/var/wpa_supplicant.conf', '');
+				// }
+				// setTimeout(e=>sdk.device.reboot().catch(console.error), 500);
+				dialog.alert('暂不支持此功能');
+			}
+		});0
+	}
+
+	m_handle_start_desktop() {
+		sdk.device.methods.startDesktop();
+	}
+
+	m_handle_poweroff = ()=>{
+		dialog.confirm('是否要重启？', e=>{
+			if (e) {
+				setTimeout(e=>sdk.device.methods.reboot().catch(console.error), 500);
+			}
+		});
 	}
 
 	render() {
 		return (
-			<div className="index">
-				<div className="con">
-					{this.state.logs.map((e,i)=>
-						<Link className="log" style={{color:'#'+this.state.color}} key={i} to="/test">{e}</Link>
-					)}
+			<div className={this.mcls('index index2')} ref="scroll" id="scroll">
+				<div className="scroll">
+					<pre className="content">
+						<code>
+						{
+							JSON.stringify({
+								...utils.filter(this.state.details,
+									[	'address',
+										'ip',
+										'deviceName',
+										'serialNumber',
+										'versions',
+									]
+								)
+							}, null, 2)
+						}
+						</code>
+					</pre>
+					<div className="g_btn g_btn2" onClick={this.m_handle_audo_test}>Auto Test</div>
+					<div className="g_btn" onClick={e=>this.pushPage('network', true)}>Network</div>
+					<div className="g_btn" onClick={e=>this.pushPage('network_set', true)}>Setting WiFi</div>
+					<div className="g_btn" onClick={e=>this.pushPage('media', true)}>Media</div>
+					<div className="g_btn" onClick={e=>this.pushPage('led', true)}>LED/Button</div>
+					<div className="g_btn" onClick={e=>this.pushPage('bad_pixels', true)}>Bad Pixels</div>
+					<div className="g_btn" onClick={e=>this.pushPage('iframe', true)}>WebGL</div>
+					<div className="g_btn" onClick={this.m_handle_reset_device}>Reset Device</div>
+					<div className="g_btn" onClick={this.m_handle_start_desktop}>Start desktop</div>
+					<div className="g_btn" onClick={this.m_handle_poweroff}>PowerOff</div>
+					<div className="g_btn" onClick={e=>this.pushPage('factory', true)}>Factory</div>
+					<div className="g_btn" onClick={e=>this.pushPage('other', true)}>Other</div>
 				</div>
 			</div>
 		);
 	}
+
 }

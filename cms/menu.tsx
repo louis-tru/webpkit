@@ -32,15 +32,15 @@ import { React, Link } from '../lib';
 import {ViewController} from '../lib/ctr';
 import {history} from '../lib/router';
 
-export interface Main {
+export interface MenuInfo {
 	icon?: string;
 	title: string;
 	go?: string;
-	bold?: boolean;
-	selected?: boolean;
-	expanded?: boolean;
+	bold?: boolean|number;
+	selected?: boolean|number;
+	expanded?: boolean|number;
 	num?: number;
-	children?: (Menu|string)[];
+	children?: (MenuInfo|string)[];
 }
 
 export default class Menu extends ViewController {
@@ -54,6 +54,7 @@ export default class Menu extends ViewController {
 	}
 
 	protected reloadNifty() {
+		require('cport-nifty/js/nifty.js');
 		(jQuery as any).niftyNav('bind');
 	}
 
@@ -144,7 +145,7 @@ export default class Menu extends ViewController {
 		)
 	}
 
-	renderMain(): (Menu|string)[] {
+	renderMain(): (MenuInfo|string)[] {
 		return [];
 	}
 

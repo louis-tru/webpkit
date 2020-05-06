@@ -1,0 +1,37 @@
+
+.conBar {
+	display: flex;
+	line-height: 01rem;
+	font-size: 0.3rem;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.conBar .cb_0, .conBar .cb_2 {
+	white-space: nowrap;
+	text-align: center;
+	padding: 0 0.1rem;
+}
+
+.conBar .cb_1 {
+	width: 100%;
+	background: #ececec;
+	height: 0.25rem;
+	position: relative;
+	box-shadow: #a7a7a7 0 0 0.03rem;
+	border-radius: 0.1rem;
+}
+
+.conBar .cb_1 div {
+	width: 0.5rem;
+	height: 0.5rem;
+	background: #fff;
+	border-radius: 0.3rem;
+	box-shadow: #000 0rem 0rem 0.05rem;
+	position: absolute;
+	top: -0.12rem;
+}
+
+.conBar .cb_2 {
+	
+}

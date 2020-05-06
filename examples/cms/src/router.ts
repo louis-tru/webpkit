@@ -30,12 +30,12 @@
 
 const routes = [
 	{
-		path: [ '/', '/index' ],
+		path: [ '/', '/index.html' ],
 		exact: true,
 		page: () => import('./pages/index'),
 	},
 	{
-		path: [ '/test' ],
+		path: '/layouts-collapsed-navigation.html',
 		exact: true,
 		page: () => import('./pages/test'),
 	},

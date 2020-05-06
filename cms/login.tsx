@@ -30,32 +30,22 @@
 
 import utils from 'nxkit';
 import { React } from '../lib';
-import {alert} from '../lib/dialog';
 import {ViewController} from '../lib/ctr';
 
 /**
  * @class Login
  */
-export default class Login extends ViewController<{admin?: boolean; padAll?: 'none'}> {
+export default abstract class Login extends ViewController<{admin?: boolean; padAll?: 'none'}> {
 
 	private m_vcode_delay_id: any;
 
 	state = { $$url: '', verificationtext: '获取验证码', disabledbtn: false};
 
-	triggerRemove() {
+	protected triggerRemove() {
 		clearTimeout(this.m_vcode_delay_id);
 	}
 
-	signin() {
-	}
-
-	private changeVerificationText(text: string) {
-	}
-
-	getVerificationCodeImpl(phone: string): any {
-	}
-
-	set_vcode_delay(vcode_delay: number) {
+	private set_vcode_delay(vcode_delay: number) {
 		vcode_delay--;
 		if (vcode_delay) {
 			this.setState({ verificationtext: vcode_delay + '秒', disabledbtn: true });
@@ -66,31 +56,26 @@ export default class Login extends ViewController<{admin?: boolean; padAll?: 'no
 		}
 	}
 
-	async getVerificationCode() {
+	private async getVerificationCode() {
 		if (this.state.disabledbtn) return;
 		var iphone = this.getCheckPhone().replace(/\s+/g, '');
 		await this.getVerificationCodeImpl(iphone);
 		this.set_vcode_delay(61);
 	}
 
-	checkPhone(phone: string) {
-		return (/^1[34578]\d{9}$/.test(phone))
-	}
+	protected abstract signin(): any;
+	protected abstract getVerificationCodeImpl(phone: string): any;
 
-	getCheckPhone() {
+	protected getCheckPhone() {
 		var iphone = (this.refs.uname as HTMLInputElement).value;
-		utils.assert(this.checkPhone(iphone), '手机输入不正确');
+		utils.assert(/^1[34578]\d{9}$/.test(iphone), '手机输入不正确');
 		return iphone;
 	}
 
-	getCheckVcode() {
+	protected getCheckVcode() {
 		var vcode = (this.refs.upwd as HTMLInputElement).value;
 		utils.assert(/^\d{6}$/.test(vcode), '手机验证码输入不正确');
 		return vcode;
-	}
-
-	showErrordialog(text: string) {
-		alert(text);
 	}
 
 	render() {

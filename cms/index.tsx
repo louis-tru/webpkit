@@ -31,36 +31,37 @@
 import 'nxkit';
 import * as React from 'react';
 import CMSPage, {CMSDataPage} from './page';
-import * as jq from 'jquery';
-import * as raphael from 'raphael';
 import './util.css';
+
+const jq = require('jquery');
+const raphael = require('raphael');
 
 const glob = globalThis as any;
 
 glob.jQuery = glob.$ = jq;
 glob.Raphael = raphael;
 
-import './_ext';
-// import '../nifty/plugins/sparkline/jquery.sparkline.js';
-import 'cport-nifty/css/bootstrap.min.css';
-import 'cport-nifty/js/bootstrap.js';
-import 'cport-nifty/plugins/font-awesome/css/font-awesome.min.css';
-import 'cport-nifty/css/nifty.min.css';
-import 'cport-nifty/plugins/magic-check/css/magic-check.css';
-import 'cport-nifty/plugins/pace/pace.css';
-import 'cport-nifty/plugins/pace/pace.js';
-import 'cport-nifty/plugins/morris-js/morris.css';
-import 'cport-nifty/plugins/morris-js/morris.js';
-// import '../nifty/css/demo/nifty-demo-icons.css';
-// import '../nifty/css/demo/nifty-demo.css';
+require('./_ext');
+require('cport-nifty/css/bootstrap.min.css');
+require('cport-nifty/js/bootstrap.js');
+require('cport-nifty/plugins/font-awesome/css/font-awesome.min.css');
+require('cport-nifty/css/nifty.min.css');
+require('cport-nifty/plugins/magic-check/css/magic-check.css');
+require('cport-nifty/plugins/pace/pace.css');
+require('cport-nifty/plugins/pace/pace.js');
+require('cport-nifty/plugins/morris-js/morris.css');
+require('cport-nifty/plugins/morris-js/morris.js');
 
 import { Router as MyRouter, Root, RootProps } from '../lib';
 import {Router, Route, Switch} from 'react-router-dom';
-import Login from './login';
 import Menu from './menu';
+import Login from './login';
 import Header from './header';
 import Footer from './footer';
-import ExamplesMenu from './test/cms-menu';
+import ExamplesLogin from '../examples/cms/src/login';
+import ExamplesHeader from '../examples/cms/src/header';
+import ExamplesFooter from '../examples/cms/src/footer';
+import ExamplesMenu from '../examples/cms/src/menu';
 import NotFound from './404';
 
 export * from '../lib';
@@ -106,7 +107,7 @@ export class CMSRoot<P extends CMSRootProps = CMSRootProps, S = {}> extends Root
 
 							{this.header()}
 							{this.menu()}
-							
+
 							{/* -- Content -- */}
 							<MyRouter ref="router" notFound={_NotFound} routes={this.props.routes} />
 
@@ -130,12 +131,12 @@ export class CMSRoot<P extends CMSRootProps = CMSRootProps, S = {}> extends Root
 		this.setState({ __is_404: true } as any);
 	}
 
-	_no404() {
+	private _no404() {
 		this.setState({ __is_404: false } as any);
 	}
 
 	login() {
-		return this.props.login || <Login />;
+		return this.props.login || <ExamplesLogin />;
 	}
 
 	menu() {
@@ -143,11 +144,11 @@ export class CMSRoot<P extends CMSRootProps = CMSRootProps, S = {}> extends Root
 	}
 
 	header() {
-		return this.props.header || <Header />;
+		return this.props.header || <ExamplesHeader />;
 	}
 
 	footer() {
-		return this.props.footer || <Footer />;
+		return this.props.footer || <ExamplesFooter />;
 	}
 
 }

@@ -1,0 +1,19 @@
+.led {
+
+}
+
+.led .text1 {
+	text-align: center;
+	color: #f00;
+	padding: 0.5rem;
+}
+
+.led .text2 {
+	text-align: center;
+	padding-top: 1rem;
+	font-size:0.5rem;
+}
+
+.led .text2.ok {
+	color: #0f0;
+}

@@ -1,0 +1,35 @@
+.factory {
+}
+.factory .f_title {
+	font-size: 0.3rem;
+	padding: 0.5rem 0 0 0.5rem;
+	color: #888;
+}
+.factory .content {
+	text-align: center;
+	padding: 0.2rem 0.5rem;
+}
+.factory .whl_item {
+	line-height: 0.5rem;
+	border-bottom: solid 1px #aaa;
+}
+.factory .whl_item:first-child {
+	/* border-top: solid 1px #aaa; */
+}
+.factory .whl_item:active {
+	opacity: 0.8;
+	background-color: #eee;
+}
+.factory .whl_item.selected {
+	color: #f00;
+}
+.factory .whl_err {
+	text-align: center;
+	line-height: 0.5rem;
+	color: #0f0;
+}
+.factory .whl_sn {
+	line-height: 0.5rem;
+	padding-left: 0.1rem;
+	color: #0f0;
+}

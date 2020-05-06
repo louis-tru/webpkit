@@ -9,6 +9,7 @@ const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin") ;
 const ManifestPlugin = require('./manifest').ManifestPlugin;
 const views = require('./views');
+const path = require('path');
 
 const {NODE_ENV,isProd} = config;
 const HOST = config.dev.host;
@@ -69,7 +70,7 @@ const plugins = [
 	// copy custom static assets
 	new CopyWebpackPlugin(config.staticAssets.map(e=>({
 		from: utils.resolve(e),
-		to: e,
+		to: path.basename(e),
 		ignore: ['.*', '*.mp4', '*.mp3'],
 	}))),
 	// generate dist index.html with correct asset hash for caching.

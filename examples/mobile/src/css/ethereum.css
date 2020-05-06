@@ -1,0 +1,12 @@
+
+.ethereum {
+	
+}
+
+.ethereum .loading {
+	text-align: center;
+	line-height: 2rem;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+}

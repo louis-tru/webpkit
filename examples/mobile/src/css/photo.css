@@ -1,0 +1,54 @@
+
+.photo {
+	
+}
+
+.photo .title {
+	/*background-color: rgba(0,0,0,0);*/
+}
+
+.photo .ul {
+	/*width: 100vw;*/
+}
+
+.photo .ul img {
+	width: 48%;
+	margin: 1%;
+	float: left;
+}
+
+.photo .ul img:active {
+	opacity: 0.5;
+}
+
+.photo .img_close {
+	color: rgba(255,255,255,0.4);
+	position: fixed;
+	z-index: 3;
+	top: 0.15rem;
+	left: 0.15rem;
+	border: solid 0.01rem #aaa;
+	border-radius: 1rem;
+	width: 0.6rem;
+	height: 0.6rem;
+	background: rgba(0,0,0,0.4);
+	text-align: center;
+	line-height: 0.6rem;
+}
+
+.photo .img_close:active {
+	opacity: 0.5;
+}
+
+.photo .img {
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	top: 0;
+	left: 0;
+	z-index: 2;
+}
+
+.photo .img img {
+	width:100%
+}
