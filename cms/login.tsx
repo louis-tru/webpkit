@@ -31,17 +31,18 @@
 import utils from 'nxkit';
 import { React } from '../lib';
 import {alert} from '../lib/dialog';
-import GlobalState from '../lib/state';
+import {ViewController} from '../lib/ctr';
 
 /**
  * @class Login
  */
-export default class Login extends GlobalState<{admin?: boolean; padAll?: 'none'}> {
+export default class Login extends ViewController<{admin?: boolean; padAll?: 'none'}> {
 
 	private m_vcode_delay_id: any;
+
 	state = { $$url: '', verificationtext: '获取验证码', disabledbtn: false};
 
-	onUnload() {
+	triggerRemove() {
 		clearTimeout(this.m_vcode_delay_id);
 	}
 

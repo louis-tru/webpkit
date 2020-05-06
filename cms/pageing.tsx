@@ -29,10 +29,10 @@
  * ***** END LICENSE BLOCK ***** */
 
 import * as React from 'react';
-import {Component} from 'react';
 import {DataPage} from '../lib';
+import {ViewController} from '../lib/ctr';
 
-export default class Pageing extends Component<{page: DataPage}> {
+export default class Pageing extends ViewController<{page: DataPage}> {
 
 	get page() {
 		return this.props.page;

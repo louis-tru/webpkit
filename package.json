@@ -9,6 +9,9 @@
 		"webpkit": "shell.js"
 	},
 	"dependencies": {
+		"cport-nifty": "~0.1.0",
+		"nxkit": "~0.10.55",
+		"crypto-tx": "~0.2.2",
 		"@babel/cli": "^7.7.0",
 		"@babel/core": "^7.7.2",
 		"@babel/plugin-proposal-class-properties": "^7.7.0",
@@ -46,8 +49,6 @@
 		"babel-loader": "^8.0.6",
 		"chalk": "^2.0.1",
 		"copy-webpack-plugin": "^5.0.5",
-		"cport-nifty": "~0.1.0",
-		"crypto-tx": "~0.2.2",
 		"css-loader": "^3.2.0",
 		"fastclick": "~1.0.6",
 		"file-loader": "^4.2.0",
@@ -58,7 +59,6 @@
 		"node-notifier": "^5.1.2",
 		"node-sass": "^4.13.0",
 		"normalize.css": "^7.0.0",
-		"nxkit": "~0.10.55",
 		"optimize-css-assets-webpack-plugin": "^5.0.3",
 		"ora": "~4.0.3",
 		"postcss-import": "^11.0.0",

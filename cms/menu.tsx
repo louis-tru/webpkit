@@ -29,7 +29,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 import { React, Link } from '../lib';
-import GlobalState from '../lib/state';
+import {ViewController} from '../lib/ctr';
+import {history} from '../lib/router';
 
 export interface Main {
 	icon?: string;
@@ -42,34 +43,37 @@ export interface Main {
 	children?: (Menu|string)[];
 }
 
-export default class Menu extends GlobalState {
+export default class Menu extends ViewController {
 
-	private m_interval_id: any;
-	state = { pathname: location.pathname };
+	private m_UnregisterCallback: any;
 
-	reloadNifty() {
+	state = { pathname: history.location.pathname };
+
+	constructor(props: any) {
+		super(props);
+	}
+
+	protected reloadNifty() {
 		(jQuery as any).niftyNav('bind');
 	}
 
 	setState(state: any) {
 		super.setState(state);
-		setTimeout(e=>this.reloadNifty(), 200);
+		setTimeout(()=>this.reloadNifty(), 200);
 	}
 
 	get pathname () {
 		return this.state.pathname;
 	}
 
-	componentDidMount() {
-		this.m_interval_id = setInterval(e=>{
-			if (this.pathname != location.pathname) {
-				super.setState({ pathname: location.pathname });
-			}
-		}, 500);
+	triggerLoad() {
+		this.m_UnregisterCallback = history.listen(()=> {
+			this.setState({ pathname: history.location.pathname });
+		});
 	}
 
-	componentWillUnmount() {
-		clearInterval(this.m_interval_id);
+	triggerRemove() {
+		this.m_UnregisterCallback();
 	}
 
 	private _renderMenuList(list: any[], level: number, out: any) {

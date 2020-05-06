@@ -34,15 +34,16 @@ import Page, { IDataPage, DataPage } from '../lib/page';
 
 export default class CMSPage<P = {}, S = {}> extends Page<P, S> {
 
-	reloadNifty() {
+	protected reloadNifty() {
 		// import('cport-nifty/js/nifty.js').then(e=>e.initialize());
 		require('cport-nifty/js/nifty.js').initialize();
 	}
 
-	async triggerLoad() {
+	async triggerMounted() {
 		this.reloadNifty();
-		await super.triggerLoad();
+		await super.triggerMounted();
 	}
+
 }
 
 export declare class CMSDataPage<P = {}, S = {}, Data = Dict> extends CMSPage<P, S> implements IDataPage<Data> {

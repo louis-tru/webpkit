@@ -44,7 +44,7 @@ export default class extends CMSPage {
 		require('./node_modules/nifty/js/demo/dashboard.jsx.js').default();
 	}
 
-	render(...agrs) {
+	render() {
 		return (
 			<div className="boxed">
 				<div className="boxed">

@@ -46,7 +46,7 @@ function main() {
 
 	if (opts.help) {
 		process.stdout.write('Usage:\n  webpkit\n');
-		process.stdout.write('     :\n  webpkit init\n');
+		process.stdout.write('     :\n  webpkit init [default|mobile|cms]\n');
 		process.stdout.write('     :\n  webpkit dev [cfg]\n');
 		process.stdout.write('     :\n  webpkit build [cfg]\n');
 		process.stdout.write('     :\n  webpkit install\n');
@@ -56,7 +56,7 @@ function main() {
 
 	if (cmd == 'init') {
 		console.log('init ...');
-		fs.copySync(__dirname + '/examples', process.cwd());
+		fs.copySync(__dirname + '/examples/' + (cfg || 'default'), process.cwd());
 		var name = path.basename(process.cwd());
 		var json = fs.readFileSync(process.cwd() + '/package.json', 'utf8').replace('"examples"', `"${name}"`);
 		fs.writeFileSync(process.cwd() + '/package.json', json);
