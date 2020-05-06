@@ -28,13 +28,13 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import { Root,ReactDom,React } from 'webpkit';
-import router from './router';
+import {Page,React,Link} from 'webpkit';
 
-ReactDom.render(
-	<Root 
-		initSDK={false} 
-		routes={router}
-	/>,
-	document.querySelector('#app')
-);
+export default class Test extends Page {
+
+	render() {
+		return (
+			<div>Test<Link to="/">Hello World</Link></div>
+		);
+	}
+}

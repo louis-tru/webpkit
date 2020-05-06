@@ -28,47 +28,13 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import utils from 'nxkit';
-import req from 'nxkit/request';
-import path from 'nxkit/path';
-import {Page,React} from 'webpkit';
-import './index.css';
+import { Root,ReactDom,React } from 'webpkit';
+import router from '../src/router';
 
-const LINES = 100;
-
-export default class Index extends Page {
-	
-	state = { logs: [], color: path.getParam('color') || '0f0' };
-
-	async showLog() {
-		var {data:text} = await req.get(`./static/${path.getParam('log')||'log'}.txt`);
-		var logsAll = (text + '').split(/\n/);
-		var index = 0, len = logsAll.length;
-		var logs = [];
-		while (true) {
-			logs.push(logsAll[index]);
-			if (logs.length > LINES) {
-				logs.shift();
-			}
-			this.setState({ logs });
-			await utils.sleep(utils.random(50, 1000));
-			index = (index + 1) % len;
-		}
-	}
-
-	triggerLoad() {
-		this.showLog();
-	}
-
-	render() {
-		return (
-			<div className="index">
-				<div className="con">
-					{this.state.logs.map((e,i)=>
-						<div className="log" style={{color:'#'+this.state.color}} key={i}>{e}</div>
-					)}
-				</div>
-			</div>
-		);
-	}
-}
+ReactDom.render(
+	<Root 
+		initSDK={false} 
+		routes={router}
+	/>,
+	document.querySelector('#app')
+);

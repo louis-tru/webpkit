@@ -12,6 +12,15 @@
 	min-height: 100%;
 }
 
+.index .con a {
+	text-decoration: none;
+	display: block;
+}
+
+.index .con a:hover {
+	text-decoration: underline;
+}
+
 .index .log {
 	color: #0f0;
 	margin: 0;
