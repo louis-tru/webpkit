@@ -255,7 +255,7 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 	protected renderBody() {
 		var props = this.props;
 		return (
-			<div className="default" style={{ transform: `scale(${DEFAULT_SCALE})` }}>
+			<div className="default" style={{ transform: `scale(${DefaultDialog.scale})` }}>
 				<div className="a" dangerouslySetInnerHTML={{ __html: props.title || ''/*||'温馨提示'*/ }}></div>
 				{
 					props.prompt ?
@@ -293,35 +293,50 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 	static setScale(scale: number) {
 		DEFAULT_SCALE = Math.max(1, Math.min(4, scale));
 	}
+
+	static get scale() {
+		return DEFAULT_SCALE;
+	}
+
+	static show(opts: DefaultOptions, stack?: DialogStack) {
+		return (stack || Dialog.globaDialogStack).show(this, Object.assign({ id: utils.getId() }, opts));
+	}
+
+	static alert(In: DialogIn, cb?: ()=>void, stack?: DialogStack) {
+		var _cb = cb || function() {}
+		var o = typeof In == 'string' ? { text: In, title: '' }: In;
+		var { text, title } = o;
+		return this.show({
+			title, text, buttons: {
+			'确定': ()=>{ _cb() },
+		}}, stack);
+	}
+
+	static confirm(In: DialogIn, cb?: (ok: boolean)=>void, stack?: DialogStack) {
+		var _cb = cb || function() {};
+		var o = typeof In == 'string' ? { text: In, title: '' } : In;
+		var { text, title } = o;
+		return this.show({title, text, buttons: {
+			'取消': ()=>_cb(false),
+			'@确定': ()=>_cb(true),
+		}}, stack);
+	}
+
+	static prompt(In: PromptIn, cb?: (value: string, ok: boolean)=>void, stack?: DialogStack) {
+		var _cb = cb || function() {}
+		var o = typeof In == 'string' ? { text: In, title: '', value: '', type: 'text' }: In;
+		var { text, title, value, type, input } = o;
+		return this.show({title, text, buttons: {
+			'取消': e=> _cb(e.refs.prompt.value, false),
+			'@确定': e=> _cb(e.refs.prompt.value, true),
+		}, prompt: {value, type, input}}, stack);
+	}
+
 }
 
 export type DialogIn = string | {
 	text?: string;
 	title?: string;
-}
-
-export function show(opts: DefaultOptions) {
-	return Dialog.globaDialogStack.show(DefaultDialog, Object.assign({ id: utils.getId() }, opts));
-}
-
-export function alert(In: DialogIn, cb?: ()=>void) {
-	var _cb = cb || function() {}
-	var o = typeof In == 'string' ? { text: In, title: '' }: In;
-	var { text, title } = o;
-	return show({
-		title, text, buttons: {
-		'确定': ()=>{ _cb() },
-	}});
-}
-
-export function confirm(In: DialogIn, cb?: (ok: boolean)=>void) {
-	var _cb = cb || function() {};
-	var o = typeof In == 'string' ? { text: In, title: '' } : In;
-	var { text, title } = o;
-	return show({title, text, buttons: {
-		'取消': ()=>_cb(false),
-		'@确定': ()=>_cb(true),
-	}});
 }
 
 export interface InputConstructor {
@@ -336,12 +351,18 @@ export type PromptIn = string | {
 	input?: InputConstructor;
 }
 
-export function prompt(In: PromptIn, cb?: (value: string, ok: boolean)=>void) {
-	var _cb = cb || function() {}
-	var o = typeof In == 'string' ? { text: In, title: '', value: '', type: 'text' }: In;
-	var { text, title, value, type, input } = o;
-	return show({title, text, buttons: {
-		'取消': e=> _cb(e.refs.prompt.value, false),
-		'@确定': e=> _cb(e.refs.prompt.value, true),
-	}, prompt: {value, type, input}});
+export function show(opts: DefaultOptions, stack?: DialogStack) {
+	return DefaultDialog.show(opts, stack);
+}
+
+export function alert(In: DialogIn, cb?: ()=>void, stack?: DialogStack) {
+	return DefaultDialog.alert(In, cb, stack);
+}
+
+export function confirm(In: DialogIn, cb?: (ok: boolean)=>void, stack?: DialogStack) {
+	return DefaultDialog.confirm(In, cb, stack);
+}
+
+export function prompt(In: PromptIn, cb?: (value: string, ok: boolean)=>void, stack?: DialogStack) {
+	return DefaultDialog.prompt(In, cb, stack);
 }

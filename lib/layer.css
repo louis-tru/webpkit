@@ -4,8 +4,11 @@
 	z-index: 101;
 	top: 0;
 	left: 0;
-	width: 100vw;
-	height: 100vh;
 	display: none;
 	transition-property: opacity;
+}
+
+.layer.fullScreen {
+	width: 100vw;
+	height: 100vh;
 }

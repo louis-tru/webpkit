@@ -34,7 +34,7 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { ViewController } from './ctr';
 import {EventNoticer,Event} from 'nxkit/event';
-import {getDefaultId,Options} from './dialog';
+import {getDefaultId, Options } from './dialog';
 import {Activity} from '../isolate/ctr';
 
 export class LayerGroup {
@@ -92,6 +92,8 @@ export class LayerGroup {
 var _globaLayerGroup: LayerGroup | null;
 
 export abstract class Layer<P = {}, S = {}> extends ViewController<P, S> {
+	
+	fullScreen = true;
 
 	readonly onClose = new EventNoticer<Event<any, Layer>>('Close', this);
 
@@ -109,7 +111,7 @@ export abstract class Layer<P = {}, S = {}> extends ViewController<P, S> {
 
 	render() {
 		return this.__show ? (
-			<div className="layer" ref="root">
+			<div className={'layer' + (this.fullScreen?' fullScreen': '')} ref="root">
 				{this.renderBody()}
 			</div>
 		): null;

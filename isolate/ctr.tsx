@@ -63,14 +63,14 @@ export abstract class Activity<P = {}, S = {}> extends Window<P, S> {
 		return this._dialogStack?.preventCover || this._layerGroup?.preventCover || false;
 	}
 
-	private get dialogStack() {
+	get dialogStack() {
 		if (!this._dialogStack) {
 			this._dialogStack = new DialogStack(this.refs.__layers as HTMLElement);
 		}
 		return this._dialogStack;
 	}
 
-	private get layerGroup() {
+	get layerGroup() {
 		if (!this._layerGroup) {
 			this._layerGroup = new LayerGroup(this.refs.__layers as HTMLElement);
 		}
