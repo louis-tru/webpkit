@@ -31,7 +31,7 @@
 import nxkit from 'nxkit';
 import path from 'nxkit/path';
 import * as React from 'react';
-import {Component} from 'react';
+import {ViewController} from './ctr';
 import store from './store';
 import './utils.css';
 import access from './auth';
@@ -136,7 +136,7 @@ export interface UploadProps {
 	accept?: string;
 }
 
-export default class Upload extends Component<UploadProps, Dict> {
+export default class Upload extends ViewController<UploadProps, Dict> {
 	state = { src: '' };
 	private m_id: string = '';
 
@@ -181,8 +181,8 @@ export default class Upload extends Component<UploadProps, Dict> {
 		return this.state.src || this.props.src || this.props.value || '';
 	}
 
-	componentDidMount() {
-		this.m_id = `upload_${nxkit.id}`;
+	triggerLoad() {
+		this.m_id = `upload_${nxkit.getId()}`;
 		this.setState({ src: this.props.src || this.props.value || '' });
 	}
 

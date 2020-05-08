@@ -28,50 +28,29 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import nxkit from 'nxkit';
-import { React, Component } from '.';
-import * as ReactDom from 'react-dom';
-// import { Toast, Icon } from './antd';
+import { React } from '.';
+import { Layer } from './layer';
 
 import './utils.css';
 
-export default class Loading extends Component<{text?: string}> {
+export default class Loading extends Layer<{text?: string}> {
 
-	state = { text: 'Loading..' };
-
-	componentDidMount() {
-		if (this.props.text) {
-			this.setState({ text: this.props.text });
-		}
-	}
-
-	componentWillUnmount() {
-		var div = (this.refs.root as HTMLDivElement).parentNode;
-		document.body.removeChild(div as HTMLDivElement);
-	}
-
-	render() {
+	renderBody() {
+		var { text } = this.props;
 		return (
 			<div ref="root" className="g_loading">
 				{/* <Icon type="loading" size="lg" /> */}
-				<div className="text">{this.state.text}</div>
+				<div className="text">{text||'Loading..'}</div>
 			</div>
 		);
 	}
 
-	static show(text = 'Loading..', id: string = String(nxkit.id)) {
-		var div = document.createElement('div');
-		div.setAttribute('__', 'Loading');
-		document.body.appendChild(div);
-		div.id = String(id || nxkit.id);
-		ReactDom.render<{}, Loading>(<Loading text={text ||'Loading..'} />, div);
-		return String(id);
+	static show(text = 'Loading..', id?: string) {
+		Loading.globaLayerGroup.show(Loading, { text, id });
 	}
 
-	static close(id: string) {
-		var div = document.getElementById(id);
-		if (div && div.getAttribute('__') == 'Loading') {
-			ReactDom.unmountComponentAtNode(div);
-		}
+	static close(id?: string) {
+		Loading.globaLayerGroup.close(id || Loading);
 	}
+
 }
