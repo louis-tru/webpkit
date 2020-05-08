@@ -42,6 +42,7 @@ export interface Options {
 	colorLight?: string;
 	correctLevel?: number;
 	text?: string;
+	padding?: number;
 }
 
 export declare class QRCode {
@@ -90,8 +91,14 @@ export default class extends ViewController<Options & {
 	}
 
 	render() {
+		var {padding,colorLight} = this.props;
+		var style = {
+			padding: padding?`${padding}px`: 0,
+			backgroundColor: colorLight?colorLight: '#ffffff',
+			...this.props.style
+		};
 		return (
-			<div className={this.props.className} style={this.props.style} ref="dom"></div>
+			<div className={this.props.className} style={style} ref="dom"></div>
 		);
 	}
 }

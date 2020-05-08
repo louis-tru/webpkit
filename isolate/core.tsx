@@ -87,11 +87,11 @@ export default class ApplicationLauncher extends Gesture<{
 	private _apps: Map<string, Application> = new Map(); // current run applications
 	private _sys: Application | null = null; // sys app
 	private _cur: Item | null = null; // cur activity
-	private _IDs: Map<string, Item> = new Map();
-	private _activity = new List<Info>();
-	private _widget = new List<Info2>();
-	private _top = new List<Info2>();
-	private _bottom = new List<Info2>();
+	private _InstanceIDs: Map<string, Item> = new Map();
+	private _activityHistory = new List<Info>();
+	private _widgetHistory = new List<Info2>();
+	private _topHistory = new List<Info2>();
+	private _bottomHistory = new List<Info2>();
 
 	protected triggerLoad() {
 		utils.assert(!_launcher);
@@ -106,19 +106,19 @@ export default class ApplicationLauncher extends Gesture<{
 		if (target == Target.ACTIVITY) {
 			var div = document.createElement('div');
 			(this.refs.__activity as HTMLElement).appendChild(div);
-			return [div, this._activity];
+			return [div, this._activityHistory];
 		} else if (target == Target.WIDGET) {
 			var div = document.createElement('div');
 			(this.refs.__widget as HTMLElement).appendChild(div);
-			return [div, this._widget];
+			return [div, this._widgetHistory];
 		} else if (target == Target.TOP) {
 			var div = document.createElement('div');
 			(this.refs.__top as HTMLElement).appendChild(div);
-			return [div, this._top];
+			return [div, this._topHistory];
 		}  else if (target == Target.BOTTOM) {
 			var div = document.createElement('div');
 			(this.refs.__bottom as HTMLElement).appendChild(div);
-			return [div, this._bottom];
+			return [div, this._bottomHistory];
 		} else {
 			throw new Error('Err');
 		}
@@ -169,7 +169,7 @@ export default class ApplicationLauncher extends Gesture<{
 
 		var retainActivityCount = 0;
 		var retainApps = new Set();
-		var item = this._activity.first;
+		var item = this._activityHistory.first;
 
 		// TODO ... auto clear activitys
 		while(item) {
@@ -190,7 +190,7 @@ export default class ApplicationLauncher extends Gesture<{
 		if (this._sys) {
 			retainApps.add(this._sys.name);
 		}
-		for (item = this._activity.first; item; item = item.next) {
+		for (item = this._activityHistory.first; item; item = item.next) {
 			var info = item.value as Info;
 			retainApps.add(info.appName);
 		}
@@ -198,7 +198,7 @@ export default class ApplicationLauncher extends Gesture<{
 		for (var [,app] of this._apps) {
 			if (!retainApps.has(app.name)) {
 
-				let item = this._widget.first;
+				let item = this._widgetHistory.first;
 				while (item) {
 					let next = item.next;
 					let info = item.value as Info2;
@@ -209,7 +209,7 @@ export default class ApplicationLauncher extends Gesture<{
 					item = next;
 				}
 
-				for(let item of [this._top.first, this._bottom.first]) {
+				for(let item of [this._topHistory.first, this._bottomHistory.first]) {
 					if (item) {
 						let info = item.value as Info2;
 						if (info.window.app === app) {
@@ -290,12 +290,12 @@ export default class ApplicationLauncher extends Gesture<{
 
 	async closeCover(type: CoverType = CoverType.TOP, animate = true) {
 		if (type == CoverType.TOP) {
-			var item = this._top.first;
+			var item = this._topHistory.first;
 			if (item) {
 				await this._unmakeTop(item, animate);
 			}
 		} else {
-			var item = this._bottom.first;
+			var item = this._bottomHistory.first;
 			if (item) {
 				await this._unmakeBottom(item, animate);
 			}
@@ -482,7 +482,7 @@ export default class ApplicationLauncher extends Gesture<{
 		utils.equalsClass(Window, window);
 		var id = args?.id ? String(args.id): getDefaultId(window);
 		var fid = _get_full_id(app, id);
-		var item = this._IDs.get(fid), load = false;
+		var item = this._InstanceIDs.get(fid), load = false;
 		if (!item) {
 			var [panel, stack] = this._genPanel(target);
 			var New = window as any;
@@ -496,7 +496,7 @@ export default class ApplicationLauncher extends Gesture<{
 			} else {
 				item = stack.push(info);
 			}
-			this._IDs.set(fid, item);
+			this._InstanceIDs.set(fid, item);
 			load = true;
 		}
 		return {item, load} as LItem;
@@ -510,22 +510,21 @@ export default class ApplicationLauncher extends Gesture<{
 			(panel.parentElement as HTMLElement).removeChild(panel);
 			info.window = undefined;
 			info.panel = undefined;
+			this._InstanceIDs.delete(_get_full_id_by_info(info));
 		}
 	}
 
 	private _unload(item: ListItem<Info>) {
 		if (!item.host) return;
-		var info = item.value as Info;
 		this._unloadInstance(item);
 		(item.host as List<Info>).del(item);
-		this._IDs.delete(_get_full_id_by_info(info));
 	}
 
 	private _getInfo(app: Application, id: string | NewWindow<Window>): ListItem<Info> | null {
 		utils.assert(app);
 		var _id: string = typeof id == 'string' ? String(id): getDefaultId(id);
 		var fid = _get_full_id(app, _id);
-		var item = this._IDs.get(fid);
+		var item = this._InstanceIDs.get(fid);
 		return item || null;
 	}
 
@@ -555,13 +554,13 @@ export default class ApplicationLauncher extends Gesture<{
 	private _disable_bottom_gesture = Number(this.props.disableBottomGesture) ? true: false;
 
 	private _top_unload = new DelayCall(()=>{
-		var item = this._top.first;
+		var item = this._topHistory.first;
 		if (item)
 			this._unload(item);
 	}, 1e3);
 
 	private _bottom_unload = new DelayCall(()=>{
-		var item = this._bottom.first;
+		var item = this._bottomHistory.first;
 		if (item)
 			this._unload(item);
 	}, 1e3);
@@ -570,7 +569,7 @@ export default class ApplicationLauncher extends Gesture<{
 		var self = this as any;
 		if (self[`_${name}_full_open`] != value) {
 			self[`_${name}_full_open`] = value;
-			var item = self[`_${name}`].first as Item;
+			var item = self[`_${name}History`].first as Item;
 			if (item) {
 				if (value) {
 					(item.value as Info2).window.triggerResume();
@@ -618,13 +617,13 @@ export default class ApplicationLauncher extends Gesture<{
 		if (type == CoverType.TOP) {
 			var {app,win} = this._getCoverConstructor(type);
 			if (!win) return;
-			if (this._top.length === 0) {
+			if (this._topHistory.length === 0) {
 				this._load(app, win, Target.TOP);
 			}
 		} else {
 			var {app,win} = this._getCoverConstructor(type);
 			if (!win) return;
-			if (this._bottom.length === 0) {
+			if (this._bottomHistory.length === 0) {
 				this._load(app, win, Target.BOTTOM);
 			}
 		}

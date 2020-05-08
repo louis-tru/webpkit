@@ -205,8 +205,8 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 }
 
 export interface DefaultOptions extends Options {
-	title?: string,
-	text?: string,
+	title?: React.ReactNode,
+	text?: React.ReactNode,
 	buttons?: Dict<(e:any)=>void>,
 	prompt?: {
 		type?: string;
@@ -240,7 +240,7 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 	}
 
 	protected renderButtons() {
-		var buttons = this.props.buttons || { '确定': (e)=>{} };
+		var buttons = this.props.buttons || { '@确定': (e)=>{} };
 		var r = [];
 		for (let i in buttons) {
 			var t = i[0] == '@' ? i.substr(1) : i;
@@ -256,7 +256,7 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 		var props = this.props;
 		return (
 			<div className="default" style={{ transform: `scale(${DefaultDialog.scale})` }}>
-				<div className="a" dangerouslySetInnerHTML={{ __html: props.title || ''/*||'温馨提示'*/ }}></div>
+				<div className="a">{ props.title || ''/*||'温馨提示'*/ }</div>
 				{
 					props.prompt ?
 					<div className="b">
@@ -281,7 +281,7 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 							);
 						})()}
 					</div>:
-					<div className="b" dangerouslySetInnerHTML={{ __html: props.text || ''}}></div>
+					<div className="b">{props.text || ''}</div>
 				}
 				<div className="btns">
 					{this.renderButtons()}
@@ -308,7 +308,7 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 		var { text, title } = o;
 		return this.show({
 			title, text, buttons: {
-			'确定': ()=>{ _cb() },
+			'@确定': ()=>{ _cb() },
 		}}, stack);
 	}
 
@@ -335,8 +335,8 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 }
 
 export type DialogIn = string | {
-	text?: string;
-	title?: string;
+	text?: React.ReactNode;
+	title?: React.ReactNode;
 }
 
 export interface InputConstructor {
@@ -344,8 +344,8 @@ export interface InputConstructor {
 }
 
 export type PromptIn = string | {
-	text?: string;
-	title?: string;
+	text?: React.ReactNode;
+	title?: React.ReactNode;
 	value?: string;
 	type?: string;
 	input?: InputConstructor;
