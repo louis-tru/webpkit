@@ -1,6 +1,6 @@
 {
 	"name": "webpkit",
-	"version": "0.2.7",
+	"version": "0.2.8",
 	"description": "Web Page KIT Framework",
 	"main": "index.js",
 	"types": "index.ts",
