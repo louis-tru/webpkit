@@ -35,7 +35,7 @@ import {ViewController} from '../lib/ctr';
 /**
  * @class Login
  */
-export default abstract class Login extends ViewController<{admin?: boolean; padAll?: 'none'}> {
+export default abstract class Login extends ViewController<{admin?: boolean; padAll?: 'none'; title?: string; }> {
 
 	private m_vcode_delay_id: any;
 
@@ -78,6 +78,13 @@ export default abstract class Login extends ViewController<{admin?: boolean; pad
 		return vcode;
 	}
 
+	protected showErrordialog(text: string) {
+		alert(text);
+	}
+
+	protected phoneChange(e:React.ChangeEvent<HTMLInputElement>) {
+	}
+
 	render() {
 		const {admin}  = this.props
 		return (
@@ -94,12 +101,13 @@ export default abstract class Login extends ViewController<{admin?: boolean; pad
 					<div className="cls-content-sm panel">
 						<div className="panel-body">
 							<div className="mar-ver pad-btm">
-								<h3 className="h4 mar-no">Account Login</h3>
-								<p className="text-muted">Hashii后台管理系统</p>
+							<h3 className="h4 mar-no">{this.props.title ? this.props.title : '后台管理系统'}</h3>
+								{/* <p className="text-muted">Hashii后台管理系统</p> */}
 							</div>
 							{/* <form> */}
 								<div className="form-group">
-									<input type="text" className="form-control" placeholder="请输入手机号" ref="uname" autoFocus />
+									<input type="text" className="form-control" placeholder="请输入手机号" ref="uname" autoFocus 
+										onChange={(e)=>this.phoneChange(e)} maxLength={11}/>
 								</div>
 								<div className="form-group" style={{position: 'relative'}}>
 									<input type={admin ? 'password' : 'text'} maxLength={6} className="form-control" placeholder={admin ? '请输入密码' : '请输入验证码'} ref="upwd"/>

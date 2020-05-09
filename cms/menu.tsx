@@ -98,7 +98,7 @@ export default class Menu extends ViewController {
 				
 				return (
 					<li className={(selected?'active-link ': '') + (expanded?'active':'')} key={key} 
-						onClick={()=>e.go&&this.setState({ pathname: e.go }) }>
+						onClick={()=> e.go&&this.setState({ pathname: e.go })}>
 						<Link to={children.length ? '#': e.go || '#'} className={current?'hover':''}>
 							<i className={e.icon||''}></i>
 							<span className="menu-title">
