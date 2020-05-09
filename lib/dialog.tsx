@@ -134,13 +134,22 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 		return this.__activity;
 	}
 
+	private _maskClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>)=>{
+		if (event.target === this.refs.root) {
+			this.triggerMaskClick();
+		}
+	};
+
+	protected triggerMaskClick() {
+	}
+
 	render() {
 		var style: Dict = {};
 		if (this.noMask) {
 			style.background = 'none';
 		}
 		return (
-			<div ref="root" className="dialog" style={style}>
+			<div ref="root" className="dialog" style={style} onClick={this._maskClick}>
 				<div className="core" ref="core">
 					{this.renderBody()}
 				</div>
