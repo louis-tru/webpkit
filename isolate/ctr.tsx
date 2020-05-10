@@ -95,6 +95,10 @@ export abstract class Activity<P = {}, S = {}> extends Window<P, S> {
 		this.app.launcher.show(this.app, activity, args, animate);
 	}
 
+	presentDynamicModule(module: Promise<{default: NewWindow<Activity>}>, args?: ActivityOptions, animate = true) {
+		module.then(({default: Act})=>this.present(Act, args, animate));
+	}
+
 	showDialog(D: typeof Dialog, opts?: Options, animate = true): Dialog {
 		this.app.launcher.closeCoverAll();
 		return this.dialogStack.show(D, opts, animate, this);
