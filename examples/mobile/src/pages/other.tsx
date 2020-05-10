@@ -20,18 +20,18 @@ export default class extends NavPage {
 
 	render() {
 		return (
-			<view className={this.mcls('index')}>
+			<div className="index">
 				<Header title="Other" page={this} />
-				<div className="g_btn" onClick={e=>this.pushPage('photo', true)}>Photo Test</div>
-				<div className="g_btn" onClick={e=>this.pushPage('details', true)}>Details</div>
-				<div className="g_btn" onClick={e=>this.pushPage('ethereum', true)}>Ethereum</div>
-				<div className="g_btn" onClick={e=>this.pushPage(this._url(0), true)}>WebGL</div>
-				<div className="g_btn" onClick={e=>this.pushPage(this._url(1), true)}>WebGL2</div>
-				<div className="g_btn" onClick={e=>this.pushPage(this._url(2), true)}>WebGL3</div>
-				<div className="g_btn" onClick={e=>this.pushPage(this._url(3), true)}>WebGL4</div>
-				<div className="g_btn" onClick={e=>this.pushPage(this._url(4), true)}>Photo switch</div>
-				<div className="g_btn" onClick={e=>this.pushPage(this._url(5), true)}>Photo switch2</div>
-			</view>
+				<div className="_btn" onClick={e=>this.pushPage('photo', true)}>Photo Test</div>
+				<div className="_btn" onClick={e=>this.pushPage('details', true)}>Details</div>
+				<div className="_btn" onClick={e=>this.pushPage('ethereum', true)}>Ethereum</div>
+				<div className="_btn" onClick={e=>this.pushPage(this._url(0), true)}>WebGL</div>
+				<div className="_btn" onClick={e=>this.pushPage(this._url(1), true)}>WebGL2</div>
+				<div className="_btn" onClick={e=>this.pushPage(this._url(2), true)}>WebGL3</div>
+				<div className="_btn" onClick={e=>this.pushPage(this._url(3), true)}>WebGL4</div>
+				<div className="_btn" onClick={e=>this.pushPage(this._url(4), true)}>Photo switch</div>
+				<div className="_btn" onClick={e=>this.pushPage(this._url(5), true)}>Photo switch2</div>
+			</div>
 		);
 	}
 

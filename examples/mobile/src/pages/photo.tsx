@@ -34,7 +34,7 @@ export default class extends NavPage {
 	render() {
 		var { photo, img } = this.state;
 		return (
-			<view className={this.mcls('photo')}>
+			<div className="photo">
 				<Header title="Photo Test" page={this} />
 
 				<div className="ul" style={{ visibility: img ? 'hidden': undefined }}>
@@ -51,7 +51,7 @@ export default class extends NavPage {
 					</div>
 					: null
 				}
-			</view>
+			</div>
 		);
 	}
 

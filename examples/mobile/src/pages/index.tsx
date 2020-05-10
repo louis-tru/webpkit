@@ -71,7 +71,7 @@ export default class extends NavPage {
 
 	render() {
 		return (
-			<div className={this.mcls('index index2')} ref="scroll" id="scroll">
+			<div className="index index2" ref="scroll" id="scroll">
 				<div className="scroll">
 					<pre className="content">
 						<code>
@@ -89,18 +89,18 @@ export default class extends NavPage {
 						}
 						</code>
 					</pre>
-					<div className="g_btn g_btn2" onClick={this.m_handle_audo_test}>Auto Test</div>
-					<div className="g_btn" onClick={e=>this.pushPage('network', true)}>Network</div>
-					<div className="g_btn" onClick={e=>this.pushPage('network_set', true)}>Setting WiFi</div>
-					<div className="g_btn" onClick={e=>this.pushPage('media', true)}>Media</div>
-					<div className="g_btn" onClick={e=>this.pushPage('led', true)}>LED/Button</div>
-					<div className="g_btn" onClick={e=>this.pushPage('bad_pixels', true)}>Bad Pixels</div>
-					<div className="g_btn" onClick={e=>this.pushPage('iframe', true)}>WebGL</div>
-					<div className="g_btn" onClick={this.m_handle_reset_device}>Reset Device</div>
-					<div className="g_btn" onClick={this.m_handle_start_desktop}>Start desktop</div>
-					<div className="g_btn" onClick={this.m_handle_poweroff}>PowerOff</div>
-					<div className="g_btn" onClick={e=>this.pushPage('factory', true)}>Factory</div>
-					<div className="g_btn" onClick={e=>this.pushPage('other', true)}>Other</div>
+					<div className="_btn _btn2" onClick={this.m_handle_audo_test}>Auto Test</div>
+					<div className="_btn" onClick={e=>this.pushPage('network', true)}>Network</div>
+					<div className="_btn" onClick={e=>this.pushPage('network_set', true)}>Setting WiFi</div>
+					<div className="_btn" onClick={e=>this.pushPage('media', true)}>Media</div>
+					<div className="_btn" onClick={e=>this.pushPage('led', true)}>LED/Button</div>
+					<div className="_btn" onClick={e=>this.pushPage('bad_pixels', true)}>Bad Pixels</div>
+					<div className="_btn" onClick={e=>this.pushPage('iframe', true)}>WebGL</div>
+					<div className="_btn" onClick={this.m_handle_reset_device}>Reset Device</div>
+					<div className="_btn" onClick={this.m_handle_start_desktop}>Start desktop</div>
+					<div className="_btn" onClick={this.m_handle_poweroff}>PowerOff</div>
+					<div className="_btn" onClick={e=>this.pushPage('factory', true)}>Factory</div>
+					<div className="_btn" onClick={e=>this.pushPage('other', true)}>Other</div>
 				</div>
 			</div>
 		);

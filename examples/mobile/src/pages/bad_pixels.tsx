@@ -22,10 +22,10 @@ export default class extends NavPage {
 
 	render() {
 		return (
-			<view className={this.mcls('index')} 
-						style={{ background: this.state.colors[this.state.index] }}
-						onClick={this.m_click_handle}>
-			</view>
+			<div className="index"> 
+				style={{ background: this.state.colors[this.state.index] }}
+				onClick={this.m_click_handle}>
+			</div>
 		);
 	}
 

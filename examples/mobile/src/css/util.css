@@ -3,16 +3,7 @@ body {
 	font-family:sans-serif,STHeiti,Microsoft YaHei,Helvetica,Arial;
 }
 
-.main .title .b > div:before { 
-	font-family: iconfont;
-	font-style: normal;
-	content: "\e626";
-	font-size: 0.5rem;
-	line-height: 0.8rem;
-	left: 0.1rem;
-}
-
-.g_btn {
+._btn {
 	width: 80%;
 	text-align: center;
 	font-size: 0.3rem;
@@ -26,11 +17,11 @@ body {
 	background: #fff;
 }
 
-.g_btn:active {
+._btn:active {
 	opacity: 0.5;
 }
 
-.g_btn2 {
+._btn2 {
 	color: #f00;
 	border-color: #f00;
 }

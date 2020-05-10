@@ -12,7 +12,7 @@ export default class extends NavPage {
 
 	render() {
 		return (
-			<view>
+			<div>
 				<Header title="Device Details" page={this} />
 
 				{ this.state.details ?
@@ -26,7 +26,7 @@ export default class extends NavPage {
 					<div style={{ lineHeight: '2rem', textAlign: 'center' }}>Loading..</div>
 				}
 
-			</view>
+			</div>
 		);
 	}
 

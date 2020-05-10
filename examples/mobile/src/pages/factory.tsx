@@ -184,7 +184,7 @@ export default class extends NavPage {
 	render() {
 		var {wifiPanel,wifiHotspotList,done,loadingText,deviceId,deviceSn,address,isActivate} = this.state;
 		return (
-			<view className={this.mcls('factory')}>
+			<div className="factory">
 				<Header title="Factory" page={this} />
 				<div className="whl_sn">id: {deviceId}, sn: {deviceSn}, {address}, {isActivate?'已激活':''}</div>
 				{ wifiPanel?
@@ -209,26 +209,26 @@ export default class extends NavPage {
 								<div className="whl_err">Scaning...</div>
 							}
 						</div>
-						<div className="g_btn g_btn2" onClick={this.m_handle_refresh}>Refresh</div>
-						<div className="g_btn" onClick={this.m_handle_poweroff}>PowerOff</div>
+						<div className="_btn _btn2" onClick={this.m_handle_refresh}>Refresh</div>
+						<div className="_btn" onClick={this.m_handle_poweroff}>PowerOff</div>
 					</div>:
 					done?
 					<div>
 						<div className="whl_err">Done 已激活，矿工已经创建</div>
-						<div className="g_btn g_btn2" onClick={this.m_reset}>Reset Device</div>
+						<div className="_btn _btn2" onClick={this.m_reset}>Reset Device</div>
 					</div>:
 					loadingText?
 					<div>
 						<div className="whl_err">{loadingText}</div>
-						<div className="g_btn g_btn2" onClick={this.m_init_status}>Stop</div>
+						<div className="_btn _btn2" onClick={this.m_init_status}>Stop</div>
 					</div>:
 					<div>
-						<div className="g_btn g_btn2" onClick={e=>this.m_start()}>Continue</div>
-						<div className="g_btn" onClick={this.m_init_status}>Setting Network</div>
+						<div className="_btn _btn2" onClick={e=>this.m_start()}>Continue</div>
+						<div className="_btn" onClick={this.m_init_status}>Setting Network</div>
 					</div>
 				}
 
-			</view>
+			</div>
 		);
 	}
 }

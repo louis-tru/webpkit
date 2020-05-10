@@ -41,14 +41,14 @@ export default class extends NavPage<{auto?: boolean}> {
 
 	render() {
 		return (
-			<view className={this.mcls('index')}>
+			<div className="index">
 				<Header title="Network" page={this} />
 				{
 					this.state.list.map((e,j)=>{
 						return <div key={j} dangerouslySetInnerHTML={{__html: e}}></div>
 					})
 				}
-			</view>
+			</div>
 		);
 	}
 

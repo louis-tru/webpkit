@@ -150,16 +150,16 @@ export default class extends NavPage<{auto?: boolean}> {
 
 	render() {
 		return (
-			<view className={this.mcls('index led')}>
+			<div className="index led">
 				<Header title="LED/Button" page={this} />
-				<div className={`g_btn ${this.state.btn==0?'g_btn2':''}`} onClick={this.m_handle_A}>A</div>
-				<div className={`g_btn ${this.state.btn==1?'g_btn2':''}`} onClick={this.m_handle_B}>B</div>
-				<div className={`g_btn ${this.state.btn==2?'g_btn2':''}`} onClick={this.m_handle_C}>C</div>
-				<div className={`g_btn ${this.state.btn==3?'g_btn2':''}`} onClick={this.m_handle_D}>D</div>
+				<div className={`_btn ${this.state.btn==0?'_btn2':''}`} onClick={this.m_handle_A}>A</div>
+				<div className={`_btn ${this.state.btn==1?'_btn2':''}`} onClick={this.m_handle_B}>B</div>
+				<div className={`_btn ${this.state.btn==2?'_btn2':''}`} onClick={this.m_handle_C}>C</div>
+				<div className={`_btn ${this.state.btn==3?'_btn2':''}`} onClick={this.m_handle_D}>D</div>
 				<div className="text1">{ this.state.text }</div>
 				<div className={'text2 ' + this.state.text2_css}>LED附件: { this.state.text2 }</div>
 				<div className={'text2 ' + this.state.text3_css}>电源按钮: { this.state.text3 }</div>
-			</view>
+			</div>
 		);
 	}
 

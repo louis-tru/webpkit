@@ -27,7 +27,7 @@ export default class extends NavPage {
 
 	render() {
 		return (
-			<view className={this.mcls('index')}>
+			<div className="index">
 				<Header title="Setting WiFi" page={this} />
 				<div style={{margin: '10px'}}>
 					<p>
@@ -42,7 +42,7 @@ export default class extends NavPage {
 						<input onClick={this.m_handle_set_wifi} value="commit" type="button" />
 					</p>
 				</div>
-			</view>
+			</div>
 		);
 	}
 

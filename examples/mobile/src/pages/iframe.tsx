@@ -20,7 +20,7 @@ export default class extends NavPage<{url?: string; auto?: boolean}> {
 		if (this.state.url)
 			url = decodeURIComponent(this.state.url);
 		return (
-			<view className={this.mcls('webgl')}>
+			<div className="webgl">
 				<div className="img_close" onClick={this.m_click_handle_1}>Close</div>
 
 				<div className="content">
@@ -32,7 +32,7 @@ export default class extends NavPage<{url?: string; auto?: boolean}> {
 						style={{ width: '100%', height: '100%' }}></iframe>
 				</div>
 
-			</view>
+			</div>
 		);
 	}
 

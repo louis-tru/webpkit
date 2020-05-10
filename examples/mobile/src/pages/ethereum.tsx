@@ -27,7 +27,7 @@ export default class extends NavPage {
 
 	render() {
 		return (
-			<view className={this.mcls('ethereum')}>
+			<div className="ethereum">
 				<Header title="Ethereum" page={this} />
 
 				<pre>
@@ -42,7 +42,7 @@ export default class extends NavPage {
 					this.state.loading ? <div className="loading"> Loading.. </div> : null
 				}
 
-			</view>
+			</div>
 		);
 	}
 

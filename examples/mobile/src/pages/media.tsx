@@ -73,7 +73,7 @@ export default class extends NavPage<{auto?: boolean}> {
 
 	render() {
 		return (
-			<div className={this.mcls('index media')}>
+			<div className="index media">
 				<Header title="Video" page={this} />
 
 				<video
