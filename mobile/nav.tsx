@@ -28,6 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+import './nav.css';
 import utils from 'nxkit';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
@@ -337,6 +338,23 @@ export class Nav extends ViewController<NavProps> {
 	readonly onNav = new EventNoticer<Event<NavArgs, Nav>>('Nav', this);
 	readonly onEnd = new EventNoticer<Event<void, Nav>>('End', this);
 
+	static platform = '';
+
+	private get _mcls() {
+		var cls_1 = '_main ';
+		if (utils.debug) {
+			cls_1 += '_test ';
+		}
+		if (Nav.platform == 'android') {
+			cls_1 += '_android ';
+		} else if (Nav.platform == 'iphonex') {
+			cls_1 += '_iphonex ';
+		} else if (Nav.platform == 'iphone') {
+			cls_1 += '_iphone ';
+		}
+		return cls_1;
+	}
+
 	triggerNav(data: NavArgs) {
 		if (this.props.onNav) {
 			this.props.onNav(data);
@@ -423,7 +441,10 @@ export class Nav extends ViewController<NavProps> {
 
 		var props = this.m_parseProps(url);
 		var panel = document.createElement('div');
+
 		(this.refs.root as HTMLDivElement).appendChild(panel);
+
+		panel.className = this._mcls;
 
 		var self = this;
 		var prev = this.m_current;
@@ -556,7 +577,7 @@ export class Nav extends ViewController<NavProps> {
 
 	render() {
 		return (
-			<div className="root" ref="root">
+			<div className="_root" ref="root">
 			</div>
 		);
 	}
@@ -570,22 +591,6 @@ interface BaseProps<P> {
 }
 
 export class NavPage<P = {}, S = {}> extends ViewController<BaseProps<P>, S> {
-	static platform = '';
-
-	mcls(cls = '') {
-		var cls_1 = 'main ';
-		if (utils.debug) {
-			cls_1 += 'test ';
-		}
-		if (NavPage.platform == 'android') {
-			cls_1 += 'android ';
-		} else if (NavPage.platform == 'iphonex') {
-			cls_1 += 'iphonex ';
-		} else if (NavPage.platform == 'iphone') {
-			cls_1 += 'iphone ';
-		}
-		return cls_1 + cls;
-	}
 
 	get nav() {
 		return this.props.priv.nav;
@@ -625,7 +630,7 @@ export class NavPage<P = {}, S = {}> extends ViewController<BaseProps<P>, S> {
 	triggerHide() {
 		// overwrite
 	}
-	
+
 	pushPage(url: Args, animate = true) {
 		return this.nav.push(url, animate);
 	}

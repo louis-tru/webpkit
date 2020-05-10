@@ -34,6 +34,7 @@ import { Component } from 'react';
 import GlobalState from '../lib/state';
 export * from 'antd-mobile';
 import 'antd-mobile/dist/antd-mobile.css';
+import './antd.css';
 
 // import { createForm } from 'rc-form';
 // export * from 'rc-form';

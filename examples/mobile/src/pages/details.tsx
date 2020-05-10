@@ -12,7 +12,7 @@ export default class extends NavPage {
 
 	render() {
 		return (
-			<view className={this.mcls('details')}>
+			<view>
 				<Header title="Device Details" page={this} />
 
 				{ this.state.details ?

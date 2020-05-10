@@ -13,9 +13,9 @@ export default class extends ViewController<{page: NavPage; title: string }> {
 	render() {
 		// 音律启蒙
 		return (
-			<div className="title">
-				<div className="a"></div>
-				<div className="b">
+			<div className="_title">
+				<div className="_a"></div>
+				<div className="_b">
 					<div onClick={this.m_handleClick_1}></div>{this.props.title || ''}
 				</div>
 				{this.props.children}
