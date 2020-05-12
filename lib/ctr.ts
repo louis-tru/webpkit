@@ -35,7 +35,7 @@ class _ViewController<P = {}, S = {}> extends GlobalState<P, S> {
 	private m_mounted?: boolean;
 	private m_loaded?: boolean;
 
-	updateState(data: S) {
+	updateState(data: S, callback?: () => void) {
 		var state: S = {} as S;
 		for (var i in data) {
 			var o = data[i];
@@ -43,7 +43,7 @@ class _ViewController<P = {}, S = {}> extends GlobalState<P, S> {
 				state[i] = Object.assign(this.state[i] || {}, data[i]);
 			}
 		}
-		this.setState(state);
+		this.setState(state, callback);
 	}
 
 	get isLoaded() {
@@ -106,20 +106,18 @@ export declare class ViewController<P, S> {
 	readonly context: any;
 	constructor(props: Readonly<P>);
 	constructor(props: P, context?: any);
-
 	setState<K extends keyof S>(
 		state: ((prevState: Readonly<S>, props: Readonly<P>) => (Pick<S, K> | S | null)) | (Pick<S, K> | S | null),
-			callback?: () => void
+		callback?: () => void
 	): void;
-
 	forceUpdate(callback?: () => void): void;
+	updateState<K extends keyof S>(state: Pick<S, K> | S, callback?: () => void): void;
 	render(): React.ReactNode;
 	readonly props: Readonly<P> & Readonly<{ children?: React.ReactNode }>;
 	state: Readonly<S>;
 	readonly refs: {
 		[key: string]: ViewController<any,any> | Element;
 	};
-	updateState<K extends keyof S>(state: Pick<S, K> | S): void;
 	readonly isLoaded: boolean;
 	readonly isMounted: boolean;
 	protected triggerLoad(): void;
