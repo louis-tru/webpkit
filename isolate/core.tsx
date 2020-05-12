@@ -149,8 +149,8 @@ export default class ApplicationLauncher extends Gesture<{
 			isLoad = true;
 			this._apps.set(appName, app);
 		}
-		if (isLoad){
-			app.triggerLoad();
+		if (isLoad) {
+			await app.triggerLoad();
 		}
 		app.triggerLaunch({...args});
 	}
