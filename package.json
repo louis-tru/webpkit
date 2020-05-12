@@ -1,6 +1,6 @@
 {
 	"name": "webpkit",
-	"version": "0.2.12",
+	"version": "0.2.13",
 	"description": "Web Page KIT Framework",
 	"main": "index.js",
 	"types": "index.ts",
@@ -10,7 +10,7 @@
 	},
 	"dependencies": {
 		"cport-nifty": "~0.1.0",
-		"nxkit": "~0.10.55",
+		"nxkit": "~0.10.56",
 		"crypto-tx": "~0.2.2",
 		"@babel/cli": "^7.7.0",
 		"@babel/core": "^7.7.2",
