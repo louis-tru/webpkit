@@ -49,7 +49,6 @@ var externals = [
 	//'os',
 	//'electron',
 	//'/^(jquery|\$)$/i'
-	'ngui/_ext',
 	'path',
 	'module',
 	'vm',
@@ -62,7 +61,9 @@ var externals = [
 ];
 
 module.exports = function(context, request, callback) {
-	if ( externals.indexOf(request) != -1 ) {
+	if (request.indexOf('ngui') === 0) {
+		callback(null, 'commonjs ' + request);
+	} else if ( externals.indexOf(request) != -1 ) {
 		callback(null, 'commonjs ' + request);
 	} else {
 		callback(null, false);
