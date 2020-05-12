@@ -34,6 +34,20 @@ import Login from './src/login';
 import Menu from './src/menu';
 import Header from './src/header';
 import Footer from './src/footer';
+import {initialize} from './src/sdk';
+import utils from 'nxkit';
+import errnoHandles from 'webpkit/lib/errno_handles';
+import {Console} from 'nxkit/log';
+
+utils.onUncaughtException.on((e)=>{
+	errnoHandles(e.data);
+});
+
+utils.onUnhandledRejection.on((e)=>{
+	errnoHandles(e.data.reason);
+});
+
+initialize().catch(console.error);
 
 ReactDom.render(
 	<CMSRoot 
@@ -45,3 +59,5 @@ ReactDom.render(
 	/>,
 	document.querySelector('#app')
 );
+
+Console.defaultInstance.log('init ok');

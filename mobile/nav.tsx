@@ -33,7 +33,7 @@ import utils from 'nxkit';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import {ViewController} from '../lib/ctr';
-import error from '../lib/handles';
+import error from '../lib/errno_handles';
 import {EventNoticer, Event} from 'nxkit/event';
 
 var loading = '正在载入数据..';

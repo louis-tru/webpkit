@@ -28,21 +28,22 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import nxkit from 'nxkit';
 import Store from 'nxkit/store';
 import path from 'nxkit/path';
+import {Signer} from 'nxkit/request';
 
-export const store = new Store();
-
-export async function initialize(config: Dict = {}) {
-	if (store.isLoaded) return;
-	var url = new path.URL(config.serviceAPI || nxkit.config.serviceAPI);
-	await store.initialize(
-		path.getParam('D_SDK_HOST') || url.hostname,
-		path.getParam('D_SDK_PORT') || url.port,
-		!!path.getParam('D_SDK_SSL') || /^(http|ws)s/.test(url.protocol),
-		path.getParam('D_SDK_VIRTUAL') || url.filename
+export async function make({
+	url = 'http://127.0.0.1:8091/service-api', signer, name, store }: { 
+	url?: string; signer?: Signer; name?: string, store?: Store 
+}) {
+	var _store = store || new Store(name);
+	if (_store.isLoaded) return _store;
+	var urlObj = new path.URL(url);
+	await _store.initialize(urlObj.hostname, 
+		urlObj.port, /^(http|ws)s/.test(urlObj.protocol), urlObj.filename
 	);
-};
-
-export default store.core;
+	if (signer) {
+		_store.setSigner(signer);
+	}
+	return _store;
+}

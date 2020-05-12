@@ -29,12 +29,22 @@
  * ***** END LICENSE BLOCK ***** */
 
 import {React,Root,ReactDom,dialog} from 'webpkit/mobile';
-import store from 'webpkit/lib/store';
 import _404 from './src/pages/404';
 import routes from './src/router';
 import path from 'nxkit/path';
-import * as config from './config';
 import './src/css/util.css';
+import sdk,{initialize} from './src/sdk';
+import utils from 'nxkit';
+import errnoHandles from 'webpkit/lib/errno_handles';
+import {Console} from 'nxkit/log';
+
+utils.onUncaughtException.on((e)=>{
+	errnoHandles(e.data);
+});
+
+utils.onUnhandledRejection.on((e)=>{
+	errnoHandles(e.data.reason);
+});
 
 class MyRoot<P> extends Root<P> {
 
@@ -42,12 +52,22 @@ class MyRoot<P> extends Root<P> {
 
 	async triggerLoad() {
 		await super.triggerLoad();
-		store.message.addEventListener('BluetoothPairRequest', e=>{
+
+		try {
+			await initialize();
+		} catch(err) {
+			dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
+			throw err;
+		}
+
+		sdk.message.addEventListener('BluetoothPairRequest', e=>{
 			dialog.confirm(e.data.mobile + ',请求蓝牙配对', e=>{
-				store.device.methods.agreeBluetoothPair({ isAgree: e }).catch(console.error);
+				sdk.device.methods.agreeBluetoothPair({ isAgree: e }).catch(console.error);
 			});
 		});
 	}
 }
 
-ReactDom.render(<MyRoot config={config} routes={routes} notFound={_404} />, document.querySelector('#app'));
+ReactDom.render(<MyRoot routes={routes} notFound={_404} />, document.querySelector('#app'));
+
+Console.defaultInstance.log('init ok');

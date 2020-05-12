@@ -32,8 +32,6 @@ import 'normalize.css';
 import '../lib/util.css';
 import './util.css';
 import rem from '../lib/rem';
-import {store, initialize as initStore} from '../lib/store';
-import error from '../lib/handles';
 import * as dialog from '../lib/dialog';
 import { NavPage, Nav, Route, NavArgs } from './nav';
 import * as ReactDom from 'react-dom';
@@ -46,7 +44,6 @@ import {NavDataPage} from './page';
 export interface RootProps {
 	scale?: number;
 	title?: string;
-	config?: Dict;
 	routes?: Route[];
 	notFound?: typeof NavPage;
 }
@@ -57,21 +54,6 @@ export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S>
 
 	async triggerLoad() {
 		rem.initialize(this.props.scale);
-
-		var config = this.props.config;
-		if (config && config.serviceAPI) {
-			try {
-				await initStore(config);
-			} catch(err) {
-				dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
-				throw err;
-			}
-		}
-
-		store.addEventListener('uncaughtException', function(err) {
-			error(err.data);
-		});
-
 		window.addEventListener('hashchange', (e)=>{
 			(this.refs.nav as Nav).current.popPage(true); // 不管前进或后退都当成后退处理
 		});

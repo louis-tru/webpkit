@@ -32,7 +32,7 @@ import utils from 'nxkit';
 import * as React from 'react';
 import { Component } from 'react';
 import { Router as RouterRaw, Route as RouteRaw, Switch } from 'react-router-dom';
-import handles from './handles';
+import handles from './errno_handles';
 import nxkit from 'nxkit';
 import Page, {History, Loading} from './page';
 import NotFound from './404';

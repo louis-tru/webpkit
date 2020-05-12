@@ -30,11 +30,24 @@
 
 import { Root,ReactDom,React } from 'webpkit';
 import router from '../src/router';
+import {initialize} from '../src/sdk';
+import utils from 'nxkit';
+import errnoHandles from 'webpkit/lib/errno_handles';
+import {Console} from 'nxkit/log';
+
+utils.onUncaughtException.on((e)=>{
+	errnoHandles(e.data);
+});
+
+utils.onUnhandledRejection.on((e)=>{
+	errnoHandles(e.data.reason);
+});
+
+initialize().catch(console.error);
 
 ReactDom.render(
-	<Root 
-		initSDK={false} 
-		routes={router}
-	/>,
+	<Root initSDK={false} routes={router} />,
 	document.querySelector('#app')
 );
+
+Console.defaultInstance.log('init ok');

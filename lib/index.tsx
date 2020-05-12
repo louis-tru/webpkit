@@ -31,8 +31,6 @@
 import 'normalize.css';
 import './util.css';
 import utils from 'nxkit';
-import {store,initialize as initStore} from './store';
-import handles from './handles';
 import { Router, Route, history } from './router';
 import Page, { DataPage } from './page';
 import * as ReactDom from 'react-dom';
@@ -40,13 +38,11 @@ import * as React from 'react';
 import {Component} from 'react';
 import {Link} from 'react-router-dom';
 import * as _history from 'history';
-import * as dialog from './dialog';
 import {ViewController} from './ctr';
 
 var current: Root | null = null;
 
 export interface RootProps {
-	config?: Dict;
 	routes?: Route[];
 	notFound?: typeof Page;
 }
@@ -56,18 +52,6 @@ export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S>
 
 	protected async triggerLoad() {
 		current = this;
-		var config = this.props.config;
-		if (config && config.serviceAPI) {
-			try {
-				await initStore(config);
-			} catch(err) {
-				dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
-				throw err;
-			}
-		}
-		store.addEventListener('uncaughtException', function(err) {
-			handles(err.data);
-		});
 	}
 
 	get history() {
@@ -77,10 +61,7 @@ export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S>
 	render() {
 		return (
 			this.isLoaded ?
-			<Router ref="router" 
-				notFound={this.props.notFound}
-				routes={this.props.routes}
-			/>:
+			<Router ref="router" notFound={this.props.notFound} routes={this.props.routes} />:
 			<div className="init-loading">{this.loadingText}</div>
 		);
 	}
