@@ -6,7 +6,7 @@ import {make} from 'webpkit/lib/store';
 export const store = new Store('examples/mobile');
 
 export function initialize() {
-	return make({ url: config.serviceAPI, store });
+	return make({ url: config.sdk, store });
 }
 
 export default store.core;
