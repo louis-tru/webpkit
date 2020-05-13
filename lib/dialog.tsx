@@ -1,460 +1,377 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Distributed under the BSD license:
+ *
+ * Copyright (c) 2019, hardchain
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of hardchain nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL hardchain BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
-import '../assets/keyboard.css';
+import './util.css';
+import './dialog.css';
+import utils from 'nxkit';
+import { ViewController } from './ctr';
+import * as React from 'react';
 import * as ReactDom from 'react-dom';
-import {ViewController, React} from './ctr';
+import {EventNoticer,Event} from 'nxkit/event';
+import {List,ListItem} from 'nxkit/event';
+import {Activity} from '../isolate/ctr';
+import {InputProps,Input} from './keyboard';
 
-export abstract class Keyboard<P = {}, S = {}> extends ViewController<P, S> {
+var DEFAULT_SCALE = 1;
 
-	private m_recipient: Input | null = null;
-	private _hasPresskeyCycle = false;
+export function getDefaultId(obj: any) {
+	utils.assert(obj);
+	if (!(obj as any).hasOwnProperty('__default_id')) {
+		(obj as any).__default_id = String(utils.getId());
+	}
+	return String((obj as any).__default_id);
+}
 
-	get isActive() {
-		return !!this.m_recipient;
+export interface Options extends Dict {
+	id?: string;
+}
+
+export class DialogStack {
+	private _dialogStack = new List<Dialog>();
+	private _IDs: Map<string, ListItem<Dialog>> = new Map();
+	private _panel: HTMLElement;
+
+	constructor(panel: HTMLElement = document.body) {
+		utils.assert(panel, 'Panel cannot be empty');
+		this._panel = panel;
 	}
 
-	get recipient() {
-		return this.m_recipient;
+	get preventCover() {
+		return this._dialogStack?.last?.value?.preventCover || false;
 	}
 
-	get hasPresskeyCycle() {
-		return this._hasPresskeyCycle;
+	show(D: typeof Dialog, opts?: Options, animate = true, act?: Activity) {
+		var id = opts?.id ? String(opts.id): getDefaultId(D);
+		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id}"`);
+
+		var div = document.createElement('div');
+		(this._panel as HTMLElement).appendChild(div);
+		var instance = ReactDom.render<{}, Dialog<any>>(<D {...opts} __activity={act} />, div);
+
+		var prev = this._dialogStack.last;
+		if (prev) {
+			(prev.value as Dialog).hide();
 	}
 
-	protected abstract active(active: boolean): void;
+		var item = this._dialogStack.push(instance);
+		this._IDs.set(id, item);
 
-	protected triggerInput(char: string) {
-		if (this.recipient) {
-			this.recipient._dom.value += char;
-			this.recipient.triggerChange();
+		instance.onClose.on(({data})=>{
+			this._dialogStack.del(item);
+			this._IDs.delete(id);
+			utils.sleep(200).then(()=>{
+				var last = this._dialogStack.last;
+				if (last) {
+					(last.value as Dialog).show(data.animate);
+		}
+			});
+		});
+
+		instance.show(animate);
+
+		return instance;
+	}
+
+	close(id: typeof Dialog | string, animate = true) {
+		var _id: string = typeof id == 'string' ? String(id): getDefaultId(id);
+		utils.assert(this._IDs.has(_id), `Dialog no exists, "${id}"`);
+		var item = this._IDs.get(_id);
+		if (item) {
+			(item.value as Dialog).close(animate);
 		}
 	}
 
-	protected triggerBackspace() {
-		if (this.recipient) {
-			var value = this.recipient._dom.value;
-			this.recipient._dom.value = value.substr(0, value.length - 1);
-			this.recipient.triggerChange();
+	closeAll() {
+		var item = this._dialogStack.first;
+		while(item) {
+			var next = item.next;
+			(item.value as Dialog).close(false);
+			item = next;
 		}
 	}
+}
 
-	protected triggerDone() {
-		if (this.recipient) {
-			this.recipient.triggerDone();
+var _globaDialogStack: DialogStack | null;
+
+export abstract class Dialog<P = {}> extends ViewController<P> {
+
+	readonly onClose = new EventNoticer<Event<any, Dialog>>('Close', this);
+
+	private __activity: Activity | null = (this.props as any).__activity || null;
+
+	get preventCover() {
+		return true;
 		}
+
+	get activity() {
+		return this.__activity;
 	}
 
-	setRecipient(input: Input) {
-		if (input instanceof Input && this.m_recipient !== input) {
-			this.m_recipient = input;
-			this.active(true);
-		}
+	private _maskClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>)=>{
+		if (event.target === this.refs.root) {
+			this.triggerMaskClick();
 	}
+	};
 
-	clearRecipient(input: Input) {
-		if (input === this.m_recipient) {
-			this.m_recipient = null;
-			this.active(false);
-		}
-	}
-
-	private _handlePresskeyCycle = ()=>{
-		this._hasPresskeyCycle = true;
-		setTimeout(()=>this._hasPresskeyCycle = false, 200);
+	protected triggerMaskClick() {
 	}
 
 	render() {
+		var style: Dict = {};
+		if (this.noMask) {
+			style.background = 'none';
+		}
 		return (
-			<div ref="dom"
-				onClick={this._handlePresskeyCycle}
-				onMouseDown={this._handlePresskeyCycle}
-				onTouchStart={this._handlePresskeyCycle}
-			>
+			<div ref="root" className="dialog" style={style} onClick={this._maskClick}>
+				<div className="core" ref="core">
 				{this.renderBody()}
 			</div>
-		);
+			</div>
+		)
 	}
 
-	abstract renderBody(): React.ReactNode;
-
-}
-
-export class DefaultKeyboard extends Keyboard {
-
-	state = { shift: 0, symbol: false, moreSymbol: false, active: false };
-	
-	private char(char: string) {
-		if (this.state.shift) {
-			return char.toUpperCase();
+	private async _enableAnimate(animate: boolean) {
+		if (animate) {
+			(this.refs.root as HTMLElement).style.transitionDuration = '300ms';
+			(this.refs.core as HTMLElement).style.transitionDuration = '300ms';
 		} else {
-			return char;
+			(this.refs.root as HTMLElement).style.transitionDuration = '0ms';
+			(this.refs.core as HTMLElement).style.transitionDuration = '0ms';
+		}
+		(this.refs.root as HTMLElement).style.display = 'flex';
+		await utils.sleep(30);
+	}
+
+	async hide(animate = true) {
+		await this._enableAnimate(animate);
+		if (!this.noMask)
+			(this.refs.root as HTMLElement).style.background = 'rgba(0,0,0,0.01)';
+		(this.refs.core as HTMLElement).style.opacity = '0';
+		(this.refs.core as HTMLElement).style.transform = 'scale(0.3)';
+		await utils.sleep(300);
+		(this.refs.root as HTMLElement).style.display = 'none';
+	}
+
+	async show(animate = true) {
+		await this._enableAnimate(animate);
+		if (!this.noMask)
+			(this.refs.root as HTMLElement).style.background = 'rgba(0,0,0,0.75)';
+		(this.refs.core as HTMLElement).style.opacity = '1';
+		(this.refs.core as HTMLElement).style.transform = 'scale(1)';
+		await utils.sleep(300);
+	}
+
+	async close(animate = true) {
+		var root = this.refs.root as HTMLElement;
+		if (root) {
+			this.onClose.trigger({animate});
+			await this.hide(animate);
+			var div = root.parentNode as HTMLElement;
+			ReactDom.unmountComponentAtNode(div);
+			(div.parentNode as HTMLElement).removeChild(div);
 		}
 	}
 
-	private m_shift = (e: any)=>{
-		e.stopPropagation();
-		this.setState({ shift: (this.state.shift + 1) % 3 });
+	get noMask() {
+		return false;
 	}
 
-	private m_symbol = (e: any)=>{
-		e.stopPropagation();
-		this.setState({ symbol: !this.state.symbol });
-	}
+	protected abstract renderBody(): React.ReactNode;
 
-	private m_moreSymbol = (e: any)=>{
-		e.stopPropagation();
-		this.setState({ moreSymbol: !this.state.moreSymbol });
+	static get globaDialogStack() {
+		if (!_globaDialogStack) {
+			_globaDialogStack = new DialogStack();
 	}
-
-	private m_preventDefault(e: any) {
-		e.stopPropagation();
-		// if (this.m_recipient)
-		// 	this.m_recipient.refs.input.focus();
+		return _globaDialogStack;
 	}
+}
 
-	private m_space = (e: any)=>{
-		this.m_preventDefault(e);
-		this.triggerInput(' ');
-	}
+export interface DefaultOptions extends Options {
+	title?: React.ReactNode,
+	text?: React.ReactNode,
+	buttons?: Dict<(e:any)=>void>,
+	prompt?: {
+		type?: string;
+		value?: string;
+		input?: InputConstructor;
+	},
+	noMask?: boolean;
+}
 
-	private m_done = (e: any)=>{
-		this.m_preventDefault(e);
-		this.triggerDone();
-	}
+export default class DefaultDialog extends Dialog<DefaultOptions> {
 
-	private m_backspace = (e: any)=>{
-		this.m_preventDefault(e);
-		this.triggerBackspace();
-	}
-
-	private m_handle_input = (e: any)=>{
-		this.m_preventDefault(e);
-		if (e.target.tagName.toUpperCase() == 'VIEW') {
-			var {symbol,moreSymbol,shift} = this.state;
-			if (symbol && moreSymbol) {
-				this.setState({ moreSymbol: false, symbol: false });
+	protected triggerMounted() {
+		if (this.refs.prompt) {
+			var props = this.props;
+			var input = this.refs.prompt as HTMLInputElement;
+			input.value = typeof props.prompt=='string'? props.prompt : '';
 			}
-			if (shift == 1) {
-				this.setState({ shift: 0 });
+		super.triggerMounted();
 			}
-			this.triggerInput(e.target.textContent);
+
+	private _handleClick_1(cb: (s:any)=>void) {
+		var root = this.refs.root;
+		if (root) {
+			cb(this);
+			this.close();
 		}
 	}
 
-	protected active(action: boolean) {
-		this.setState({ active: action });
+	get noMask() {
+		return !!this.props.noMask;
 	}
 
-	renderMoreSymbol() {
-		return (
-			<div className="kb" onClick={this.m_handle_input}>
-				<div className="row">
-					<view>[</view>
-					<view>]</view>
-					<view>{'{'}</view>
-					<view>}</view>
-					<view>#</view>
-					<view>%</view>
-					<view>^</view>
-					<view>*</view>
-					<view>+</view>
-					<view>=</view>
-				</div>
-
-				<div className="row">
-					<view>ˇ</view>
-					<view>\</view>
-					<view>|</view>
-					<view>{'<'}</view>
-					<view>></view>
-					<view>¥</view>
-					<view>€</view>
-					<view>£</view>
-					<view>₤</view>
-					<view>•</view>
-				</div>
-
-				<div className="row">
-					<view className="grey" onClick={this.m_moreSymbol}>123</view>
-					<view>~</view>
-					<view>,</view>
-					<view>…</view>
-					<view>@</view>
-					<view>!</view>
-					<view>`</view>
-					<view className="grey" onClick={this.m_backspace}>backspace</view>
-				</div>
-
-				<div className="row">
-					<view className="grey" onClick={this.m_symbol}>return</view>
-					<view>.</view>
-					<view className="space" onClick={this.m_space}>Space</view>
-					<view>?</view>
-					<view className="blue" onClick={this.m_done}>Done</view>
-				</div>
-
-			</div>
-		)
+	protected renderButtons() {
+		var buttons = this.props.buttons || { '@确定': (e)=>{} };
+		var r = [];
+		for (let i in buttons) {
+			var t = i[0] == '@' ? i.substr(1) : i;
+			var cls = i[0] == '@' ? 'ok':'';
+			r.push(
+				<div key={i} className={cls} onClick={()=>this._handleClick_1(buttons[i])}>{t}</div>
+			);
+		}
+		return r;
 	}
 
-	renderSymbol() {
-		if (this.state.moreSymbol)
-			return this.renderMoreSymbol();
+	protected renderBody() {
+		var props = this.props;
 		return (
-			<div className="kb" onClick={this.m_handle_input}>
-				<div className="row">
-					<view>1</view>
-					<view>2</view>
-					<view>3</view>
-					<view>4</view>
-					<view>5</view>
-					<view>6</view>
-					<view>7</view>
-					<view>8</view>
-					<view>9</view>
-					<view>0</view>
-				</div>
-
-				<div className="row">
-					<view>-</view>
-					<view>/</view>
-					<view>:</view>
-					<view>;</view>
-					<view>(</view>
-					<view>)</view>
-					<view>_</view>
-					<view>$</view>
-					<view>{'&'}</view>
-					<view>"</view>
-				</div>
-
-				<div className="row">
-					<view className="grey" onClick={this.m_moreSymbol}>more</view>
-					<view>~</view>
-					<view>,</view>
-					<view>…</view>
-					<view>@</view>
-					<view>!</view>
-					<view>'</view>
-					<view className="grey" onClick={this.m_backspace}>backspace</view>
-				</div>
-
-				<div className="row">
-					<view className="grey" onClick={this.m_symbol}>return</view>
-					<view>.</view>
-					<view className="space" onClick={this.m_space}>Space</view>
-					<view>?</view>
-					<view className="blue" onClick={this.m_done}>Done</view>
-				</div>
-
-			</div>
-		)
+			<div className="default" style={{ transform: `scale(${DefaultDialog.scale})` }}>
+				<div className="a">{ props.title || ''/*||'温馨提示'*/ }</div>
+				{
+					props.prompt ?
+					<div className="b">
+						<div>{props.text}</div>
+						{	(()=>{
+							var Input = props.prompt.input;
+							var type = props.prompt.type || 'text';
+							var inputProps = {
+								ref: 'prompt',
+								style: {
+									border: 'solid 0.015rem #ccc',
+									width: '90%',
+									marginTop: '0.1rem',
+									height: '0.5rem',
+									padding: '0 2px',
+								} as React.CSSProperties,
 	}
-
-	renderBody() {
-		if (!this.state.active)
-			return null;
-		if (this.state.symbol)
-			return this.renderSymbol();
-		var char = (e: string)=>this.char(e);
 		return (
-			<div className="kb" onClick={this.m_handle_input}>
-				<div className="row">
-					<view>{char('q')}</view>
-					<view>{char('w')}</view>
-					<view>{char('e')}</view>
-					<view>{char('r')}</view>
-					<view>{char('t')}</view>
-					<view>{char('y')}</view>
-					<view>{char('u')}</view>
-					<view>{char('i')}</view>
-					<view>{char('o')}</view>
-					<view>{char('p')}</view>
-				</div>
-
-				<div className="row">
-					<view>{char('a')}</view>
-					<view>{char('s')}</view>
-					<view>{char('d')}</view>
-					<view>{char('f')}</view>
-					<view>{char('g')}</view>
-					<view>{char('h')}</view>
-					<view>{char('j')}</view>
-					<view>{char('k')}</view>
-					<view>{char('l')}</view>
-				</div>
-
-				<div className="row">
-					<view className={this.state.shift==2?'blue':'grey'} onClick={this.m_shift}>shift</view>
-					<view>{char('z')}</view>
-					<view>{char('x')}</view>
-					<view>{char('c')}</view>
-					<view>{char('v')}</view>
-					<view>{char('b')}</view>
-					<view>{char('n')}</view>
-					<view>{char('m')}</view>
-					<view className="grey" onClick={this.m_backspace}>backspace</view>
-				</div>
-
-				<div className="row">
-					<view className="grey" onClick={this.m_symbol}>?123</view>
-					<view>.</view>
-					<view className="space" onClick={this.m_space}>Space</view>
-					<view>?</view>
-					<view className="blue" onClick={this.m_done}>Done</view>
+								Input ? 
+								<Input {...inputProps} value={props.prompt.value} />: 
+								<input {...inputProps} defaultValue={props.prompt.value} type={type} />
+							);
+						})()}
+					</div>:
+					<div className="b">{props.text || ''}</div>
+				}
+				<div className="btns">
+					{this.renderButtons()}
 				</div>
 			</div>
 		);
 	}
-}
 
-var GlobalKeyboard: typeof Keyboard = DefaultKeyboard;
-var keyboard: Keyboard | null = null;
-var panel: HTMLElement | null = null;
-
-function getPanel() {
-	if (!panel) {
-		panel = document.createElement('div');
-		document.body.appendChild(panel);
+	static setScale(scale: number) {
+		DEFAULT_SCALE = Math.max(1, Math.min(4, scale));
 	}
-	return panel;
-}
 
-function keyboardInstance() {
-	if (!keyboard) {
-		keyboard = ReactDom.render<{}>(<GlobalKeyboard />, getPanel()) as Keyboard;
+	static get scale() {
+		return DEFAULT_SCALE;
 	}
-	return keyboard;
-}
 
-export function setGlobalKeyboard(keyboard: typeof Keyboard) {
-	if (GlobalKeyboard !== keyboard) {
-		ReactDom.unmountComponentAtNode(getPanel());
-		GlobalKeyboard = keyboard;
+	static show(opts: DefaultOptions, stack?: DialogStack) {
+		return (stack || Dialog.globaDialogStack).show(this, Object.assign({ id: utils.getId() }, opts));
 	}
+
+	static alert(In: DialogIn, cb?: ()=>void, stack?: DialogStack) {
+		var _cb = cb || function() {}
+		var o = typeof In == 'string' ? { text: In, title: '' }: In;
+		var { text, title } = o;
+		return this.show({
+			title, text, buttons: {
+			'@确定': ()=>{ _cb() },
+		}}, stack);
+	}
+
+	static confirm(In: DialogIn, cb?: (ok: boolean)=>void, stack?: DialogStack) {
+		var _cb = cb || function() {};
+		var o = typeof In == 'string' ? { text: In, title: '' } : In;
+		var { text, title } = o;
+		return this.show({title, text, buttons: {
+			'取消': ()=>_cb(false),
+			'@确定': ()=>_cb(true),
+		}}, stack);
+	}
+
+	static prompt(In: PromptIn, cb?: (value: string, ok: boolean)=>void, stack?: DialogStack) {
+		var _cb = cb || function() {}
+		var o = typeof In == 'string' ? { text: In, title: '', value: '', type: 'text' }: In;
+		var { text, title, value, type, input } = o;
+		return this.show({title, text, buttons: {
+			'取消': e=> _cb(e.refs.prompt.value, false),
+			'@确定': e=> _cb(e.refs.prompt.value, true),
+		}, prompt: {value, type, input}}, stack);
+	}
+
 }
 
-export interface InputProps {
-	onChange?: ()=>void;
-	onDone?: ()=>void;
-	onFocus?: ()=>void;
-	onBlur?: ()=>void;
+export type DialogIn = string | {
+	text?: React.ReactNode;
+	title?: React.ReactNode;
+}
+
+export interface InputConstructor {
+	new(props: InputProps): Input;
+}
+
+export type PromptIn = string | {
+	text?: React.ReactNode;
+	title?: React.ReactNode;
 	value?: string;
-	className?: string;
-	style?: React.CSSProperties;
 	type?: string;
-	placeholder?: string;
-	initFocus?: boolean;
+	input?: InputConstructor;
 }
 
-export class Input extends ViewController<InputProps> {
+export function show(opts: DefaultOptions, stack?: DialogStack) {
+	return DefaultDialog.show(opts, stack);
+}
 
-	private _focus = false;
+export function alert(In: DialogIn, cb?: ()=>void, stack?: DialogStack) {
+	return DefaultDialog.alert(In, cb, stack);
+}
 
-	triggerMounted() {
-		// keyboardInstance().setRecipient(this);
-		if (this.props.initFocus) {
-			setTimeout(e=>{
-				var input = this._dom;
-				if (input)
-					input.focus();
-			}, 100);
-		}
-	}
+export function confirm(In: DialogIn, cb?: (ok: boolean)=>void, stack?: DialogStack) {
+	return DefaultDialog.confirm(In, cb, stack);
+}
 
-	triggerRemove() {
-		keyboardInstance().clearRecipient(this);
-	}
-
-	get value() {
-		return this._dom.value;
-	}
-
-	set value(val) {
-		this._dom.value = val;
-	}
-
-	get _dom() {
-		return this.refs.input as HTMLInputElement;
-	}
-
-	triggerChange() {
-		if (this.props.onChange) {
-			var input = this._dom;
-			var len = input.value.length
-			// console.log(input.setSelectionRange);
-			// input.setSelectionRange(len, len);
-			setTimeout(() => {
-				try {
-					input.focus();
-					input.setSelectionRange(len, len);
-				} catch(err) {}
-			}, 50);
-
-			this.props.onChange();
-		}
-	}
-
-	triggerDone() {
-		if (this.props.onDone) {
-			this.props.onDone();
-		}
-	}
-
-	private _handleChange = ()=>{
-		// keyboardInstance().setRecipient(this);
-		this.triggerChange();
-	}
-
-	private _handleFocus = ()=>{
-		// console.log('_handleFocus');
-		if (!this._focus) {
-			this._focus = true;
-			keyboardInstance().setRecipient(this);
-			if (this.props.onFocus) {
-				this.props.onFocus();
-			}
-		}
-	}
-
-	private _handleBlur = (event: React.FocusEvent<HTMLInputElement>)=>{
-		// console.log('_handleBlur');
-		var keyboard = keyboardInstance();
-		if (keyboard.hasPresskeyCycle) {
-			event.preventDefault();
-			return;
-		}
-		if (this._focus) {
-			this._focus = false;
-			keyboard.clearRecipient(this);
-			if (this.props.onBlur) {
-				this.props.onBlur();
-			}
-		}
-	}
-
-	focus() {
-		this._dom.focus();
-	}
-
-	blur() {
-		this._dom.blur();
-	}
-
-	render() {
-		var {value,className,type,style,placeholder} = this.props;
-		return (
-			<input 
-				placeholder={placeholder}
-				className={className} 
-				defaultValue={value} 
-				ref="input" 
-				type={type}
-				style={style}
-				onChange={this._handleChange}
-				onClick={this._handleFocus}
-				onFocus={this._handleFocus}
-				onBlur={this._handleBlur}
-			/>
-		);
-	}
+export function prompt(In: PromptIn, cb?: (value: string, ok: boolean)=>void, stack?: DialogStack) {
+	return DefaultDialog.prompt(In, cb, stack);
 }
