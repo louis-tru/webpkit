@@ -60,7 +60,7 @@ export class AForm extends GlobalState<{form: Form}> {
 	isFieldValidating = (...args: any[])=>this.props.form.isFieldValidating(...args);
 	getFieldValue = (...args: any[])=>this.props.form.getFieldValue(...args);
 
-	_check(name: string) {
+	private _check(name: string) {
 		var {rules} = this.props.form.getFieldInstance(name).props;
 		var value = this.props.form.getFieldValue(name);
 		if (rules) {
