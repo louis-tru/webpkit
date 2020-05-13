@@ -221,6 +221,7 @@ export interface DefaultOptions extends Options {
 		type?: string;
 		value?: string;
 		input?: InputConstructor;
+		placeholder?: string;
 	},
 	noMask?: boolean;
 }
@@ -273,8 +274,10 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 						{	(()=>{
 							var Input = props.prompt.input;
 							var type = props.prompt.type || 'text';
+							var placeholder = props.prompt.placeholder || '';
 							var inputProps = {
 								ref: 'prompt',
+								placeholder: placeholder,
 								style: {
 									border: 'solid 0.015rem #ccc',
 									width: '90%',
@@ -282,10 +285,10 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 									height: '0.5rem',
 									padding: '0 2px',
 								} as React.CSSProperties,
-	}
-		return (
+							};
+							return (
 								Input ? 
-								<Input {...inputProps} value={props.prompt.value} />: 
+								<Input {...inputProps} value={props.prompt.value} type={type} initFocus={true} />: 
 								<input {...inputProps} defaultValue={props.prompt.value} type={type} />
 							);
 						})()}
@@ -334,11 +337,11 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 	static prompt(In: PromptIn, cb?: (value: string, ok: boolean)=>void, stack?: DialogStack) {
 		var _cb = cb || function() {}
 		var o = typeof In == 'string' ? { text: In, title: '', value: '', type: 'text' }: In;
-		var { text, title, value, type, input } = o;
+		var { text, title, value, type, input, placeholder } = o;
 		return this.show({title, text, buttons: {
 			'取消': e=> _cb(e.refs.prompt.value, false),
 			'@确定': e=> _cb(e.refs.prompt.value, true),
-		}, prompt: {value, type, input}}, stack);
+		}, prompt: {value, type, input, placeholder }}, stack);
 	}
 
 }
@@ -358,6 +361,7 @@ export type PromptIn = string | {
 	value?: string;
 	type?: string;
 	input?: InputConstructor;
+	placeholder?: string;
 }
 
 export function show(opts: DefaultOptions, stack?: DialogStack) {
