@@ -1,7 +1,7 @@
 
 import Header from '../util/header';
 import { React, NavPage, dialog } from 'webpkit/mobile';
-import sdk from 'webpkit/lib/store';
+import sdk from '../sdk';
 
 export default class extends NavPage {
 

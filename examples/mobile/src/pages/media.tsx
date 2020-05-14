@@ -2,7 +2,7 @@
 import utils from 'nxkit';
 import Header from '../util/header';
 import {React, NavPage} from 'webpkit/mobile';
-import sdk from 'webpkit/lib/store';
+import sdk from '../sdk';
 import { ConBar } from '../util/bar';
 import { Monitor } from 'nxkit/monitor';
 

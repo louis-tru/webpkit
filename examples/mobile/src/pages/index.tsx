@@ -1,6 +1,6 @@
 
 import { React, NavPage,dialog } from 'webpkit/mobile';
-import sdk from 'webpkit/lib/store';
+import sdk from '../sdk';
 import utils from 'nxkit';
 import '../css/index.css';
 

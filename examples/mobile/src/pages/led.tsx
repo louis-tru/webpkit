@@ -1,7 +1,7 @@
 
 import Header from '../util/header';
 import { React, NavPage } from 'webpkit/mobile';
-import sdk from 'webpkit/lib/store';
+import sdk from '../sdk';
 import {Monitor} from 'nxkit/monitor';
 import '../css/led.css';
 

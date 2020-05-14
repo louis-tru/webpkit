@@ -6,6 +6,15 @@ const config = require('./cfg');
 
 // https://www.cnblogs.com/champyin/p/12198515.html
 
+function mkdirp(dir) {
+	if (dir) {
+		if (!fs.existsSync(dir)) {
+			mkdirp(path.dirname(dir));
+			fs.mkdirSync(dir);
+		}
+	}
+}
+
 class ManifestPlugin {
 
 	apply(compiler) {
@@ -93,7 +102,12 @@ class ManifestPlugin {
 			// var s = path.resolve(config.output, utils.assetsPath('chunks.json'));
 
 			// fs.writeFileSync(path.resolve(config.output, utils.assetsPath('js/chunks.json')), JSON.stringify(data.chunks, null, 2));
-			fs.writeFileSync(path.resolve(config.output, utils.assetsPath('js/chunks.json')), JSON.stringify(data.chunks.map(e=>{
+
+			var path_str = path.resolve(config.output, utils.assetsPath('js/chunks.json'));
+
+			mkdirp(path.dirname(path_str));
+
+			fs.writeFileSync(path_str, JSON.stringify(data.chunks.map(e=>{
 				return {
 					entry: e.entry,
 					id: e.id,

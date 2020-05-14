@@ -1,7 +1,7 @@
 
 import Header from '../util/header';
 import { React, NavPage } from 'webpkit/mobile';
-import sdk from 'webpkit/lib/store';
+import sdk from '../sdk';
 import {prompt,alert,confirm} from 'webpkit/lib/dialog';
 import {Input} from '../util/keyboard';
 import utils from 'nxkit';
