@@ -22,7 +22,7 @@ export default class extends NavPage {
 
 	render() {
 		return (
-			<div className="index"> 
+			<div className="index"
 				style={{ background: this.state.colors[this.state.index] }}
 				onClick={this.m_click_handle}>
 			</div>
