@@ -29,76 +29,42 @@
  * ***** END LICENSE BLOCK ***** */
 
 import {ViewController,React} from './ctr';
-// import * as _qrcode from './_qrcode';
-var _Qrcode = require('./_qrcode').default;
-
-exports.QRCode = _Qrcode;
+const qrcode = require('qrcode/lib/browser');
 
 export interface Options {
 	width?: number;
 	height?: number;
-	typeNumber?: number;
-	colorDark?: string;
-	colorLight?: string;
-	correctLevel?: number;
-	text?: string;
-	padding?: number;
-}
-
-export declare class QRCode {
-	constructor(el: string | HTMLElement, opts?: Options);
-	makeCode(sText: string): void;
-	makeImage(): void;
-	clear(): void;
-	static CorrectLevel: {
-		L: number;
-		M: number;
-		Q: number;
-		H: number;
+	errorCorrectionLevel?: 'L'| 'M'| 'Q'| 'H',
+	quality?: number;
+	margin?: number;
+	scale?: number;
+	color?: {
+		dark?: string;
+		light?: string;
 	};
+	logoSrc?: string;
+	text: string;
 }
 
-export default class extends ViewController<Options & { 
-	className?: string;
-	style?: React.CSSProperties;
-	logoSrc?: string;
-}> {
+export default class extends ViewController<Options> {
 
-	private _qr?: QRCode;
-
-	private get opts() {
-		return {
-			width: 256,
-			height: 256,
-			typeNumber: 4,
-			colorDark: "#000000",
-			colorLight: "#ffffff",
-			correctLevel: (_Qrcode as typeof QRCode).CorrectLevel.H,
-			...this.props,
-		};
+	private get _opts() {
+		return { errorCorrectionLevel: 'M', margin: 0, ...this.props};
 	}
 
 	triggerMounted() {
-		this._qr = new _Qrcode(this.refs.dom as HTMLElement, this.opts);
+		if (this.props.text)
+			qrcode.toCanvas(this.refs.dom, this.props.text, this._opts);
 	}
 
 	triggerUpdate() {
-		(this._qr as QRCode).makeCode(this.props.text || '');
-	}
-
-	triggerRemove() {
-		(this._qr as QRCode).clear();
+		if (this.props.text)
+			qrcode.toCanvas(this.refs.dom, this.props.text, this._opts);
 	}
 
 	render() {
-		var {padding,colorLight} = this.props;
-		var style = {
-			padding: padding?`${padding}px`: 0,
-			backgroundColor: colorLight?colorLight: '#ffffff',
-			...this.props.style
-		};
 		return (
-			<div className={this.props.className} style={style} ref="dom"></div>
+			<canvas ref="dom" style={{display: 'block'}} />
 		);
 	}
 }
