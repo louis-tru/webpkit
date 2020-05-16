@@ -30,21 +30,13 @@
 
 import * as React from 'react';
 import GlobalState from './state';
+import { Component } from 'react';
+
+const persistentState = new Map<typeof _ViewController, any>();
 
 class _ViewController<P = {}, S = {}> extends GlobalState<P, S> {
 	private m_mounted?: boolean;
 	private m_loaded?: boolean;
-
-	updateState(data: S, callback?: () => void) {
-		var state: S = {} as S;
-		for (var i in data) {
-			var o = data[i];
-			if (typeof o == 'object' && !Array.isArray(o)) {
-				state[i] = Object.assign(this.state[i] || {}, data[i]);
-			}
-		}
-		this.setState(state, callback);
-	}
 
 	get isLoaded() {
 		return !!this.m_loaded;
@@ -54,17 +46,28 @@ class _ViewController<P = {}, S = {}> extends GlobalState<P, S> {
 		return !!this.m_mounted;
 	}
 
+	saveState(): any {
+		return null;
+	}
+
+	
+
 	componentWillMount() {
+		var state = persistentState.get(this.constructor as typeof _ViewController);
+		if (state) {
+			this.state = Object.assign(this.state || {}, state);
+			Component.prototype.setState.call(this, state);
+		}
 		super.componentWillMount(); // call super
 		var r = this.triggerLoad() as any; // trigger event Load
 		if (r instanceof Promise) {
 			r.then(()=>{
 				this.m_loaded = true;
-				this.setState({ __loaded: true } as any);
+				this.forceUpdate();
 			});
 		} else {
 			this.m_loaded = true;
-			this.setState({ __loaded: true } as any);
+			this.forceUpdate();
 		}
 	}
 
@@ -74,6 +77,10 @@ class _ViewController<P = {}, S = {}> extends GlobalState<P, S> {
 	}
 
 	componentWillUnmount() {
+		var state = this.saveState();
+		if (state) {
+			persistentState.set(this.constructor as typeof _ViewController, state);
+		}
 		super.componentWillUnmount(); // call super
 		this.triggerRemove();
 	}
@@ -110,8 +117,8 @@ export declare class ViewController<P, S> {
 		state: ((prevState: Readonly<S>, props: Readonly<P>) => (Pick<S, K> | S | null)) | (Pick<S, K> | S | null),
 		callback?: () => void
 	): void;
+	protected saveState(): any;
 	forceUpdate(callback?: () => void): void;
-	updateState<K extends keyof S>(state: Pick<S, K> | S, callback?: () => void): void;
 	render(): React.ReactNode;
 	readonly props: Readonly<P> & Readonly<{ children?: React.ReactNode }>;
 	state: Readonly<S>;
