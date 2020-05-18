@@ -52,12 +52,19 @@ export class Window<P = {}, S = {}> extends ViewController<P, S> {
 	}
 }
 
+export enum ActivityNavStatus {
+	BACKGROUND = 1,
+	FOREGROUND = 2,
+	LEAVE = 3,
+}
+
 export abstract class Activity<P = {}, S = {}> extends Window<P, S> {
 	static readonly type: Type = Type.ACTIVITY;
 	private _dialogStack?: DialogStack;
 	private _layerGroup?: LayerGroup;
 
 	permanent = 0;
+	navStatus = ((this.props as any).__navStatus || ActivityNavStatus.LEAVE) as ActivityNavStatus;
 
 	get preventCover() {
 		return this._dialogStack?.preventCover || this._layerGroup?.preventCover || false;
@@ -75,6 +82,12 @@ export abstract class Activity<P = {}, S = {}> extends Window<P, S> {
 			this._layerGroup = new LayerGroup(this.refs.__layers as HTMLElement);
 		}
 		return this._layerGroup;
+	}
+
+	protected recoveryState() {
+		if (this.navStatus == ActivityNavStatus.BACKGROUND) {
+			return super.recoveryState();
+		}
 	}
 
 	protected triggerRemove() {
@@ -125,6 +138,77 @@ export abstract class Activity<P = {}, S = {}> extends Window<P, S> {
 				</div>
 			</div>
 		);
+	}
+
+	async intoBackground(animate: number) {
+		var div = this.refs.__dom as HTMLDivElement;
+		var prevNavStatus = this.navStatus;
+		if (prevNavStatus != ActivityNavStatus.BACKGROUND) {
+			this.navStatus = ActivityNavStatus.BACKGROUND;
+			this.triggerPause();
+			if (div) {
+				if (animate) {
+					div.style.zIndex = '2';
+					div.style.transitionDuration = `${animate}ms`;
+					div.style.transform = 'translateX(-50%) scale(1,1)';
+					await utils.sleep(400);
+				}
+				div.style.display = 'none';
+			}
+		} else {
+			this.triggerPause();
+		}
+	}
+
+	async intoForeground(animate: number) {
+		var div = this.refs.__dom as HTMLDivElement;
+		var prevNavStatus = this.navStatus;
+		if (prevNavStatus != ActivityNavStatus.FOREGROUND) {
+			this.navStatus = ActivityNavStatus.FOREGROUND;
+			this.triggerResume();
+			if (div) {
+				div.style.display = 'block';
+				div.style.transitionDuration = '0ms';
+				if (animate) {
+					div.style.transitionDuration = '0ms';
+					if (prevNavStatus == ActivityNavStatus.LEAVE) { //  <- right
+						div.style.zIndex = '3';
+						div.style.transform = 'translateX(100%) scale(1,1)';
+					} else { // left ->
+						div.style.zIndex = '1';
+						div.style.transform = 'translateX(-50%) scale(1,1)';
+					}
+					await utils.sleep(30);
+					div.style.transitionDuration = `${animate}ms`;
+					div.style.transform = 'translateX(0) scale(1,1)';
+					await utils.sleep(400);
+				} else {
+					div.style.transform = 'translateX(0) scale(1,1)';
+				}
+			}
+		} else {
+			this.triggerResume();
+		}
+	}
+
+	async intoLeave(animate: number) {
+		var div = this.refs.__dom as HTMLDivElement;
+		var prevNavStatus = this.navStatus;
+		if (prevNavStatus != ActivityNavStatus.LEAVE) {
+			this.navStatus = ActivityNavStatus.LEAVE;
+			this.triggerPause();
+			if (div) {
+				if (animate) {
+					div.style.zIndex = '2';
+					div.style.transitionDuration = `${animate}ms`;
+					div.style.transform = 'translateX(100%) scale(1,1)';
+					await utils.sleep(400);
+				}
+				div.style.display = 'none';
+			}
+		} else {
+			this.triggerPause();
+		}
 	}
 
 	protected abstract renderBody(): React.ReactNode;

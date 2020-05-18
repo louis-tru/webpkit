@@ -28,11 +28,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+import utils from 'nxkit';
 import * as React from 'react';
 import GlobalState from './state';
 import { Component } from 'react';
 
-const persistentState = new Map<typeof _ViewController, any>();
+const persistentState = new Map<string, any>();
 
 class _ViewController<P = {}, S = {}> extends GlobalState<P, S> {
 	private m_mounted?: boolean;
@@ -46,14 +47,24 @@ class _ViewController<P = {}, S = {}> extends GlobalState<P, S> {
 		return !!this.m_mounted;
 	}
 
+	get persistentID() {
+		var id = (this.constructor as any).__persistentID__ as string;
+		if (!id) {
+			(this.constructor as any).__persistentID__ = id = String(utils.getId());
+		}
+		return id;
+	}
+
 	saveState(): any {
 		return null;
 	}
 
-	
+	recoveryState(): any {
+		return persistentState.get(this.persistentID);
+	}
 
 	componentWillMount() {
-		var state = persistentState.get(this.constructor as typeof _ViewController);
+		var state = this.recoveryState();
 		if (state) {
 			this.state = Object.assign(this.state || {}, state);
 			Component.prototype.setState.call(this, state);
@@ -79,7 +90,9 @@ class _ViewController<P = {}, S = {}> extends GlobalState<P, S> {
 	componentWillUnmount() {
 		var state = this.saveState();
 		if (state) {
-			persistentState.set(this.constructor as typeof _ViewController, state);
+			persistentState.set(this.persistentID, state);
+		} else {
+			persistentState.delete(this.persistentID);
 		}
 		super.componentWillUnmount(); // call super
 		this.triggerRemove();
@@ -111,6 +124,7 @@ export interface ViewController<P = {}, S = {}> {
 export declare class ViewController<P, S> {
 	static contextType?: React.Context<any>;
 	readonly context: any;
+	readonly persistentID: string;
 	constructor(props: Readonly<P>);
 	constructor(props: P, context?: any);
 	setState<K extends keyof S>(
@@ -118,6 +132,7 @@ export declare class ViewController<P, S> {
 		callback?: () => void
 	): void;
 	protected saveState(): any;
+	protected recoveryState(): void;
 	forceUpdate(callback?: () => void): void;
 	render(): React.ReactNode;
 	readonly props: Readonly<P> & Readonly<{ children?: React.ReactNode }>;

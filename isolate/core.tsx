@@ -8,7 +8,7 @@ import utils from 'nxkit';
 import {List,ListItem} from 'nxkit/event';
 import {React} from '../lib';
 import {getDefaultId} from '../lib/dialog';
-import {Type,CoverType,Window,NewWindow, Cover, Activity} from './ctr';
+import {Type,CoverType,Window,NewWindow, Cover, Activity, ActivityNavStatus} from './ctr';
 import {Application} from './app';
 import Gesture, {Event} from '../lib/gesture';
 import * as ReactDom from 'react-dom';
@@ -314,38 +314,17 @@ export default class ApplicationLauncher extends Gesture<{
 		if (prev) {
 			if (prev !== this._cur) {
 				var prevInfo = prev.value as Info2;
-				prevInfo.window.triggerPause();
-				currInfo.window.triggerResume();
-				if (animate) {
-					// init style
-					prevInfo.panel.style.zIndex = '1';
-					currInfo.panel.style.zIndex = '2';
-					prevInfo.panel.style.display = 'block';
-					currInfo.panel.style.display = 'block';
-					prevInfo.panel.style.transitionDuration = '0ms';
-					currInfo.panel.style.transitionDuration = '0ms';
-					prevInfo.panel.style.transform = 'translateX(0) scale(1,1)';
-					currInfo.panel.style.transform = 'translateX(100%) scale(1,1)';
-					await utils.sleep(50);
-					// ani
-					prevInfo.panel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
-					currInfo.panel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
-					// prevInfo.panel.style.transform = 'translateX(-50%) scale(0.7,0.7)';
-					prevInfo.panel.style.transform = 'translateX(-50%) scale(1,1)';
-					currInfo.panel.style.transform = 'translateX(0) scale(1,1)';
-					await utils.sleep(400);
-					prevInfo.panel.style.display = 'none';
-				} else {
-					prevInfo.panel.style.transitionDuration = '0ms';
-					currInfo.panel.style.transitionDuration = '0ms';
-					prevInfo.panel.style.transform = 'translateX(0) scale(1,1)';
-					currInfo.panel.style.transform = 'translateX(0) scale(1,1)';
-					prevInfo.panel.style.display = 'none';
-					currInfo.panel.style.display = 'block';
-				}
+				var prevAct = prevInfo.window as Activity;
+				var currAct = currInfo.window as Activity;
+				var time = animate ? ACTIVITY_ANIMATE_TIME: 0;
+				await Promise.all([
+					currAct.navStatus == ActivityNavStatus.BACKGROUND ?
+					prevAct.intoLeave(time): prevAct.intoBackground(time),
+					currAct.intoForeground(time),
+				]);
 			}
 		} else {
-			currInfo.window.triggerResume();
+			await (currInfo.window as Activity).intoForeground(0);
 		}
 
 		var act = currInfo.window as Activity;
@@ -353,7 +332,7 @@ export default class ApplicationLauncher extends Gesture<{
 			currInfo.permanent = true;
 		}
 
-		this._autoClear();
+		utils.nextTick(()=>this._autoClear());
 		return currInfo.window;
 	}
 
@@ -367,37 +346,21 @@ export default class ApplicationLauncher extends Gesture<{
 				if (!currInfo.window) { // reload
 					prev = cur.prev;
 					this._unload(cur);
-					cur = this._load(currInfo.app, currInfo.New, Target.ACTIVITY, currInfo.args, prev || item).item;
+					var args = { ...currInfo.args, __navStatus: ActivityNavStatus.BACKGROUND };
+					cur = this._load(currInfo.app, currInfo.New, Target.ACTIVITY, args, prev || item).item;
 					currInfo = cur.value as Info2;
 				}
 				this._cur = cur;
-				nextInfo.window.triggerPause();
-				currInfo.window.triggerResume();
-				if (animate) {
-					// init style
-					var currPanel = currInfo.panel;
-					var nextPanel = nextInfo.panel;
-					currPanel.style.zIndex = '1';
-					nextPanel.style.zIndex = '2';
-					currPanel.style.display = 'block';
-					nextPanel.style.display = 'block';
-					currPanel.style.transitionDuration = '0ms';
-					nextPanel.style.transitionDuration = '0ms';
-					// currPanel.style.transform = 'translateX(-50%) scale(0.7,0.7)';
-					currPanel.style.transform = 'translateX(-50%) scale(1,1)';
-					nextPanel.style.transform = 'translateX(0) scale(1,1)';
-					await utils.sleep(50);
-					// ani
-					currPanel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
-					nextPanel.style.transitionDuration = `${ACTIVITY_ANIMATE_TIME}ms`;
-					currPanel.style.transform = 'translateX(0) scale(1,1)';
-					nextPanel.style.transform = 'translateX(100%) scale(1,1)';
-					await utils.sleep(400);
-					nextPanel.style.display = 'none';
-				}
+				var currAct = currInfo.window as Activity;
+				var nextAct = nextInfo.window as Activity;
+				var time = animate ? ACTIVITY_ANIMATE_TIME: 0;
+				await Promise.all([
+					currAct.intoForeground(time),
+					nextAct.intoLeave(time),
+				]);
 			} else {
 				this._cur = null;
-				(item.value as Info2).window.triggerPause();
+				await ((item.value as Info2).window as Activity).intoLeave(0);
 			}
 		}
 		utils.nextTick(()=>this._autoClear());
@@ -498,6 +461,11 @@ export default class ApplicationLauncher extends Gesture<{
 			}
 			this._InstanceIDs.set(fid, item);
 			load = true;
+		} else {
+			// var [panel, stack] = this._genPanel(target);
+			// var New = window as any;
+			// var win = ReactDom.render<{}>(<New {...args} __app__={app} id={id} />, panel) as Window;
+			// (item.value as Info2).window.props
 		}
 		return {item, load} as LItem;
 	}

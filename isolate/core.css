@@ -51,14 +51,19 @@ body {
 }
 
 .iso_activitys > div {
-	transform-style: preserve-3d;
-	transition-property: transform;
-	transition-duration: 0ms;
+	width: auto;
+	height: auto;
+	position: static;
 }
 
 .iso_activitys > div > div {
-	width: 100%;
-	height: 100%;
+	position: absolute;
+	z-index: 1;
+	width: 100vw;
+	height: 100vh;
+	transform-style: preserve-3d;
+	transition-property: transform;
+	transition-duration: 0ms;
 }
 
 .iso_widgets > div {
