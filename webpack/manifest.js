@@ -3,6 +3,8 @@ const path = require('path');
 const utils = require('./utils');
 const fs = require('fs');
 const config = require('./cfg');
+const nxkit = require('nxkit').default;
+const crypto = require('crypto');
 
 // https://www.cnblogs.com/champyin/p/12198515.html
 
@@ -15,9 +17,56 @@ function mkdirp(dir) {
 	}
 }
 
+const hash_buf_len = 256*256;// 65536b = 64kb
+const hash_buf = Buffer.from({length: hash_buf_len});
+
+function hash_md4(filename, characteristic) {
+	var fd = fs.openSync(filename.replace(/\?.*$/, ''));
+	var size = 0;
+	var hash = crypto.createHash('md4');
+
+	while ( (size = fs.readSync(fd, hash_buf, 0, hash_buf_len)) > 0 ) {
+		hash.update(Buffer.from(hash_buf.buffer, 0, size));
+		if (size < hash_buf_len)
+			break;
+	}
+	fs.closeSync(fd);
+
+	if (characteristic)
+		hash.update(characteristic);
+
+	return hash.digest('base64');
+}
+
+function hash_simple(filename, characteristic) {
+	var fd = fs.openSync(filename.replace(/\?.*$/, ''));
+	var size = 0;
+	var _hash = 0;
+
+	while ( (size = fs.readSync(fd, hash_buf, 0, hash_buf_len)) > 0 ) {
+		var code = Buffer.from(hash_buf.buffer, 0, size).hashCode();
+		_hash += (_hash << 5) + code;
+		if (size < hash_buf_len)
+			break;
+	}
+	fs.closeSync(fd);
+
+	if (characteristic)
+		_hash += (_hash << 5) + suffix.hashCode();
+
+	return nxkit.hash(_hash);
+}
+
 class ManifestPlugin {
 
 	apply(compiler) {
+		if (config.isProd)
+			this.applyManifest(compiler);
+		this.applyChunkIds(compiler);
+		this.applyModuleIds(compiler);
+	}
+
+	applyManifest(compiler) {
 
 		var options = {};
 		options.assets = false;
@@ -92,17 +141,8 @@ class ManifestPlugin {
 		}
 		*/
 
-		// console.log(compiler.hooks);
-
-		compiler.hooks.done.tap('ManifestPlugin', (stats) => {
+		compiler.hooks.done.tap('Manifest', (stats) => {
 			var data = stats.toJson(options);
-			// console.log('-- ManifestPlugin --', data.modules.filter(e=>e.name&&['.ts','.tsx'].indexOf(path.extname(e.name))!=-1 ) );
-			// console.log('-- ManifestPlugin --', data.chunks );
-			// console.log('--- ManifestPlugin ---', path.resolve(config.output, utils.assetsPath('chunks.json')));
-			// var s = path.resolve(config.output, utils.assetsPath('chunks.json'));
-
-			// fs.writeFileSync(path.resolve(config.output, utils.assetsPath('js/chunks.json')), JSON.stringify(data.chunks, null, 2));
-
 			var path_str = path.resolve(config.output, utils.assetsPath('js/chunks.json'));
 
 			mkdirp(path.dirname(path_str));
@@ -120,7 +160,69 @@ class ManifestPlugin {
 				};
 			}), null, 2));
 		});
+
 	}
+
+	applyChunkIds(compiler) {
+
+		/*
+		 * 重新指定输出文件名称,添加应用前缀
+		 * 这会影响到配置 optimization.chunkIds
+		 */
+		var _autoId = 0;
+		var _retainRaws = [
+			'low', 'nxkit_bigint', 'runtime',
+		];
+
+		compiler.hooks.compilation.tap("ManifestChunkIds", compilation => {
+			compilation.hooks.beforeChunkIds.tap("ManifestChunkIds", chunks => {
+				for (const chunk of chunks) {
+
+					if (config.productName == chunk.name) {
+						chunk.id = chunk.name;
+					} else {
+						chunk.id = chunk.name ? chunk.name: (_autoId++);
+
+						if (!chunk.name || _retainRaws.indexOf(chunk.name) == -1) {
+							chunk.id = config.productName + '_' + chunk.id;
+						}
+					}
+				}
+			});
+		});
+
+	}
+
+	applyModuleIds(compiler) {
+
+		/*
+		 * 重新指定模块的id，取文件内容hash做为id
+		 * 这会影响到配置 optimization.moduleIds
+		 */
+
+		var _autoId = 0;
+
+		compiler.hooks.compilation.tap("ManifestModuleIds", compilation => {
+			const hashDigestLength = 4;
+			const usedIds = new Set();
+			const useMd4 = true;
+			compilation.hooks.beforeModuleIds.tap("ManifestModuleIds", modules => {
+				for (const module of modules) {
+					if (module.resource) {
+						var hashId = (useMd4 ? hash_md4: hash_simple)(module.resource, module.rawRequest.indexOf('!') ? '!': '');
+						var len = hashDigestLength;
+						while (usedIds.has(hashId.substr(0, len)))
+							len++;
+						module.id = hashId.substr(0, len);
+					} else {
+						module.id = config.productName + '_mod_' + (_autoId++);
+					}
+					// console.log(module.id);
+				}
+			});
+		});
+	}
+
 }
 
 exports.ManifestPlugin = ManifestPlugin;

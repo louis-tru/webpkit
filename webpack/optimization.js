@@ -19,13 +19,6 @@ module.exports = {
 		name: 'runtime',
 	},
 	splitChunks: {
-		// chunks: 'all'|'async'|'initial', //同时分割同步和异步代码,推荐。
-		// maxAsyncRequests: 5,  // 异步加载chunk的并发请求数量<=5
-		// maxInitialRequests: 3, // 一个入口并发加载的chunk数量<=3
-		// minSize: 30000, // 模块超过30k自动被抽离成公共模块
-		// minChunks: 1, // 模块被引用>=1次，便分割
-		// name: true,
-		// automaticNameDelimiter: '~',
 		cacheGroups: {
 			vendors: {
 				test: /node_modules|webpkit/,
@@ -34,13 +27,6 @@ module.exports = {
 				priority: 3,
 				enforce: true,
 			},
-			// common: {
-			// 	name: "common",
-			// 	chunks: "all",
-			// 	priority: 2,
-			// 	enforce: true,
-			// 	minChunks: 2,
-			// },
 			nxkit_bigint: {
 				test: /nxkit\/_bigint/,
 				name: "nxkit_bigint",
@@ -57,4 +43,6 @@ module.exports = {
 			},
 		},
 	},
+	chunkIds: 'named',
+	moduleIds: 'hashed',
 };

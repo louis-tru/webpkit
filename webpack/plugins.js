@@ -61,10 +61,10 @@ const prod_plugins = [
 	...(config.build.bundleAnalyzerReport ? [
 		new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin)() ]:[]
 	),
-	new ManifestPlugin(),
 ];
 
 const plugins = [
+	new ManifestPlugin(),
 	new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/),
 	new webpack.DefinePlugin({ 'process.env': { NODE_ENV: `"${NODE_ENV}"` } }),
 	// copy custom static assets
@@ -77,7 +77,7 @@ const plugins = [
 	// you can customize output by editing /index.html
 	// see https://github.com/ampedandwired/html-webpack-plugin
 	
-	...views.map(({name,html})=>
+	...views.filter(({html})=>html).map(({name,html})=>
 		new HtmlWebpackPlugin({
 			filename: name + '.html',
 			template: html,
