@@ -7,7 +7,7 @@ import './cell.css';
 import utils from 'nxkit';
 import {React} from '.';
 import {ViewController} from './ctr';
-import Gesture,{Event as GE} from './gesture';
+import Gesture,{Event as GEvent} from './gesture';
 import {EventNoticer, Event} from 'nxkit/event';
 
 interface CellDom { type: CellConstructor; props: any, key?: any; ref?: any; }
@@ -20,22 +20,29 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	preloading?: number;
 }> {
 
+	private _count = 0;
 	private __index = Number(this.props.index) || 0;
 	private _bounce = !!Number(this.props.bounce);
-	private _preloading = Math.max(1, Number(this.props.preloading) || 1);
+	private __preloading = Math.max(1, Number(this.props.preloading) || 1);
 	private _cells = new Set<Cell>();
-	private __count = 0;
 
 	private get _index() {
 		return this.__index;
 	}
 
+	private _reallyIndex(index: number) {
+		var count = this._count;
+		return (((index % count) + count) % count);
+	}
+
 	private set _index(index: number) {
-		if (index !== this.__index || !this.isMounted) {
-			this.__index = index;
+		index = Number(index);
+		var reallyIndex = this._reallyIndex(index);
+		if (reallyIndex !== this._reallyIndex(this.__index) || !this.isMounted) {
+			this.__index = this._count < 3 ? this._reallyIndex(index): index;
 			utils.nextTick(()=>this.forceUpdate(()=>{
 				for (var cell of this._cells) {
-					if (cell.index == index) {
+					if (cell.index == reallyIndex) {
 						(cell as any)._resume(); // private visit
 					} else {
 						(cell as any)._pause(); // private visit
@@ -44,6 +51,14 @@ export class CellPanel<P = {}> extends Gesture<P & {
 				this.onSwitch.trigger(index);
 			}));
 		}
+	}
+
+	private get _max() {
+		return this._count < 3 ? Math.max((this._count - 1) * this.clientWidth, 0): Infinity;
+	}
+
+	private get _min() {
+		return this._count < 3 ? 0: -Infinity;
 	}
 
 	private _cellsDom() {
@@ -55,32 +70,59 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		return cells;
 	}
 
-	private get _count() {
-		return this._cellsDom().length;
+	private _preloading(count: number) {
+		return Math.min(this.__preloading, Math.floor((count - 1) / 2));
+	}
+
+	private _displayRange(index: number, count: number): number[] {
+		if (count < 3) {
+			if (count == 1) {
+				return [0];
+			} else if (count == 2) {
+				return [0, 1];
+			}
+			return [];
+		}
+
+		var preloading = this._preloading(count);
+		var range = [];
+
+		for (var i = index - preloading, j = index + preloading * 2; i < j; i++) {
+			range.push(i);
+		}
+		return range;
 	}
 
 	private _renderChild() {
 		var cells = this._cellsDom();
-		var index = this._index;
-		// console.log('_preloading', this._preloading);
-		this._index = index = Math.min(Math.max(0, index), cells.length - 1); // fix index value
-		this.__count = cells.length;
-		var width = 100 / cells.length + '%';
-		return cells.map((e,j)=>{
-			utils.assert( utils.equalsClass(Cell, e.type), 'CellPanel.props.children type error' );
-			var E = {...e, props: {...e.props, panel: this, __index: j } };
-			return (
-				<div key={e.key || j} style={{width}}>
-					{ Math.abs(j - index) <= this._preloading ? E: null }
-				</div>
-			);
+		var count = this._count = cells.length;
+		var range = this._displayRange(this._index, count);
+
+		return range.map((index)=>{
+			var reallyIndex = this._reallyIndex(index);
+			var cell = cells[reallyIndex];
+			utils.assert( utils.equalsClass(Cell, cell.type), 'CellPanel.props.children type error' );
+			// console.log(cell.key || reallyIndex)
+			var key = cell.key || reallyIndex;
+			var x = index * 100 + '%';
+			var E = {
+				...cell,
+				props: {
+					...cell.props,
+					panel: this,
+					__index: reallyIndex,
+					key: key,
+					__left: x,
+				}
+			};
+			return E;
 		});
 	}
 
 	readonly onSwitch = new EventNoticer<Event<number, CellPanel<P>>>('Switch', this);
 
 	get count() {
-		return this.__count;
+		return this._count;
 	}
 
 	get index() {
@@ -89,10 +131,6 @@ export class CellPanel<P = {}> extends Gesture<P & {
 
 	set index(val: number) {
 		this.switchAt(val);
-	}
-
-	private get _max_x() {
-		return Math.max((this._count - 1) * this.clientWidth, 0);
 	}
 
 	cellAt(index: number) {
@@ -105,11 +143,11 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	}
 
 	switchAt(index: number, animate = true) {
-		index = Math.min(Math.max(0, index), this._count - 1);
+		index = Number(index);
 		if (this._index != index) {
 			this._index = index;
-			(this.refs.cells as HTMLElement).style.transitionDuration = animate ? `${transitionDuration}ms` : '0ms';
-			this.forceUpdate();
+			(this.refs.cells as HTMLElement).
+				style.transitionDuration = animate ? `${transitionDuration}ms` : '0ms';
 		}
 	}
 
@@ -124,8 +162,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		return (
 			<div ref="root" className="_cells_panel">
 				<div ref="cells" className="_cells" style={{
-					width: cells.length * 100 + '%',
-					transform: `translateX(-${this._index/cells.length*100}%)`,
+					transform: `translateX(${(-this._index)*100}%)`,
 				}}>{cells}</div>
 			</div>
 		);
@@ -137,48 +174,49 @@ export class CellPanel<P = {}> extends Gesture<P & {
 
 	private _beginX = -1;
 
-	protected triggerMove(e: GE) {
+	protected triggerMove(e: GEvent) {
 		if (e.begin_direction == 1 || e.begin_direction == 3) { // left / rigjt
 
 			var cells = this.refs.cells as HTMLElement;
 
 			if (this._beginX == -1) {
 				var style = getComputedStyle(cells);
-				this._beginX = Math.abs(parseInt(style.transform.split(',')[4]));
+				var transformX = style.transform.split(',')[4];
+				this._beginX = parseInt(transformX);
 				cells.style.transform = `translateX(${-this._beginX}px)`;
 				cells.style.transitionDuration = `0ms`;
 			}
 
 			e.cancelBubble = true;
 			var move_x = e.begin_x - e.x;
-			// var x = this._index * this.clientWidth + move_x;
-			var x = this._beginX + move_x;
+			var x = move_x - this._beginX;
+
 			if (this._bounce) {
-				if (this._max_x < x) {
-					x -= ((x - this._max_x) / 1.5);
-				} else if (x < 0) {
+				if (this._max < x) {
+					x -= ((x - this._max) / 1.5);
+				} else if (x < this._min) {
 					x -= (x / 1.5);
 				}
 			} else {
-				x = Math.min(this._max_x, x);
-				x = Math.max(0, x);
+				x = Math.min(this._max, x);
+				x = Math.max(this._min, x);
 			}
 			cells.style.transform = `translateX(${-x}px)`;
 			cells.style.transitionDuration = `0ms`;
 		}
 	}
 
-	protected triggerEndMove(e: GE) {
+	protected triggerEndMove(e: GEvent) {
 		if (e.begin_direction == 1 || e.begin_direction == 3) { // left / rigjt
 			if (e.speed > 100 && e.begin_direction == e.instant_direction) {
 				if (e.begin_direction == 1) { // right
-					this._index = Math.max(0, this._index - 1);
+					this._index = this._index - 1;
 				} else { // left
-					this._index = Math.min(Math.max(0, this._count - 1), this._index + 1);
+					this._index = this._index + 1 
 				}
 			}
 			var cells = this.refs.cells as HTMLElement;
-			cells.style.transform = `translateX(-${this._index/this._count*100}%)`;
+			cells.style.transform = `translateX(${(-this._index)*100}%)`;
 			cells.style.transitionDuration = `${transitionDuration}ms`;
 			this._beginX = -1;
 		}
@@ -229,6 +267,7 @@ export class Cell<P = {}, S = {}> extends ViewController<P & { style?: React.CSS
 	private _pause() {
 		if (!this._isPause) {
 			this._isPause = true;
+			// console.log('triggerPause', this.index);
 			this.triggerPause();
 		}
 	}
@@ -244,8 +283,10 @@ export class Cell<P = {}, S = {}> extends ViewController<P & { style?: React.CSS
 	}
 
 	render() {
+		var left = (this.props as any).__left || '0';
+		var style = {...this.props.style, transform: `translateX(${left})`, position: 'absolute' };
 		return (
-			<div className={`_cell ${this.props.className||''}`} style={this.props.style}>
+			<div className={`_cell ${this.props.className||''}`} style={style as React.CSSProperties}>
 				{this.props.children}
 			</div>
 		);

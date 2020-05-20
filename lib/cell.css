@@ -6,14 +6,21 @@
 
 ._cells {
 	height: 100%;
-	display: flex;
-	flex-direction: row;
+	width: 100%;
 	transform-style: preserve-3d;
-	transition-property: transform /*, filter*/;
+	transition-property: transform;
 	transition-duration: 0ms;
+	position: relative;
+}
+
+._cells > div {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	/* transform-style: preserve-3d; */
 }
 
 ._cell {
-	height: 100%;
 	width: 100%;
+	height: 100%;
 }
