@@ -55,6 +55,13 @@ function compute_speed(time0: number, time1: number, speed0: number, distance: n
 	};
 }
 
+export enum Direction {
+	LEFT = 1,
+	TOP = 2,
+	RIGHT = 3,
+	BOTTOM = 4,
+}
+
 export interface Event {
 	begin: boolean,
 	time: number,
@@ -63,7 +70,7 @@ export interface Event {
 	x: number, y: number,
 	speed: number, instant_speed: number,
 	begin_angle: number, angle: number, instant_angle: number,
-	begin_direction: number, direction: number, instant_direction: number,
+	begin_direction: Direction, direction: Direction, instant_direction: Direction,
 	distance: number, instant_distance: number, cancelBubble: boolean,
 }
 
