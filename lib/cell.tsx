@@ -39,7 +39,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		index = Number(index);
 		var reallyIndex = this._reallyIndex(index);
 		if (reallyIndex !== this._reallyIndex(this.__index) || !this.isMounted) {
-			this.__index = this._count < 3 ? this._reallyIndex(index): index;
+			this.__index = Math.max(Math.min(this._maxIndex, index), this._minIndex);
 			utils.nextTick(()=>this.forceUpdate(()=>{
 				for (var cell of this._cells) {
 					if (cell.index == reallyIndex) {
@@ -53,12 +53,20 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		}
 	}
 
+	private get _maxIndex() {
+		return this._count < 3 ? Math.max(this._count - 1, 0): Infinity;
+	}
+
+	private get _minIndex() {
+		return this._count < 3 ? 0: -Infinity;
+	}
+
 	private get _max() {
-		return this._count < 3 ? Math.max((this._count - 1) * this.clientWidth, 0): Infinity;
+		return this._maxIndex * this.clientWidth;
 	}
 
 	private get _min() {
-		return this._count < 3 ? 0: -Infinity;
+		return this._minIndex * this.clientWidth;
 	}
 
 	private _cellsDom() {
@@ -210,7 +218,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		if (e.begin_direction == 1 || e.begin_direction == 3) { // left / rigjt
 			if (e.speed > 100 && e.begin_direction == e.instant_direction) {
 				if (e.begin_direction == 1) { // right
-					this._index = this._index - 1;
+					this._index =  this._index - 1;
 				} else { // left
 					this._index = this._index + 1 
 				}
