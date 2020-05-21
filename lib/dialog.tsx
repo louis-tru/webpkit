@@ -124,7 +124,7 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 
 	readonly onClose = new EventNoticer<Event<any, Dialog>>('Close', this);
 
-	private __activity: Activity | null = (this.props as any).__activity || null;
+	private __activity?: Activity = (this.props as any).__activity;
 
 	get preventCover() {
 		return true;

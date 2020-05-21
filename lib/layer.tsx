@@ -99,7 +99,7 @@ export abstract class Layer<P = {}, S = {}> extends ViewController<P, S> {
 
 	private __show = false;
 	private __close = false;
-	private __activity: Activity | null = (this.props as any).__activity || null;
+	private __activity?: Activity = (this.props as any).__activity;
 
 	get preventCover() {
 		return this.fullScreen;
