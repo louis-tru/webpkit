@@ -85,8 +85,10 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	private _displayRange(index: number, count: number): number[] {
 		if (count < 3) {
 			if (count == 1) {
+				this.__index = 0;
 				return [0];
 			} else if (count == 2) {
+				this.__index = this._reallyIndex(index);
 				return [0, 1];
 			}
 			return [];

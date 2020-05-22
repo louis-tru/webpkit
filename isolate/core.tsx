@@ -124,6 +124,10 @@ export default class ApplicationLauncher extends Gesture<{
 		}
 	}
 
+	get currentApplication() {
+		return this._cur ? (this._cur.value as Info).app.name: '';
+	}
+
 	install(appName: string, app: ()=>Promise<{default:NewApplication}>) {
 		utils.assert(!this._installed.has(appName));
 		this._installed.set(appName, app);
