@@ -6,7 +6,7 @@ import sdk from '../sdk';
 import { ConBar } from '../util/bar';
 import { Monitor } from 'nxkit/monitor';
 
-const piper720p = require('../res/piper720p.mp4');
+// const piper720p = require('../res/piper720p.mp4');
 
 export default class extends NavPage<{auto?: boolean}> {
 	state = {volume: 0, light: 0};
@@ -84,7 +84,7 @@ export default class extends NavPage<{auto?: boolean}> {
 					preload="auto"
 					onPlay={this.m_handle_play}
 					onTimeUpdate={this.m_handle_time_update}
-					src={piper720p}
+					src="http://ngui.fun/media/piper720p.mp4"
 				></video>
 				{
 					// <audio
