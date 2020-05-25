@@ -59,7 +59,7 @@ export abstract class Keyboard<P = {}, S = {}> extends ViewController<P, S> {
 
 	private _handlePresskeyCycle = ()=>{
 		this._hasPresskeyCycle = true;
-		setTimeout(()=>this._hasPresskeyCycle = false, 50);
+		setTimeout(()=>this._hasPresskeyCycle = false, 100);
 	}
 
 	render() {
