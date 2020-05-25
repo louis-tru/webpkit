@@ -59,7 +59,7 @@ export abstract class Keyboard<P = {}, S = {}> extends ViewController<P, S> {
 
 	private _handlePresskeyCycle = ()=>{
 		this._hasPresskeyCycle = true;
-		setTimeout(()=>this._hasPresskeyCycle = false, 200);
+		setTimeout(()=>this._hasPresskeyCycle = false, 50);
 	}
 
 	render() {
@@ -405,9 +405,14 @@ export class Input extends ViewController<InputProps> {
 		this.triggerChange();
 	}
 
-	private _handleFocus = ()=>{
+	private _handleClick = ()=>{
+		this._handleFocus(true);
+	}
+
+	private _handleFocus = (force = false)=>{
 		// console.log('_handleFocus');
-		if (!this._focus) {
+		// console.log('_focus', this._focus);
+		if (force || !this._focus) {
 			this._focus = true;
 			keyboardInstance().setRecipient(this);
 			if (this.props.onFocus) {
@@ -451,8 +456,8 @@ export class Input extends ViewController<InputProps> {
 				type={type}
 				style={style}
 				onChange={this._handleChange}
-				onClick={this._handleFocus}
-				onFocus={this._handleFocus}
+				onClick={this._handleClick}
+				onFocus={e=>this._handleFocus()}
 				onBlur={this._handleBlur}
 			/>
 		);
