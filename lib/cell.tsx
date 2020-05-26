@@ -39,7 +39,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		index = Number(index);
 		var reallyIndex = this._reallyIndex(index);
 		if (reallyIndex !== this._reallyIndex(this.__index) || !this.isMounted) {
-			this.__index = Math.max(Math.min(this._maxIndex, index), this._minIndex);
+			this.__index = index > this._maxIndex || index < this._minIndex ? reallyIndex: index;
 			utils.nextTick(()=>this.forceUpdate(()=>{
 				for (var cell of this._cells) {
 					if (cell.index == reallyIndex) {
@@ -54,11 +54,11 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	}
 
 	private get _maxIndex() {
-		return this._count < 3 ? Math.max(this._count - 1, 0): Infinity;
+		return this._count < 3 ? Math.max(this._count - 1, 0): 1000;
 	}
 
 	private get _minIndex() {
-		return this._count < 3 ? 0: -Infinity;
+		return this._count < 3 ? 0: -1000;
 	}
 
 	private get _max() {
@@ -195,6 +195,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 				this._beginX = parseInt(transformX);
 				cells.style.transform = `translateX(${-this._beginX}px)`;
 				cells.style.transitionDuration = `0ms`;
+				console.log('style.transform', style.transform);
 			}
 
 			e.cancelBubble = true;
@@ -222,7 +223,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 				if (e.begin_direction == 1) { // right
 					this._index =  this._index - 1;
 				} else { // left
-					this._index = this._index + 1 
+					this._index = this._index + 1;
 				}
 			}
 			var cells = this.refs.cells as HTMLElement;
