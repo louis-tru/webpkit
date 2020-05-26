@@ -45,6 +45,8 @@ export abstract class Keyboard<P = {}, S = {}> extends ViewController<P, S> {
 
 	setRecipient(input: Input) {
 		if (input instanceof Input && this.m_recipient !== input) {
+			if (this.m_recipient)
+				this.m_recipient.blur();
 			this.m_recipient = input;
 			this.active(true);
 		}
@@ -52,6 +54,7 @@ export abstract class Keyboard<P = {}, S = {}> extends ViewController<P, S> {
 
 	clearRecipient(input: Input) {
 		if (input === this.m_recipient) {
+			input.blur();
 			this.m_recipient = null;
 			this.active(false);
 		}
@@ -59,7 +62,7 @@ export abstract class Keyboard<P = {}, S = {}> extends ViewController<P, S> {
 
 	private _handlePresskeyCycle = ()=>{
 		this._hasPresskeyCycle = true;
-		setTimeout(()=>this._hasPresskeyCycle = false, 100);
+		setTimeout(()=>this._hasPresskeyCycle = false, 50);
 	}
 
 	render() {
@@ -406,19 +409,7 @@ export class Input extends ViewController<InputProps> {
 	}
 
 	private _handleClick = ()=>{
-		this._handleFocus(true);
-	}
-
-	private _handleFocus = (force = false)=>{
-		// console.log('_handleFocus');
-		// console.log('_focus', this._focus);
-		if (force || !this._focus) {
-			this._focus = true;
-			keyboardInstance().setRecipient(this);
-			if (this.props.onFocus) {
-				this.props.onFocus();
-			}
-		}
+		this._focusFun(true);
 	}
 
 	private _handleBlur = (event: React.FocusEvent<HTMLInputElement>)=>{
@@ -426,38 +417,52 @@ export class Input extends ViewController<InputProps> {
 		var keyboard = keyboardInstance();
 		if (keyboard.hasPresskeyCycle) {
 			event.preventDefault();
-			return;
+		} else {
+			this.blur();
 		}
+	}
+
+	private _focusFun(force = false) {
+		if (force || !this._focus) {
+			this._focus = true;
+			keyboardInstance().setRecipient(this);
+			if (this.props.onFocus) {
+				this.props.onFocus();
+			}
+			this.forceUpdate();
+		}
+	}
+
+	focus() {
+		this._focusFun();
+	}
+
+	blur() {
 		if (this._focus) {
+			var keyboard = keyboardInstance();
 			this._focus = false;
 			keyboard.clearRecipient(this);
 			if (this.props.onBlur) {
 				this.props.onBlur();
 			}
+			this.forceUpdate();
 		}
-	}
-
-	focus() {
-		this._dom.focus();
-	}
-
-	blur() {
-		this._dom.blur();
 	}
 
 	render() {
 		var {value,className,type,style,placeholder} = this.props;
+		var focusCls = this._focus ? ' focus': ''
 		return (
 			<input 
 				placeholder={placeholder}
-				className={className} 
+				className={className + focusCls} 
 				defaultValue={value} 
 				ref="input" 
 				type={type}
 				style={style}
 				onChange={this._handleChange}
 				onClick={this._handleClick}
-				onFocus={e=>this._handleFocus()}
+				onFocus={()=>this.focus()}
 				onBlur={this._handleBlur}
 			/>
 		);
