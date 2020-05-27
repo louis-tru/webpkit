@@ -24,7 +24,7 @@ module.exports = {
 	rules: [
 		{
 			test: /\.(js|jsx)$/,
-			include: [utils.resolve('.'), path.join(__dirname, '..')],
+			include: [/*utils.resolve('.'), */path.resolve('..')],
 			exclude: /(typeof|_bigint)\.js/,
 			use: [{
 				loader: 'babel-loader',
@@ -33,7 +33,7 @@ module.exports = {
 		},
 		{
 			test: /\.(ts|tsx)$/,
-			include: [utils.resolve('.'), path.join(__dirname, '..')],
+			include: [/*utils.resolve('.'), */path.resolve('..')],
 			use: [{
 				loader: 'babel-loader',
 				options: babelOptions,
@@ -46,7 +46,7 @@ module.exports = {
 			test: /\.(png|jpe?g|gif|svg|mp4|webm|ogg|mp3|wav|flac|aac|woff2?|eot|ttf|otf)(\?.*)?$/,
 			loader: 'url-loader',
 			options: {
-				limit: 10240,
+				limit: config.limit,
 				name: utils.assetsPath('res/[name].[hash:7].[ext]')
 			}
 		},

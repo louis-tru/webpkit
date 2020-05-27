@@ -178,13 +178,13 @@ class ManifestPlugin {
 			compilation.hooks.beforeChunkIds.tap("ManifestChunkIds", chunks => {
 				for (const chunk of chunks) {
 
-					if (config.productName == chunk.name) {
-						chunk.id = chunk.name;
+					if (config.productName == chunk.name) { // entry name
+						chunk.id = config.productName;
 					} else {
-						chunk.id = chunk.name ? chunk.name: (_autoId++);
-
-						if (!chunk.name || _retainRaws.indexOf(chunk.name) == -1) {
-							chunk.id = config.productName + '_' + chunk.id;
+						if (_retainRaws.indexOf(chunk.name) != -1) {
+							chunk.id = chunk.name; // retain raw name
+						} else {
+							chunk.id = config.productName + '_' + (chunk.name ? chunk.name: _autoId++);
 						}
 					}
 				}
@@ -204,7 +204,7 @@ class ManifestPlugin {
 
 		compiler.hooks.compilation.tap("ManifestModuleIds", compilation => {
 			const hashDigestLength = 4;
-			const usedIds = new Set();
+			const usedIds = new Map();
 			const useMd4 = true;
 			compilation.hooks.beforeModuleIds.tap("ManifestModuleIds", modules => {
 				for (const module of modules) {
@@ -217,6 +217,7 @@ class ManifestPlugin {
 					} else {
 						module.id = config.productName + '_mod_' + (_autoId++);
 					}
+					usedIds.set(module.id);
 					// console.log(module.id);
 				}
 			});

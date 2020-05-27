@@ -41,6 +41,7 @@ const source = path.resolve(process.env.ROOT_DIR || process.cwd());
 const output = path.resolve(process.env.OUTPUT ||  'out/public', assetsPublicPath);
 const sourceMap = process.env.MAP === 'false' ? false: true;
 const isMinimizer = process.env.MINIM === 'false' ? false: true;
+const limit = Number(process.env.LIMIT) || 10240;
 
 const NODE_ENV = 
 	process.env.NODE_ENV == 'prod' ? 'production': 
@@ -79,6 +80,7 @@ module.exports = {
 	isMinimizer: isMinimizer,
 	isProd: isProd,
 	NODE_ENV: NODE_ENV,
+	limit: limit,
 
 	dev: {
 		inline: devinline,

@@ -35,7 +35,39 @@ import { Component } from 'react';
 
 const persistentState = new Map<string, any>();
 
-class _ViewController<P = {}, S = {}> extends GlobalState<P, S> {
+interface ViewControllerDefine<P = {}, S = {}> {
+	shouldComponentUpdate?(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean;
+}
+
+declare class ViewControllerDefine<P = {}, S = {}> {
+	static contextType?: React.Context<any>;
+	readonly context: any;
+	readonly persistentID: string;
+	constructor(props: Readonly<P>);
+	constructor(props: P, context?: any);
+	setState<K extends keyof S>(
+		state: ((prevState: Readonly<S>, props: Readonly<P>) => (Pick<S, K> | S | null)) | (Pick<S, K> | S | null),
+		callback?: () => void
+	): void;
+	protected saveState(): any;
+	protected recoveryState(): void;
+	forceUpdate(callback?: () => void): void;
+	render(): React.ReactNode;
+	readonly props: Readonly<P> & Readonly<{ children?: React.ReactNode }>;
+	state: Readonly<S>;
+	readonly refs: {
+		[key: string]: ViewControllerDefine<any,any> | Element;
+	};
+	readonly isLoaded: boolean;
+	readonly isMounted: boolean;
+	protected triggerLoad(): void;
+	protected triggerMounted(): void;
+	protected triggerUpdate(prevProps: Readonly<P>, prevState: Readonly<S>): void;
+	protected triggerRemove(): void;
+	protected triggerError(error: Error, errorInfo: React.ErrorInfo): void;
+}
+
+class ViewControllerIMPL<P = {}, S = {}> extends GlobalState<P, S> {
 	private m_mounted?: boolean;
 	private m_loaded?: boolean;
 
@@ -55,11 +87,11 @@ class _ViewController<P = {}, S = {}> extends GlobalState<P, S> {
 		return id;
 	}
 
-	saveState(): any {
+	protected saveState(): any {
 		return null;
 	}
 
-	recoveryState(): any {
+	protected recoveryState(): any {
 		return persistentState.get(this.persistentID);
 	}
 
@@ -113,38 +145,6 @@ class _ViewController<P = {}, S = {}> extends GlobalState<P, S> {
 	protected triggerError(error: Error, errorInfo: React.ErrorInfo) { /* overwrite */ }
 }
 
-exports.ViewController = _ViewController;
-
 export { React };
 
-export interface ViewController<P = {}, S = {}> {
-	shouldComponentUpdate?(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean;
-}
-
-export declare class ViewController<P, S> {
-	static contextType?: React.Context<any>;
-	readonly context: any;
-	readonly persistentID: string;
-	constructor(props: Readonly<P>);
-	constructor(props: P, context?: any);
-	setState<K extends keyof S>(
-		state: ((prevState: Readonly<S>, props: Readonly<P>) => (Pick<S, K> | S | null)) | (Pick<S, K> | S | null),
-		callback?: () => void
-	): void;
-	protected saveState(): any;
-	protected recoveryState(): void;
-	forceUpdate(callback?: () => void): void;
-	render(): React.ReactNode;
-	readonly props: Readonly<P> & Readonly<{ children?: React.ReactNode }>;
-	state: Readonly<S>;
-	readonly refs: {
-		[key: string]: ViewController<any,any> | Element;
-	};
-	readonly isLoaded: boolean;
-	readonly isMounted: boolean;
-	protected triggerLoad(): void;
-	protected triggerMounted(): void;
-	protected triggerUpdate(prevProps: Readonly<P>, prevState: Readonly<S>): void;
-	protected triggerRemove(): void;
-	protected triggerError(error: Error, errorInfo: React.ErrorInfo): void;
-}
+export const ViewController = ViewControllerIMPL as unknown as typeof ViewControllerDefine;

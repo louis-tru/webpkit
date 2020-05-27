@@ -1,7 +1,7 @@
 {
 	"compileOnSave": true,
 	"compilerOptions": {
-		"module": "amd",
+		"module": "esnext",
 		"target": "ES2018",
 		"moduleResolution": "node",
 		"sourceMap": true,
@@ -34,5 +34,6 @@
 		"_.js",
 		"webpack",
 		"nifty",
+		"examples",
 	]
 }
