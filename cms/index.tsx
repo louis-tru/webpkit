@@ -135,19 +135,19 @@ export class CMSRoot<P extends CMSRootProps = CMSRootProps, S = {}> extends Root
 		this.setState({ __is_404: false } as any);
 	}
 
-	login() {
+	login(): React.ReactNode {
 		return this.props.login || <ExamplesLogin />;
 	}
 
-	menu() {
+	menu(): React.ReactNode {
 		return this.props.menu || <ExamplesMenu />;
 	}
 
-	header() {
+	header(): React.ReactNode {
 		return this.props.header || <ExamplesHeader />;
 	}
 
-	footer() {
+	footer(): React.ReactNode {
 		return this.props.footer || <ExamplesFooter />;
 	}
 
