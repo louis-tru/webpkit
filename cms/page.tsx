@@ -35,18 +35,16 @@ import Page, { IDataPage, DataPage } from '../lib/page';
 export default class CMSPage<P = {}, S = {}> extends Page<P, S> {
 
 	protected reloadNifty() {
-		// import('cport-nifty/js/nifty.js').then(e=>e.initialize());
 		require('cport-nifty/js/nifty.js').initialize();
 	}
 
-	async triggerMounted() {
+	protected triggerMounted() {
 		this.reloadNifty();
-		await super.triggerMounted();
 	}
 
 }
 
-export declare class CMSDataPage<P = {}, S = {}, Data = Dict> extends CMSPage<P, S> implements IDataPage<Data> {
+export declare class CMSDataPageDefine<P = {}, S = {}, Data = Dict> extends CMSPage<P, S> implements IDataPage<Data> {
 	name: string;
 	dataPage: number;
 	readonly dataPageCount: number
@@ -61,8 +59,8 @@ export declare class CMSDataPage<P = {}, S = {}, Data = Dict> extends CMSPage<P,
 	loadData(params: Dict): Promise<{ value: Data[]; total?: number; index?: number }>;
 }
 
-class _CMSDataPage extends CMSPage {}
+class CMSDataPageIMPL extends CMSPage {}
 
-nxkit.extendClass(_CMSDataPage, DataPage, ViewController.prototype);
+nxkit.extendClass(CMSDataPageIMPL, DataPage, ViewController.prototype);
 
-exports.CMSDataPage = _CMSDataPage
+export const CMSDataPage = CMSDataPageIMPL as typeof CMSDataPageDefine;
