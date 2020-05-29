@@ -32,14 +32,28 @@ import utils from 'nxkit';
 import { React } from '../lib';
 import {ViewController} from '../lib/ctr';
 
+require('cport-nifty/css/demo/nifty-demo.css');
+
+export interface Props {
+	admin?: boolean;
+	padAll?: 'none';
+	title?: string;
+}
+
+export interface State extends Dict {
+	$$url: string;
+}
+
 /**
  * @class Login
  */
-export default abstract class Login extends ViewController<{admin?: boolean; padAll?: 'none'; title?: string; }> {
+export default abstract class Login<P = {}> extends ViewController<Props & P> {
 
 	private m_vcode_delay_id: any;
+	private _verificationtext = '获取验证码';
+	private _disabledbtn = false;
 
-	state = { $$url: '', verificationtext: '获取验证码', disabledbtn: false};
+	state = {$$url: ''} as State;
 
 	protected triggerRemove() {
 		clearTimeout(this.m_vcode_delay_id);
@@ -48,16 +62,20 @@ export default abstract class Login extends ViewController<{admin?: boolean; pad
 	private set_vcode_delay(vcode_delay: number) {
 		vcode_delay--;
 		if (vcode_delay) {
-			this.setState({ verificationtext: vcode_delay + '秒', disabledbtn: true });
+			this._verificationtext = vcode_delay + '秒';
+			this._disabledbtn = true;
+			this.forceUpdate();
 			this.m_vcode_delay_id = 
-				setTimeout(e=>this.set_vcode_delay(vcode_delay),1000);
+				setTimeout(()=>this.set_vcode_delay(vcode_delay),1000);
 		} else {
-			this.setState({ verificationtext: '获取验证码', disabledbtn: false });
+			this._verificationtext = '获取验证码';
+			this._disabledbtn = false;
+			this.forceUpdate();
 		}
 	}
 
 	private async getVerificationCode() {
-		if (this.state.disabledbtn) return;
+		if (this._disabledbtn) return;
 		var iphone = this.getCheckPhone().replace(/\s+/g, '');
 		await this.getVerificationCodeImpl(iphone);
 		this.set_vcode_delay(61);
@@ -83,6 +101,48 @@ export default abstract class Login extends ViewController<{admin?: boolean; pad
 	}
 
 	protected phoneChange(e:React.ChangeEvent<HTMLInputElement>) {
+	}
+
+	protected triggerMounted() {
+
+		var $imgHolder 	= $('#demo-bg-list');
+		var $bgBtn 		= $imgHolder.find('.demo-chg-bg');
+		var $target 	= $('#bg-overlay');
+		var self = this;
+
+		$bgBtn.on('click', function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			
+			var $el = $(this);
+			if ($el.hasClass('active') || $imgHolder.hasClass('disabled')) return;
+			if ($el.hasClass('bg-trans')) {
+				self.setState({ $$url: '' });
+				
+				$target.css('background-image','none').removeClass('bg-img');
+				$imgHolder.removeClass('disabled');
+				$bgBtn.removeClass('active');
+				$el.addClass('active');
+
+				return;
+			}
+
+			$imgHolder.addClass('disabled');
+			var url = ($el.attr('src') || '').replace('/thumbs','');
+			
+			$('<img/>').load(url, function(){
+
+				self.setState({ $$url: url });
+				
+				$target.css('background-image', 'url("' + url + '")').addClass('bg-img');
+				$imgHolder.removeClass('disabled');
+				$bgBtn.removeClass('active');
+				$el.addClass('active');
+
+				$(this).remove();
+			})
+
+		});
 	}
 
 	render() {
@@ -113,8 +173,8 @@ export default abstract class Login extends ViewController<{admin?: boolean; pad
 									<input type={admin ? 'password' : 'text'} maxLength={6} className="form-control" placeholder={admin ? '请输入密码' : '请输入验证码'} ref="upwd"/>
 									<button className="btn btn-default" 
 										style={{position: 'absolute', top: '1px',right: '1px', padding: '4px 12px',border: 'none', display: admin ? 'none' : 'block'}} 
-										onClick={()=>{this.getVerificationCode()}} disabled={this.state.disabledbtn ? true : false}>
-										{this.state.verificationtext}</button>
+										onClick={()=>{this.getVerificationCode()}} disabled={this._disabledbtn ? true : false}>
+										{this._verificationtext}</button>
 								</div>
 								
 								<div className="checkbox pad-btm text-left">{/*
@@ -145,6 +205,24 @@ export default abstract class Login extends ViewController<{admin?: boolean; pad
 					</div>
 				</div>
 				{/*--===================================================--*/}
+
+				{/* <!-- DEMO PURPOSE ONLY --> */}
+				{/* <!--===================================================--> */}
+				<div className="demo-bg">
+					<div id="demo-bg-list">
+						<div className="demo-loading"><i className="psi-repeat-2"></i></div>
+						<img className="demo-chg-bg bg-trans active" src="cport-nifty/img/bg-img/thumbs/bg-trns.jpg" alt="Background Image" />
+						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-1.jpg" alt="Background Image" />
+						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-2.jpg" alt="Background Image" />
+						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-3.jpg" alt="Background Image" />
+						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-4.jpg" alt="Background Image" />
+						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-5.jpg" alt="Background Image" />
+						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-6.jpg" alt="Background Image" />
+						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-7.jpg" alt="Background Image" />
+					</div>
+				</div>
+				{/* <!--===================================================--> */}
+
 			</div>
 		);
 	}
