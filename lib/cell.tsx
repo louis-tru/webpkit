@@ -18,6 +18,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	index?: number;
 	bounce?: boolean;
 	preloading?: number;
+	transitionDuration?: number;
 }> {
 
 	private _count = 0;
@@ -35,7 +36,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		return (((index % count) + count) % count);
 	}
 
-	private set _index(index: number) {
+	private setIndex(index: number) {
 		index = Number(index);
 		var reallyIndex = this._reallyIndex(index);
 		if (reallyIndex !== this._reallyIndex(this.__index) || !this.isMounted) {
@@ -131,6 +132,10 @@ export class CellPanel<P = {}> extends Gesture<P & {
 
 	readonly onSwitch = new EventNoticer<Event<number, CellPanel<P>>>('Switch', this);
 
+	get transitionDuration() {
+		return Number(this.props.transitionDuration) || transitionDuration;
+	}
+
 	get count() {
 		return this._count;
 	}
@@ -155,9 +160,9 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	switchAt(index: number, animate = true) {
 		index = Number(index);
 		if (this._index != index) {
-			this._index = index;
+			this.setIndex(index);
 			(this.refs.cells as HTMLElement).
-				style.transitionDuration = animate ? `${transitionDuration}ms` : '0ms';
+				style.transitionDuration = animate ? `${this.transitionDuration}ms` : '0ms';
 		}
 	}
 
@@ -192,10 +197,19 @@ export class CellPanel<P = {}> extends Gesture<P & {
 			if (this._beginX == -1) {
 				var style = getComputedStyle(cells);
 				var transformX = style.transform.split(',')[4];
+				var w = this.clientWidth;
+				var x = -this._index * w;
+
 				this._beginX = parseInt(transformX);
-				cells.style.transform = `translateX(${-this._beginX}px)`;
-				cells.style.transitionDuration = `0ms`;
-				console.log('style.transform', style.transform, this._beginX);
+
+				if (this._beginX < x - w || this._beginX > x + w) {
+					console.log('--------------', this._beginX);
+					this._beginX = x;
+				}
+
+				// cells.style.transform = `translateX(${-this._beginX}px)`;
+				// cells.style.transitionDuration = `0ms`;
+				// console.log('style.transform', style.transform, this._beginX);
 			}
 
 			e.cancelBubble = true;
@@ -221,14 +235,17 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		if (e.begin_direction == 1 || e.begin_direction == 3) { // left / rigjt
 			if (e.speed > 100 && e.begin_direction == e.instant_direction) {
 				if (e.begin_direction == 1) { // right
-					this._index =  this._index - 1;
+					// this._index =  this._index - 1;
+					this.setIndex(this._index - 1)
 				} else { // left
-					this._index = this._index + 1;
+					// this._index = this._index + 1;
+					this.setIndex(this._index + 1);
 				}
+				// console.log('triggerEndMove', this._index);
 			}
 			var cells = this.refs.cells as HTMLElement;
-			cells.style.transform = `translateX(${(-this._index)*100}%)`;
-			cells.style.transitionDuration = `${transitionDuration}ms`;
+			cells.style.transform = `translateX(${(-this._index*100)}%)`;
+			cells.style.transitionDuration = `400ms`;
 			this._beginX = -1;
 		}
 	}

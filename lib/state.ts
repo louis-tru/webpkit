@@ -85,7 +85,12 @@ export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
 		GlobalState.setGlobalState(state, this, callback);
 	}
 
-	componentWillMount() {
+	constructor(arg: any, context?: any) {
+		super(arg, context);
+		this.__initialize__();
+	}
+
+	protected __initialize__() {
 		if (!global_state_components.has(this)) {
 			var set = this._fill_global_state_value();
 			if (set.size) {
