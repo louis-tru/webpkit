@@ -58,10 +58,10 @@ import Menu from './menu';
 import Login from './login';
 import Header from './header';
 import Footer from './footer';
-import ExamplesLogin from '../examples/cms/src/login';
-import ExamplesHeader from '../examples/cms/src/header';
-import ExamplesFooter from '../examples/cms/src/footer';
-import ExamplesMenu from '../examples/cms/src/menu';
+// import ExamplesLogin from '../examples/cms/src/login';
+// import ExamplesHeader from '../examples/cms/src/header';
+// import ExamplesFooter from '../examples/cms/src/footer';
+// import ExamplesMenu from '../examples/cms/src/menu';
 import NotFound from './404';
 
 export * from '../lib';
@@ -136,19 +136,19 @@ export class CMSRoot<P extends CMSRootProps = CMSRootProps, S = {}> extends Root
 	}
 
 	login(): React.ReactNode {
-		return this.props.login || <ExamplesLogin />;
+		return this.props.login;// || <ExamplesLogin />;
 	}
 
 	menu(): React.ReactNode {
-		return this.props.menu || <ExamplesMenu />;
+		return this.props.menu;// || <ExamplesMenu />;
 	}
 
 	header(): React.ReactNode {
-		return this.props.header || <ExamplesHeader />;
+		return this.props.header;// || <ExamplesHeader />;
 	}
 
 	footer(): React.ReactNode {
-		return this.props.footer || <ExamplesFooter />;
+		return this.props.footer;// || <ExamplesFooter />;
 	}
 
 }
