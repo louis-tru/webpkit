@@ -11,3 +11,4 @@ package-lock.json
 nohup.out
 var
 demo/nifty
+!examples/node_modules
