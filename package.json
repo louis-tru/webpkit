@@ -47,7 +47,7 @@
 		"babel-loader": "^8.0.6",
 		"chalk": "^2.0.1",
 		"copy-webpack-plugin": "^5.0.5",
-		"cport-nifty": "~0.1.1",
+		"cport-nifty": "~0.1.0",
 		"crypto-tx": "~0.2.2",
 		"css-loader": "^3.2.0",
 		"fastclick": "~1.0.6",

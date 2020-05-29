@@ -195,7 +195,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 				this._beginX = parseInt(transformX);
 				cells.style.transform = `translateX(${-this._beginX}px)`;
 				cells.style.transitionDuration = `0ms`;
-				console.log('style.transform', style.transform);
+				console.log('style.transform', style.transform, this._beginX);
 			}
 
 			e.cancelBubble = true;
