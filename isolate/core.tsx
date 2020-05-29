@@ -93,7 +93,8 @@ export default class ApplicationLauncher extends Gesture<{
 	private _topHistory = new List<Info2>();
 	private _bottomHistory = new List<Info2>();
 
-	protected triggerLoad() {
+	constructor(props: any) {
+		super(props);
 		utils.assert(!_launcher);
 		_launcher = this;
 	}

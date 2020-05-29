@@ -102,6 +102,9 @@ class ViewControllerIMPL<P = {}, S = {}> extends GlobalState<P, S> {
 			Component.prototype.setState.call(this, state);
 		}
 		super.__initialize__(); // call super
+
+		await Promise.resolve();
+
 		var r = this.triggerLoad() as any; // trigger event Load
 		if (r instanceof Promise) {
 			r.then(()=>{
@@ -110,6 +113,7 @@ class ViewControllerIMPL<P = {}, S = {}> extends GlobalState<P, S> {
 			});
 		} else {
 			this.m_loaded = true;
+			// this.forceUpdate();
 		}
 	}
 
