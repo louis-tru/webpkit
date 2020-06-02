@@ -119,6 +119,7 @@ class ViewControllerIMPL<P = {}, S = {}> extends GlobalState<P, S> {
 
 	componentDidMount() {
 		this.m_mounted = true;
+		await Promise.resolve();
 		this.triggerMounted();
 	}
 
