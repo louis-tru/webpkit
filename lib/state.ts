@@ -85,8 +85,7 @@ export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
 		GlobalState.setGlobalState(state, this, callback);
 	}
 
-	constructor(arg: any, context?: any) {
-		super(arg, context);
+	UNSAFE_componentWillMount() {
 		this.__initialize__();
 	}
 

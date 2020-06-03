@@ -95,15 +95,14 @@ class ViewControllerIMPL<P = {}, S = {}> extends GlobalState<P, S> {
 		return persistentState.get(this.persistentID);
 	}
 
-	protected async __initialize__() {
+	protected __initialize__() {
 		var state = this.recoveryState();
 		if (state) {
 			this.state = Object.assign(this.state || {}, state);
 			Component.prototype.setState.call(this, state);
 		}
-		super.__initialize__(); // call super
 
-		await Promise.resolve();
+		super.__initialize__(); // call super
 
 		var r = this.triggerLoad() as any; // trigger event Load
 		if (r instanceof Promise) {
@@ -113,7 +112,7 @@ class ViewControllerIMPL<P = {}, S = {}> extends GlobalState<P, S> {
 			});
 		} else {
 			this.m_loaded = true;
-			// this.forceUpdate();
+			this.forceUpdate();
 		}
 	}
 
