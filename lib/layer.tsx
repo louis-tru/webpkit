@@ -59,14 +59,13 @@ export class LayerGroup {
 		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id}"`);
 
 		var div = document.createElement('div');
-		(this._panel as HTMLElement).appendChild(div);
 		var instance = ReactDom.render<{}, Layer<any>>(<D {...opts} __activity={act} />, div);
 
-		this._IDs.set(id, instance);
+		this._panel.appendChild(div);
 
-		instance.onClose.on(()=>{
-			this._IDs.delete(id);
-		});
+		instance.onClose.on(()=>this._IDs.delete(id));
+
+		this._IDs.set(id, instance);
 
 		instance.show(animate, delay);
 
