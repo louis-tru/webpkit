@@ -54,14 +54,17 @@ export class LayerGroup {
 		return false;
 	}
 
-	show(D: typeof Layer, opts?: Options, animate = true, delay = 0, act?: Activity) {
+	async show(D: typeof Layer, opts?: Options, animate = true, delay = 0, act?: Activity) {
 		var id = opts?.id ? String(opts.id): getDefaultId(D);
 		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id}"`);
 
 		var div = document.createElement('div');
-		var instance = ReactDom.render<{}, Layer<any>>(<D {...opts} __activity={act} />, div);
 
 		this._panel.appendChild(div);
+
+		var instance = await new Promise<Layer>(r=>
+			ReactDom.render(<D {...opts} __activity={act} />, div, function(this: any) { r(this) })
+		);
 
 		instance.onClose.on(()=>this._IDs.delete(id));
 

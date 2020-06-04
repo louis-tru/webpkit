@@ -234,9 +234,9 @@ export default class ApplicationLauncher extends Gesture<{
 	async show<T extends Window>(app: Application, window: NewWindow<T>, args?: Options, animate = true): Promise<T> {
 		if (window.type == Type.ACTIVITY) {
 			this.closeCoverAll();
-			return await this._makeActivity(this._load(app, window, Target.ACTIVITY, args), animate) as any;
+			return await this._makeActivity(await this._load(app, window, Target.ACTIVITY, args), animate) as any;
 		} else if (window.type == Type.WIDGET) {
-			return await this._makeWidget(this._load(app, window, Target.WIDGET, args), animate) as any;
+			return await this._makeWidget(await this._load(app, window, Target.WIDGET, args), animate) as any;
 		} else {
 			throw new Error('Err');
 		}
@@ -286,10 +286,10 @@ export default class ApplicationLauncher extends Gesture<{
 		if (!win) return;
 		if (type == CoverType.TOP) {
 			this.closeCover(CoverType.BOTTOM);
-			await this._makeTop(this._load(app, win, Target.TOP), animate);
+			await this._makeTop(await this._load(app, win, Target.TOP), animate);
 		} else if (type == CoverType.BOTTOM) {
 			this.closeCover(CoverType.TOP);
-			await this._makeBottom(this._load(app, win, Target.BOTTOM), animate);
+			await this._makeBottom(await this._load(app, win, Target.BOTTOM), animate);
 		}
 	}
 
@@ -352,7 +352,7 @@ export default class ApplicationLauncher extends Gesture<{
 					prev = cur.prev;
 					this._unload(cur);
 					var args = { ...currInfo.args, __navStatus: ActivityNavStatus.BACKGROUND };
-					cur = this._load(currInfo.app, currInfo.New, Target.ACTIVITY, args, prev || item).item;
+					cur = (await this._load(currInfo.app, currInfo.New, Target.ACTIVITY, args, prev || item)).item;
 					currInfo = cur.value as Info2;
 				}
 				this._cur = cur;
@@ -446,7 +446,7 @@ export default class ApplicationLauncher extends Gesture<{
 		}
 	}
 
-	private _load<T extends Window>(app: Application, window: NewWindow<T>, target: Target, args?: Options, prev?: Item | null) {
+	private async _load<T extends Window>(app: Application, window: NewWindow<T>, target: Target, args?: Options, prev?: Item | null) {
 		utils.equalsClass(Window, window);
 		var id = args?.id ? String(args.id): getDefaultId(window);
 		var fid = _get_full_id(app, id);
@@ -454,8 +454,12 @@ export default class ApplicationLauncher extends Gesture<{
 		if (!item) {
 			var [panel, stack] = this._genPanel(target);
 			var New = window as any;
-			var win = ReactDom.render<{}>(<New {...args} __app__={app} id={id} />, panel) as Window;
-			var info: Info = { 
+
+			var win = await new Promise<Window>(r=>
+				ReactDom.render(<New {...args} __app__={app} id={id} />, panel, function(this: any) { r(this) })
+			);
+
+			var info: Info = {
 				window: win, panel, id, target, time: Date.now(),
 				permanent: false, args, appName: app.name, New, app,
 			};

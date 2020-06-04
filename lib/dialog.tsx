@@ -67,21 +67,24 @@ export class DialogStack {
 		return this._dialogStack?.last?.value?.preventCover || false;
 	}
 
-	show(D: typeof Dialog, opts?: Options, animate = true, act?: Activity) {
+	async show(D: typeof Dialog, opts?: Options, animate = true, act?: Activity) {
 		var id = opts?.id ? String(opts.id): getDefaultId(D);
 		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id}"`);
 
 		var div = document.createElement('div');
-		(this._panel as HTMLElement).appendChild(div);
-		var instance = ReactDom.render<{}, Dialog<any>>(<D {...opts} __activity={act} />, div);
+
+		this._panel.appendChild(div);
+
+		var instance = await new Promise<Dialog>(r=>
+			ReactDom.render(<D {...opts} __activity={act} />, div, function(this: any) { r(this) })
+		);
 
 		var prev = this._dialogStack.last;
 		if (prev) {
 			(prev.value as Dialog).hide();
-	}
+		}
 
 		var item = this._dialogStack.push(instance);
-		this._IDs.set(id, item);
 
 		instance.onClose.on(({data})=>{
 			this._dialogStack.del(item);
@@ -90,9 +93,11 @@ export class DialogStack {
 				var last = this._dialogStack.last;
 				if (last) {
 					(last.value as Dialog).show(data.animate);
-		}
+				}
 			});
 		});
+
+		this._IDs.set(id, item);
 
 		instance.show(animate);
 
