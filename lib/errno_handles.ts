@@ -28,9 +28,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import {alert,Dialog} from './dialog';
+import {alert} from './dialog';
 
-const dialog_handles: Dict<Dialog> = {};
+const dialog_handles: Dict<any> = {};
 
 var _handle = function(e: any) {
 	var err = Error.new(e);
