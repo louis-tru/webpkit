@@ -40,7 +40,12 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		index = Number(index);
 		var reallyIndex = this._reallyIndex(index);
 		if (reallyIndex !== this._reallyIndex(this.__index) || !this.isMounted) {
-			this.__index = index > this._maxIndex || index < this._minIndex ? reallyIndex: index;
+			if (index > this._maxIndex || index < this._minIndex) {
+				if (this._count < 3) return;
+				this.__index = reallyIndex;
+			} else {
+				this.__index = index;
+			}
 			utils.nextTick(()=>this.forceUpdate(()=>{
 				for (var cell of this._cells) {
 					if (cell.index == reallyIndex) {
@@ -315,8 +320,12 @@ export class Cell<P = {}, S = {}> extends ViewController<P & { style?: React.CSS
 		var style = {...this.props.style, transform: `translateX(${left})`, position: 'absolute' };
 		return (
 			<div className={`_cell ${this.props.className||''}`} style={style as React.CSSProperties}>
-				{this.props.children}
+				{this.renderBody() || this.props.children}
 			</div>
 		);
+	}
+
+	renderBody(): React.ReactNode {
+		return null;
 	}
 }

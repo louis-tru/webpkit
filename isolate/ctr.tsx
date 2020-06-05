@@ -112,7 +112,7 @@ export abstract class Activity<P = {}, S = {}> extends Window<P, S> {
 		module.then(({default: Act})=>this.present(Act, args, animate));
 	}
 
-	showDialog(D: typeof Dialog, opts?: Options, animate = true): Dialog {
+	showDialog(D: typeof Dialog, opts?: Options, animate = true): Promise<Dialog> {
 		this.app.launcher.closeCoverAll();
 		return this.dialogStack.show(D, opts, animate, this);
 	}
@@ -121,7 +121,7 @@ export abstract class Activity<P = {}, S = {}> extends Window<P, S> {
 		return this.dialogStack.close(id, animate);
 	}
 
-	showLayer(L: typeof Layer, opts?: Options, animate = true, delay = 0): Layer {
+	showLayer(L: typeof Layer, opts?: Options, animate = true, delay = 0): Promise<Layer> {
 		this.app.launcher.closeCoverAll();
 		return this.layerGroup.show(L, opts, animate, delay, this);
 	}
