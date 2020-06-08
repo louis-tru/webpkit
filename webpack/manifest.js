@@ -207,7 +207,11 @@ class ManifestPlugin {
 			const usedIds = new Map();
 			const useMd4 = true;
 			compilation.hooks.beforeModuleIds.tap("ManifestModuleIds", modules => {
-				for (const module of modules) {
+				for (var module of modules) {
+					var resource = module.resource;
+					if (!resource && module.rootModule)
+						module = module.rootModule; //.resource;
+
 					if (module.resource) {
 						var hashId = (useMd4 ? hash_md4: hash_simple)(module.resource, module.rawRequest.indexOf('!') ? '!': '');
 						var len = hashDigestLength;
