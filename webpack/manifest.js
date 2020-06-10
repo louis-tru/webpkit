@@ -143,7 +143,7 @@ class ManifestPlugin {
 
 		compiler.hooks.done.tap('Manifest', (stats) => {
 			var data = stats.toJson(options);
-			var path_str = path.resolve(config.output, utils.assetsPath('js/chunks.json'));
+			var path_str = path.resolve(config.output, utils.assetsPath('chunks.json'));
 
 			mkdirp(path.dirname(path_str));
 
