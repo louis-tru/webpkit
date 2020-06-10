@@ -1,6 +1,6 @@
 {
 	"name": "webpkit",
-	"version": "0.2.58",
+	"version": "0.2.59",
 	"description": "Web Page KIT Framework",
 	"main": "index.js",
 	"types": "index.ts",
@@ -59,7 +59,7 @@
 		"node-notifier": "^5.1.2",
 		"node-sass": "^4.13.0",
 		"normalize.css": "^7.0.0",
-		"nxkit": "~0.10.64",
+		"nxkit": "~0.10.65",
 		"optimize-css-assets-webpack-plugin": "^5.0.3",
 		"ora": "~4.0.3",
 		"postcss-import": "^11.0.0",
