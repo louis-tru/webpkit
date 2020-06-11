@@ -1,6 +1,7 @@
 NODE    ?= node
 CWD     ?= $(shell pwd)
 ENV     ?= dev
+NAME    ?= $(shell node -e 'console.log(require("./package.json").name)')
 
 cfg = \
 if [ -f .config.js ]; then \
@@ -9,29 +10,16 @@ elif [ -f .cfg_$(1).js ]; then \
 	cat .cfg_$(1).js > config.js; \
 fi
 
-.PHONY: all build dev pull install
+.PHONY: build dev config
 
 .SECONDEXPANSION:
 
-all: build
-
-build:
-	@$(call cfg,$(ENV))
+build: config
 	@npm run $@
-	@cd out; tar cfvz public.tgz public
+	@cd out/public; tar cfvz ../$(NAME).dpk ./*
 
-dev:
-	@$(call cfg,$(ENV))
+dev: config
 	@npm run $@
 
-pull:
-	@git pull; \
-	if [ ! -d ../webpkit ]; then \
-		cd .. && git clone http://gitlab.stars-mine.com/cport/webpkit.git; \
-	else \
-		cd ../webpkit && git pull; \
-	fi
-
-install: pull
-	@-npm install
-	@rm -rf ../node_modules && ln -s webpkit/node_modules ../node_modules
+config:
+	@$(call cfg,$(ENV))

@@ -46,7 +46,7 @@ function main() {
 
 	if (opts.help) {
 		process.stdout.write('Usage:\n  webpkit\n');
-		process.stdout.write('     :\n  webpkit init [default|mobile|cms]\n');
+		process.stdout.write('     :\n  webpkit init [default|mobile|cms|dpk]\n');
 		process.stdout.write('     :\n  webpkit dev [cfg]\n');
 		process.stdout.write('     :\n  webpkit build [cfg]\n');
 		process.stdout.write('     :\n  webpkit install\n');

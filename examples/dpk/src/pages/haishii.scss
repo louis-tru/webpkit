@@ -1,0 +1,28 @@
+
+.dphoto_art_haishii {
+
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	// justify-content: center;
+	flex-direction: column;
+
+	.img {
+		width: 3.9rem;
+		height: 3.9rem;
+		margin: 0.47rem;
+		margin-top: 2rem;
+	}
+
+	.txt {
+		color: #EEEEEE;
+		font-size: 0.27rem;
+		line-height: 0.4rem;
+		text-align: center;
+		width: 5.56rem;
+	}
+
+	.svg{fill:#94BFFF;fill-rule:evenodd}
+
+}

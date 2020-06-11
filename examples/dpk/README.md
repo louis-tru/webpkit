@@ -1,0 +1,2 @@
+HC Photo Client spirit
+=====================

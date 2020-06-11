@@ -1,0 +1,244 @@
+
+.dphoto_art_index {
+	width: 100%;
+	height: 100%;
+	background-color: #1D1E23;
+	.cell {
+		position: relative;
+		.img {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			img {
+				width: 100%;
+				border: none;
+			}
+		}
+		.info {
+			position: absolute;
+			width: 100%;
+			// bottom: 0;
+			bottom: 0.1rem;
+			left: 0;
+			.txt1 {
+			}
+			.txt2 {
+			}
+			.txt3 {
+				font-size: 0.36rem;
+				padding-left: 0.3rem;
+				height: 0.36rem;
+				color: #fff;
+			}
+			.icons {
+				height: 0.82rem;
+				display: flex;
+				align-items: center;
+				color: #fff;
+				
+				div {
+					margin-left: 0.35rem;
+					margin-right: 0.35rem;
+					height: 0.4rem;
+					line-height: 0.4rem;
+					font-size: 0.22rem;
+					background-repeat: no-repeat;
+					padding-left: 0.28rem;
+					background-position: left center;
+					background-size: 0.24rem;
+					transition-property: opacity;
+					transition-duration: 200ms;
+					&:active {
+						opacity: 0.7;
+					}
+				}
+				.a {
+					background-image: url(../../assets/art/store.png);
+				}
+				.b {
+					background-image: url(../../assets/art/icon1.png);
+					&::after {
+						content: '';
+						display: inline-block;
+						width: 0.1rem;
+						height: 0.18rem;
+						background-image: url(../../assets/art/arrow2.png);
+						margin-left: 0.1rem;
+					}
+				}
+			}
+		}
+	}
+	.action {
+		width: 0.88rem;
+		height: 0.88rem;
+		background-color: #2C2E36;
+		border-radius: 0.1rem;
+		background-position: center;
+		background-repeat: no-repeat;
+		background-size: 0.6rem;
+		background-image: url(../../assets/art/more.png);
+		position: absolute;
+		right: 0.3rem;
+		bottom: 0.3rem;
+		transition-property: opacity;
+		transition-duration: 200ms;
+		&:active {
+			opacity: 0.7;
+		}
+		&.contribute {
+			background-image: url(../../assets/art/contribute.png);
+		}
+	}
+	.box_1 {
+		width: 100%;
+		height: 1rem;
+		background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.06), rgba(0,0,0,0));
+		top: 0;
+		left: 0;
+		position: absolute;
+	}
+}
+
+.dphoto_art_more {
+	width: 6.1rem;
+	height: 6.1rem;
+	background-color: rgba(44, 46, 54, 0.7);
+	border-radius: 0.1rem;
+	display: flex;
+	flex-wrap: wrap;
+	box-sizing: border-box;
+	padding: 0.125rem;
+	align-content: flex-start;
+	> div {
+		width: 1.95rem;
+		/* padding: 0.375rem; */
+		padding-bottom: 0;
+		text-align: center;
+		font-size: 0.22rem;
+		height: 1.875rem;
+		transition-property: opacity;
+		transition-duration: 200ms;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		&::before {
+			content: '';
+			display: block;
+			width: 1.2rem;
+			height: 1.2rem;
+			margin-top: 0.375rem;
+			margin-bottom: 0.1rem;
+			border-radius: 0.2rem;
+			background-repeat: no-repeat;
+			background-size: 0.6rem;
+			background-position: center;
+			background-color: rgba(60, 66, 79, 1);
+		}
+		transition-property: opacity;
+		transition-duration: 200ms;
+		&:active {
+			opacity: 0.7;
+		}
+		&.spirit::before {
+			background-image: url(../../assets/art/spirit.png);
+		}
+		&.contribute::before {
+			background-image: url(../../assets/art/contribute.png);
+		}
+	}
+}
+
+.dphoto_art_guide {
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.8);
+	._btn {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		.a {
+			width: 2.35rem;
+			height: 0.8rem;
+			line-height: 0.8rem;
+			text-align: center;
+			font-size: 0.35rem;
+			background-image: url(../../assets/art/01.png);
+		}
+		.b {
+			color: #EEEEEE;
+			font-size: 0.32rem;
+			padding-top: 0.5rem;
+		}
+	}
+	.icon_1 {
+		background-image: url(../../assets/art/02.png);
+		width: 0.94rem;
+		height: 0.89rem;
+		position: absolute;
+	}
+	.border_1 {
+		position: absolute;
+		border-radius: 0.1rem;
+		border: solid 0.04rem #fff;
+	}
+	.step_0 {
+		._btn {
+			top: 8.7rem;
+			left: 3rem;
+		}
+		.icon_1 {
+			top: 10.6rem;
+			left: 5.1rem;
+		}
+		.border_1 {
+			width: 0.88rem;
+			height: 0.88rem;
+			top: 11.58rem;
+			left: 6rem;
+			background-color: rgba(0,0,0,0.8);
+			background-image: url(../../assets/art/more.png);
+			background-size: 0.6rem;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+	}
+	.step_1 {
+		._btn {
+			top: 9.24rem;
+			left: 1.24rem;
+		}
+		.icon_1 {
+			top: 11.16rem;
+			left: 1rem;
+			transform: scaleX(-1);
+		}
+		.border_1 {
+			width: 0.8rem;
+			height: 0.4rem;
+			top: 12.12rem;
+			left: 0.3rem;
+			background-color: rgba(0, 0, 0, 0.8);
+			padding-left: 0.4rem;
+			line-height: 0.4rem;
+			font-size: 0.22rem;
+			background-repeat: no-repeat;
+			background-position: 0.1rem center;
+			background-size: 0.24rem;
+			transition-property: opacity;
+			transition-duration: 200ms;
+			background-image: url(../../assets/art/icon1.png);
+			&::after {
+				content: '';
+				display: inline-block;
+				width: 0.1rem;
+				height: 0.18rem;
+				background-image: url(../../assets/art/arrow2.png);
+				margin-left: 0.1rem;
+			}
+		}
+	}
+}

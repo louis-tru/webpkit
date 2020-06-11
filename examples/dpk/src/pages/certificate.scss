@@ -1,0 +1,22 @@
+.dphoto_art_certificate {
+	display: flex;
+	flex-direction: column;
+	// justify-content: center;
+	align-items: center;
+	.img1 {
+		width: 6.6rem;
+		height: 8rem;
+		// background-color: #f00;
+		margin-top: 0.5rem;
+	}
+	.qr {
+		margin-top: 0.4rem;
+		padding: 10px;
+		background-color: #fff;
+	}
+	.txt1 {
+		margin-top: 0.2rem;
+		font-size: 0.24rem;
+		color: #fff;
+	}
+}

@@ -1,0 +1,168 @@
+
+.dphoto_art_details {
+	.list {
+		margin-top: 0.3rem;
+		height: 11.45rem;
+		overflow-y: scroll;
+		display: flex;
+		flex-direction: column;
+		padding-top: 0.1rem;
+		box-sizing: border-box;
+		padding-bottom: 0.2rem;
+		padding-left: 0.3rem;
+		padding-right: 0.3rem;
+		&::-webkit-scrollbar { display: none; }
+		.item {
+			width: 6.6rem;
+			// height: 3.04rem;
+			border-radius: 0.1rem;
+			background-color: #2C2E36;
+			box-sizing: border-box;
+			margin: auto;
+			padding: 0.3rem;
+			padding-bottom: 0.2rem;
+			padding-top: 0.2rem;
+			position: relative;
+			margin-bottom: 0.1rem;
+			margin-top: 0.1rem;
+			min-height: 2.6rem;
+		}
+		.row {
+			color: #999999;
+			font-size: 0.24rem;
+			height: 0.24rem;
+			line-height: 0.24rem;
+			padding: 0.1rem 0;
+			display: flex;
+			align-items: center;
+			white-space: break-spaces;
+			span {
+				color: #fff;
+				display: inline-block;
+				&.more {
+					color: #94BFFF;
+					padding-left: 0.1rem;
+					transition-property: opacity;
+					transition-duration: 200ms;
+					&:active {
+						opacity: 0.7;
+					}
+				}
+				&.icon {
+					width: 0.24rem;
+					height: 0.24rem;
+					display: inline-block;
+					background-image: url(../../assets/art/info.png);
+					background-size: 100%;
+					margin-left: 0.1rem;
+					transition-property: opacity;
+					transition-duration: 200ms;
+					&:active {
+						opacity: 0.7;
+					}
+				}
+				&.green {
+					color: #71DB6E;
+				}
+				&.orange {
+					color: #F5A623;
+				}
+				&.red {
+					color: #f00;
+				}
+				&.long {
+					max-width: 4.14rem;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
+			}
+		}
+		.icons {
+			position: absolute;
+			height: 1rem;
+			right: 0;
+			top: 0;
+			display: flex;
+			padding: 0 0.15rem;
+			align-items: center;
+			> div {
+				width: 0.4rem;
+				height: 0.4rem;
+				background-size: 0.4rem 0.4rem;
+				background-position: center;
+				background-repeat: no-repeat;
+				padding: 0.15rem;
+				transition-property: opacity;
+				transition-duration: 200ms;
+				&:active {
+					opacity: 0.7;
+				}
+			}
+			.a {
+				background-image: url(../../assets/art/certificate.png);
+			}
+			.b {
+				background-image: url(../../assets/art/tracing.png);
+			}
+		}
+		.btns {
+			position: absolute;
+			bottom: 0.3rem;
+			right: 0.3rem;
+			> div {
+				width: 2.5rem;
+				height: 0.64rem;
+				border-radius: 0.1rem;
+				text-align: center;
+				line-height: 0.64rem;
+				color: #fff;
+				background-color: #666E81;
+				transition-property: opacity;
+				transition-duration: 200ms;
+				&:active {
+					opacity: 0.7;
+				}
+			}
+			.a {
+				background-color: #94BFFF;
+			}
+			.b {
+			}
+		}
+	}
+}
+
+.dphoto_art_successful_payment_alert {
+	.txt1 {
+		font-size: 0.5rem;
+		color: #94BFFF;
+		text-align: center;
+		span {
+			font-size: 0.28rem;
+		}
+	}
+	.txt2 {
+		font-size: 0.28;
+		line-height: 0.4rem;
+		color: rgba(238, 238, 238, 0.8);
+		text-align: center;
+		padding-top: 0.2rem;
+		span {
+			color: #94BFFF;
+		}
+	}
+}
+
+.dphoto_art_fail_payment_alert {
+	.img1 {
+		margin: auto;
+		width: 1.5rem;
+		height: 1.5rem;
+		display: block;
+	}
+	.txt1 {
+		font-size: 0.28rem;
+		color: #EEEEEE;
+		text-align: center;
+	}
+}

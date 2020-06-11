@@ -1,0 +1,40 @@
+
+._dphoto_art_foot {
+	font-size: 0.2rem;
+	color: #999999;
+	padding: 0.2rem 0;
+	text-align: center;
+	position: relative;
+	// position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	&::after {
+		content: '';
+		position: absolute;
+		display: block;
+		height: 0.02rem;
+		background-color: #999999;
+		top: 0.3rem;
+		z-index: 0;
+		left: 0rem;
+		right: 0rem;
+	}
+	span {
+		background-color: #1d1e24;
+		display: inline-block;
+		padding: 0 0.1rem;
+		position: relative;
+		z-index: 1;
+	}
+}
+
+._dphoto_art_loading {
+	color: #fff;
+	text-align: center;
+	padding-top: 0.44rem;
+	font-size: 0.24rem;
+	background-image: url(../assets/art/loading.png);
+	background-position: center 0.14rem;
+	background-repeat: no-repeat;
+}
