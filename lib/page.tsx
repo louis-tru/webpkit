@@ -63,14 +63,11 @@ export default class Page<P = {}, S = {}> extends ViewController<PageProps & P, 
 		if (search) {
 			search.split('&').forEach(e=>{
 				var [key,...value] = e.split('=');
-				// console.log(key,value[0]);
-				var	valueStr = value[0]
+				var	valueStr = value[0];
 				if (valueStr && valueStr.length) {
 					var val = '';
 					if (value[0].length >= 1) {
-						
 						val = value.join('=');
-						
 					}
 					(this as any)._params[key] = decodeURIComponent(val);
 				}
