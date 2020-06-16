@@ -68,13 +68,10 @@ export default class Page<P = {}, S = {}> extends ViewController<PageProps & P, 
 				if (valueStr && valueStr.length) {
 					var val = '';
 					if (value[0].length >= 1) {
-						
 						val = value.join('=');
-						
 					}
 					(this as any)._params[key] = decodeURIComponent(val);
 				}
-				
 			});
 		}
 	}

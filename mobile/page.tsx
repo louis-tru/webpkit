@@ -33,7 +33,7 @@ import {ViewController} from '../lib/ctr';
 import { NavPage } from './nav';
 import { DataPage, IDataPage } from '../lib/page';
 
-export declare class NavDataPage<P = {}, S = {}, Data = Dict> extends NavPage<P, S> implements IDataPage<Data> {
+export declare class NavDataPageDefine<P = {}, S = {}, Data = Dict> extends NavPage<P, S> implements IDataPage<Data> {
 	name: string;
 	dataPage: number;
 	readonly dataPageCount: number
@@ -48,8 +48,8 @@ export declare class NavDataPage<P = {}, S = {}, Data = Dict> extends NavPage<P,
 	loadData(params: Dict): Promise<{ value: Data[]; total?: number; index?: number }>;
 }
 
-class _NavDataPage extends NavPage {}
+class NavDataPageIMPL extends NavPage {}
 
-utils.extendClass(_NavDataPage, DataPage, ViewController.prototype);
+utils.extendClass(NavDataPageIMPL, DataPage, ViewController.prototype);
 
-exports.NavDataPage = _NavDataPage
+export const NavDataPage = NavDataPageIMPL as typeof NavDataPageDefine;
