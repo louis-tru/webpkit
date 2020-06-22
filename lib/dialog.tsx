@@ -213,7 +213,7 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 	static get globaDialogStack() {
 		if (!_globaDialogStack) {
 			_globaDialogStack = new DialogStack();
-	}
+		}
 		return _globaDialogStack;
 	}
 }
