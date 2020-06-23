@@ -322,11 +322,16 @@ function getPanel() {
 	return panel;
 }
 
-function keyboardInstance() {
+async function keyboardInstance() {
 	if (!keyboard) {
-		keyboard = ReactDom.render<{}>(<GlobalKeyboard />, getPanel()) as Keyboard;
+		await new Promise(function(resolve, reject) {
+			ReactDom.render<{}>(<GlobalKeyboard />, getPanel(), function(this: any) {
+				keyboard = this;
+				resolve();
+			});
+		});
 	}
-	return keyboard;
+	return keyboard as Keyboard;
 }
 
 export function setGlobalKeyboard(keyboard: typeof Keyboard) {
@@ -365,7 +370,7 @@ export class Input extends ViewController<InputProps> {
 	}
 
 	triggerRemove() {
-		keyboardInstance().clearRecipient(this);
+		keyboardInstance().then((k)=>k.clearRecipient(this));
 	}
 
 	get value() {
@@ -412,9 +417,9 @@ export class Input extends ViewController<InputProps> {
 		this._focusFun(true);
 	}
 
-	private _handleBlur = (event: React.FocusEvent<HTMLInputElement>)=>{
+	private _handleBlur = async (event: React.FocusEvent<HTMLInputElement>)=>{
 		// console.log('_handleBlur');
-		var keyboard = keyboardInstance();
+		var keyboard = await keyboardInstance();
 		if (keyboard.hasPresskeyCycle) {
 			event.preventDefault();
 		} else {
@@ -425,9 +430,21 @@ export class Input extends ViewController<InputProps> {
 	private _focusFun(force = false) {
 		if (force || !this._focus) {
 			this._focus = true;
-			keyboardInstance().setRecipient(this);
+			keyboardInstance().then((k)=>k.setRecipient(this));
 			if (this.props.onFocus) {
 				this.props.onFocus();
+			}
+			this.forceUpdate();
+		}
+	}
+
+	private async _blur() {
+		if (this._focus) {
+			var keyboard = await keyboardInstance();
+			this._focus = false;
+			keyboard.clearRecipient(this);
+			if (this.props.onBlur) {
+				this.props.onBlur();
 			}
 			this.forceUpdate();
 		}
@@ -438,15 +455,7 @@ export class Input extends ViewController<InputProps> {
 	}
 
 	blur() {
-		if (this._focus) {
-			var keyboard = keyboardInstance();
-			this._focus = false;
-			keyboard.clearRecipient(this);
-			if (this.props.onBlur) {
-				this.props.onBlur();
-			}
-			this.forceUpdate();
-		}
+		this._blur();
 	}
 
 	render() {
