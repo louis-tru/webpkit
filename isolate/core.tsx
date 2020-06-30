@@ -509,9 +509,13 @@ export default class ApplicationLauncher extends Gesture<{
 		return this._getInfo(app, id)?.value?.window || null;
 	}
 
+	private _handleContextMenu = (event: any)=>{
+		// event.preventDefault();
+	};
+
 	render() {
 		return (
-			<div className="iso_sys" ref="__root">
+			<div className="iso_sys" ref="__root" onContextMenu={this._handleContextMenu}>
 				<div className="iso_activitys" ref="__activity"></div>
 				<div className="iso_widgets" ref="__widget"></div>
 				<div className="iso_covers" style={{top: '-100%'}} ref="__top"></div>

@@ -2,6 +2,7 @@
 import '../assets/keyboard.css';
 import * as ReactDom from 'react-dom';
 import {ViewController, React} from './ctr';
+import {DelayCall} from 'nxkit/delay_call';
 
 export abstract class Keyboard<P = {}, S = {}> extends ViewController<P, S> {
 
@@ -60,17 +61,33 @@ export abstract class Keyboard<P = {}, S = {}> extends ViewController<P, S> {
 		}
 	}
 
-	private _handlePresskeyCycle = ()=>{
+	private _handleContextMenu = (event: any)=>{
+		event.preventDefault();
+	};
+
+	private _hasPresskeyCycleSet = new DelayCall(()=>{
+		this._hasPresskeyCycle = false;
+	}, 20);
+
+	private _handleStart = ()=>{
 		this._hasPresskeyCycle = true;
-		setTimeout(()=>this._hasPresskeyCycle = false, 50);
-	}
+		this._hasPresskeyCycleSet.clear();
+	};
+
+	private _handleEnd = ()=>{
+		this._hasPresskeyCycleSet.call();
+	};
 
 	render() {
 		return (
 			<div ref="dom"
-				onClick={this._handlePresskeyCycle}
-				onMouseDown={this._handlePresskeyCycle}
-				onTouchStart={this._handlePresskeyCycle}
+				onContextMenu={this._handleContextMenu}
+				// onClick={this._handlePresskeyCycle}
+				onTouchStart={this._handleStart}
+				onTouchEnd={this._handleEnd}
+				onTouchCancel={this._handleEnd}
+				onMouseDown={this._handleStart}
+				onMouseUp={this._handleEnd}
 			>
 				{this.renderBody()}
 			</div>
@@ -149,7 +166,7 @@ export class DefaultKeyboard extends Keyboard {
 
 	renderMoreSymbol() {
 		return (
-			<div className="kb" onClick={this.m_handle_input}>
+			<div className="kb" onTouchStart={this.m_handle_input}>
 				<div className="row">
 					<view>[</view>
 					<view>]</view>
@@ -177,22 +194,22 @@ export class DefaultKeyboard extends Keyboard {
 				</div>
 
 				<div className="row">
-					<view className="grey" onClick={this.m_moreSymbol}>123</view>
+					<view className="grey" onTouchStart={this.m_moreSymbol}>123</view>
 					<view>~</view>
 					<view>,</view>
 					<view>…</view>
 					<view>@</view>
 					<view>!</view>
 					<view>`</view>
-					<view className="grey" onClick={this.m_backspace}>backspace</view>
+					<view className="grey" onTouchStart={this.m_backspace}>backspace</view>
 				</div>
 
 				<div className="row">
-					<view className="grey" onClick={this.m_symbol}>return</view>
+					<view className="grey" onTouchStart={this.m_symbol}>return</view>
 					<view>.</view>
-					<view className="space" onClick={this.m_space}>Space</view>
+					<view className="space" onTouchStart={this.m_space}>Space</view>
 					<view>?</view>
-					<view className="blue" onClick={this.m_done}>Done</view>
+					<view className="blue" onTouchStart={this.m_done}>Done</view>
 				</div>
 
 			</div>
@@ -203,7 +220,7 @@ export class DefaultKeyboard extends Keyboard {
 		if (this.state.moreSymbol)
 			return this.renderMoreSymbol();
 		return (
-			<div className="kb" onClick={this.m_handle_input}>
+			<div className="kb" onTouchStart={this.m_handle_input}>
 				<div className="row">
 					<view>1</view>
 					<view>2</view>
@@ -231,22 +248,22 @@ export class DefaultKeyboard extends Keyboard {
 				</div>
 
 				<div className="row">
-					<view className="grey" onClick={this.m_moreSymbol}>more</view>
+					<view className="grey" onTouchStart={this.m_moreSymbol}>more</view>
 					<view>~</view>
 					<view>,</view>
 					<view>…</view>
 					<view>@</view>
 					<view>!</view>
 					<view>'</view>
-					<view className="grey" onClick={this.m_backspace}>backspace</view>
+					<view className="grey" onTouchStart={this.m_backspace}>backspace</view>
 				</div>
 
 				<div className="row">
-					<view className="grey" onClick={this.m_symbol}>return</view>
+					<view className="grey" onTouchStart={this.m_symbol}>return</view>
 					<view>.</view>
-					<view className="space" onClick={this.m_space}>Space</view>
+					<view className="space" onTouchStart={this.m_space}>Space</view>
 					<view>?</view>
-					<view className="blue" onClick={this.m_done}>Done</view>
+					<view className="blue" onTouchStart={this.m_done}>Done</view>
 				</div>
 
 			</div>
@@ -260,7 +277,7 @@ export class DefaultKeyboard extends Keyboard {
 			return this.renderSymbol();
 		var char = (e: string)=>this.char(e);
 		return (
-			<div className="kb" onClick={this.m_handle_input}>
+			<div className="kb" onTouchStart={this.m_handle_input}>
 				<div className="row">
 					<view>{char('q')}</view>
 					<view>{char('w')}</view>
@@ -287,7 +304,7 @@ export class DefaultKeyboard extends Keyboard {
 				</div>
 
 				<div className="row">
-					<view className={this.state.shift==2?'blue':'grey'} onClick={this.m_shift}>shift</view>
+					<view className={this.state.shift==2?'blue':'grey'} onTouchStart={this.m_shift}>shift</view>
 					<view>{char('z')}</view>
 					<view>{char('x')}</view>
 					<view>{char('c')}</view>
@@ -295,15 +312,15 @@ export class DefaultKeyboard extends Keyboard {
 					<view>{char('b')}</view>
 					<view>{char('n')}</view>
 					<view>{char('m')}</view>
-					<view className="grey" onClick={this.m_backspace}>backspace</view>
+					<view className="grey" onTouchStart={this.m_backspace}>backspace</view>
 				</div>
 
 				<div className="row">
-					<view className="grey" onClick={this.m_symbol}>?123</view>
+					<view className="grey" onTouchStart={this.m_symbol}>?123</view>
 					<view>.</view>
-					<view className="space" onClick={this.m_space}>Space</view>
+					<view className="space" onTouchStart={this.m_space}>Space</view>
 					<view>?</view>
-					<view className="blue" onClick={this.m_done}>Done</view>
+					<view className="blue" onTouchStart={this.m_done}>Done</view>
 				</div>
 			</div>
 		);
@@ -386,6 +403,7 @@ export class Input extends ViewController<InputProps> {
 	}
 
 	triggerChange() {
+
 		if (this.props.onChange) {
 			var input = this._dom;
 			var len = input.value.length
@@ -400,6 +418,8 @@ export class Input extends ViewController<InputProps> {
 
 			this.props.onChange();
 		}
+
+		setTimeout(()=>(this.refs.input as HTMLInputElement).focus(), 5e2);
 	}
 
 	triggerDone() {
@@ -421,7 +441,8 @@ export class Input extends ViewController<InputProps> {
 		// console.log('_handleBlur');
 		var keyboard = await keyboardInstance();
 		if (keyboard.hasPresskeyCycle) {
-			event.preventDefault();
+			// event.preventDefault();
+			// event.persist();
 		} else {
 			this.blur();
 		}
