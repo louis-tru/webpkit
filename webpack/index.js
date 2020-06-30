@@ -53,9 +53,7 @@ module.exports = {
 	optimization: require('./optimization'),
 	devServer: require('./server'),
 	// cheap-module-eval-source-map is faster for development
-	devtool: isProd 
-		? (config.build.productionSourceMap ? config.build.devtool : false)
-		: config.dev.devtool,
+	devtool: config.sourceMap ? (isProd? config.build.devtool: config.dev.devtool): false,
 	node: {
 		// prevent webpack from injecting useless setImmediate polyfill because Vue
 		// source contains it (although only uses it if it's native).

@@ -5,8 +5,6 @@ const path = require('path');
 const fs = require('fs');
 
 const isProd = config.isProd;
-const sourceMapEnabled = isProd ?
-	config.build.productionSourceMap: config.dev.cssSourceMap;
 
 var babelOptions;
 var babelrc = [utils.resolve('.babelrc'), path.join(__dirname + '/../.babelrc')];
@@ -50,6 +48,6 @@ module.exports = {
 				name: utils.assetsPath('res/[name].[hash:7].[ext]')
 			}
 		},
-		...utils.styleLoaders({ sourceMap: sourceMapEnabled, usePostCSS: true, extract: isProd, }),
+		...utils.styleLoaders({ sourceMap: config.sourceMap, usePostCSS: true, extract: isProd, }),
 	],
 };
