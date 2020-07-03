@@ -36,12 +36,13 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		return (((index % count) + count) % count);
 	}
 
-	private setIndex(index: number) {
+	private setIndex(index: number, isCall: boolean = false) {
 		index = Number(index);
 		var reallyIndex = this._reallyIndex(index);
 		if (reallyIndex !== this._reallyIndex(this.__index) || !this.isMounted) {
 			if (index > this._maxIndex || index < this._minIndex) {
-				if (this._count < 3) return;
+				if (!isCall)
+					if (this._count < 3) return;
 				this.__index = reallyIndex;
 			} else {
 				this.__index = index;
@@ -165,7 +166,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	switchAt(index: number, animate = true) {
 		index = Number(index);
 		if (this._index != index) {
-			this.setIndex(index);
+			this.setIndex(index, true);
 			(this.refs.cells as HTMLElement).
 				style.transitionDuration = animate ? `${this.transitionDuration}ms` : '0ms';
 		}
