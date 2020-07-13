@@ -176,16 +176,19 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 
 	async hide(animate = true) {
 		await this._enableAnimate(animate);
+		if (!this.refs.root) return;
 		if (!this.noMask)
 			(this.refs.root as HTMLElement).style.background = 'rgba(0,0,0,0.01)';
 		(this.refs.core as HTMLElement).style.opacity = '0';
 		(this.refs.core as HTMLElement).style.transform = 'scale(0.3)';
 		await utils.sleep(300);
+		if (!this.refs.root) return;
 		(this.refs.root as HTMLElement).style.display = 'none';
 	}
 
 	async show(animate = true) {
 		await this._enableAnimate(animate);
+		if (!this.refs.root) return;
 		if (!this.noMask)
 			(this.refs.root as HTMLElement).style.background = 'rgba(0,0,0,0.75)';
 		(this.refs.core as HTMLElement).style.opacity = '1';
@@ -194,14 +197,13 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 	}
 
 	async close(animate = true) {
-		var root = this.refs.root as HTMLElement;
-		if (root) {
-			this.onClose.trigger({animate});
-			await this.hide(animate);
-			var div = root.parentNode as HTMLElement;
-			ReactDom.unmountComponentAtNode(div);
-			(div.parentNode as HTMLElement).removeChild(div);
-		}
+		if (!this.refs.root) return;
+		this.onClose.trigger({animate});
+		await this.hide(animate);
+		if (!this.refs.root) return
+		var div = (this.refs.root as HTMLElement).parentNode as HTMLElement;
+		ReactDom.unmountComponentAtNode(div);
+		(div.parentNode as HTMLElement).removeChild(div);
 	}
 
 	get noMask() {
