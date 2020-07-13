@@ -1,9 +1,9 @@
 
 import Header from '../util/header';
 import { React, NavPage } from 'webpkit/mobile';
-import req from 'nxkit/request';
+import req from 'somes/request';
 import '../css/photo.css';
-import path from 'nxkit/path';
+import path from 'somes/path';
 
 export default class extends NavPage {
 

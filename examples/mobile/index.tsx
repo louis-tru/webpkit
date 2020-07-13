@@ -31,12 +31,12 @@
 import {React,Root,ReactDom,dialog} from 'webpkit/mobile';
 import _404 from './src/pages/404';
 import routes from './src/router';
-import path from 'nxkit/path';
+import path from 'somes/path';
 import './src/css/util.css';
 import sdk,{initialize} from './src/sdk';
-import utils from 'nxkit';
+import utils from 'somes';
 import errnoHandles from 'webpkit/lib/errno_handles';
-import {Console} from 'nxkit/log';
+import {Console} from 'somes/log';
 
 utils.onUncaughtException.on((e)=>{
 	errnoHandles(e.data);

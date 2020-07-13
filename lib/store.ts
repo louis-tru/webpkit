@@ -28,9 +28,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import Store from 'nxkit/store';
-import path from 'nxkit/path';
-import {Signer} from 'nxkit/request';
+import Store from 'somes/store';
+import path from 'somes/path';
+import {Signer} from 'somes/request';
 
 export async function make({
 	url = 'http://127.0.0.1:8091/service-api', signer, name, store }: { 

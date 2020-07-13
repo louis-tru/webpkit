@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import {ErrnoList} from 'nxkit/errno';
+import {ErrnoList} from 'somes/errno';
 
 export class ErrnoList_1 extends ErrnoList {
 	// define errno

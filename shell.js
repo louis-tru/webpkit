@@ -4,10 +4,10 @@
  * @date 2018-11-05
  */
 
-var arguments = require('nxkit/arguments');
-var fs = require('nxkit/fs');
+var arguments = require('somes/arguments');
+var fs = require('somes/fs');
 var path = require('path');
-var {exec} = require('nxkit/syscall');
+var {exec} = require('somes/syscall');
 
 const args = process.argv.slice(2);
 const cmd = args.shift() || 'dev';

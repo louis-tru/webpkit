@@ -3,7 +3,7 @@
  * @date 2020-04-07
  */
 
-import utils from 'nxkit';
+import utils from 'somes';
 import * as React from 'react';
 import {ViewController} from '../lib/ctr';
 import {Application} from './app';
@@ -48,7 +48,7 @@ export class Window<P = {}, S = {}> extends ViewController<P, S> {
 		// overwrite
 	}
 	close(animate: boolean = true) {
-		this.app.launcher.close(this.app, this.id, animate);
+		return this.app.launcher.close(this.app, this.id, animate);
 	}
 }
 
@@ -98,9 +98,9 @@ export abstract class Activity<P = {}, S = {}> extends Window<P, S> {
 	exit(rc?: any, animate = true) {
 		var cb = (this.props as ActivityOptions).callback;
 		if (cb) {
-			this.app.launcher.launch(cb.app, {animate, ...cb.args, ...rc});
+			return this.app.launcher.launch(cb.app, {animate, ...cb.args, ...rc});
 		} else {
-			this.close(animate);
+			return this.close(animate);
 		}
 	}
 

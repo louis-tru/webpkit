@@ -2,7 +2,7 @@
 import '../assets/keyboard.css';
 import * as ReactDom from 'react-dom';
 import {ViewController, React} from './ctr';
-import {DelayCall} from 'nxkit/delay_call';
+import {DelayCall} from 'somes/delay_call';
 
 export abstract class Keyboard<P = {}, S = {}> extends ViewController<P, S> {
 

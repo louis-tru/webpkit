@@ -31,9 +31,9 @@
 import { Root,ReactDom,React } from 'webpkit';
 import router from '../src/router';
 import {initialize} from '../src/sdk';
-import utils from 'nxkit';
+import utils from 'somes';
 import errnoHandles from 'webpkit/lib/errno_handles';
-import {Console} from 'nxkit/log';
+import {Console} from 'somes/log';
 
 utils.onUncaughtException.on((e)=>{
 	errnoHandles(e.data);

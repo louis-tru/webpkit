@@ -28,9 +28,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import utils from 'nxkit';
-import req from 'nxkit/request';
-import path from 'nxkit/path';
+import utils from 'somes';
+import req from 'somes/request';
+import path from 'somes/path';
 import {Page,React,Link} from 'webpkit';
 import './index.css';
 

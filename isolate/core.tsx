@@ -4,15 +4,15 @@
  */
 
 import './core.css';
-import utils from 'nxkit';
-import {List,ListItem} from 'nxkit/event';
+import utils from 'somes';
+import {List,ListItem} from 'somes/event';
 import {React} from '../lib';
 import {getDefaultId} from '../lib/dialog';
 import {Type,CoverType,Window,NewWindow, Cover, Activity, ActivityNavStatus} from './ctr';
 import {Application} from './app';
 import Gesture, {Event} from '../lib/gesture';
 import * as ReactDom from 'react-dom';
-import { DelayCall } from 'nxkit/delay_call';
+import { DelayCall } from 'somes/delay_call';
 import * as fastClick from 'fastclick';
 
 (fastClick as any).attach(document.body);

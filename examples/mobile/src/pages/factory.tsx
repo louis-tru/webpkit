@@ -4,7 +4,7 @@ import { React, NavPage } from 'webpkit/mobile';
 import sdk from '../sdk';
 import {prompt,alert,confirm} from 'webpkit/lib/dialog';
 import {Input} from '../util/keyboard';
-import utils from 'nxkit';
+import utils from 'somes';
 import '../css/factory.css';
 
 export default class extends NavPage {

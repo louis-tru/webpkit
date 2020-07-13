@@ -12,7 +12,7 @@ module.exports = {
 			terserOptions: {
 				// https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
 			},
-			exclude: config.isMinimizer ? /nxkit_bigint/: /.*/,
+			exclude: config.isMinimizer ? /somes_bigint/: /.*/,
 		}),
 	],
 	runtimeChunk: {
@@ -27,9 +27,9 @@ module.exports = {
 				priority: 3,
 				enforce: true,
 			},
-			nxkit_bigint: {
-				test: /nxkit\/_bigint/,
-				name: "nxkit_bigint",
+			somes_bigint: {
+				test: /somes\/_bigint/,
+				name: "somes_bigint",
 				chunks: "all",
 				enforce: true,
 				priority: 5,

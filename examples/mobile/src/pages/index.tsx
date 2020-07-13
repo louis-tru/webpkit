@@ -1,7 +1,7 @@
 
 import { React, NavPage,dialog } from 'webpkit/mobile';
 import sdk from '../sdk';
-import utils from 'nxkit';
+import utils from 'somes';
 import '../css/index.css';
 
 export default class extends NavPage {

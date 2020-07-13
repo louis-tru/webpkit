@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import nxkit from 'nxkit';
+import somes from 'somes';
 import {ViewController} from '../lib/ctr';
 import Page, { IDataPage, DataPage } from '../lib/page';
 
@@ -61,6 +61,6 @@ export declare class CMSDataPageDefine<P = {}, S = {}, Data = Dict> extends CMSP
 
 class CMSDataPageIMPL extends CMSPage {}
 
-nxkit.extendClass(CMSDataPageIMPL, DataPage, ViewController.prototype);
+somes.extendClass(CMSDataPageIMPL, DataPage, ViewController.prototype);
 
 export const CMSDataPage = CMSDataPageIMPL as typeof CMSDataPageDefine;

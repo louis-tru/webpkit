@@ -29,12 +29,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 import './nav.css';
-import utils from 'nxkit';
+import utils from 'somes';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import {ViewController} from '../lib/ctr';
 import error from '../lib/errno_handles';
-import {EventNoticer, Event} from 'nxkit/event';
+import {EventNoticer, Event} from 'somes/event';
 
 var loading = '正在载入数据..';
 

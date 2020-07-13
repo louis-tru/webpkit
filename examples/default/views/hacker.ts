@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import path from 'nxkit/path';
+import path from 'somes/path';
 
 var ocav = document.getElementById("cav") as HTMLCanvasElement;
 var ctx = ocav.getContext("2d") as CanvasRenderingContext2D;

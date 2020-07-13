@@ -4,11 +4,11 @@
  */
 
 import './cell.css';
-import utils from 'nxkit';
+import utils from 'somes';
 import {React} from '.';
 import {ViewController} from './ctr';
 import Gesture,{Event as GEvent} from './gesture';
-import {EventNoticer, Event} from 'nxkit/event';
+import {EventNoticer, Event} from 'somes/event';
 
 interface CellDom { type: CellConstructor; props: any, key?: any; ref?: any; }
 

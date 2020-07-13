@@ -3,7 +3,7 @@ const path = require('path');
 const utils = require('./utils');
 const fs = require('fs');
 const config = require('./cfg');
-const nxkit = require('nxkit').default;
+const somes = require('somes').default;
 const crypto = require('crypto');
 
 // https://www.cnblogs.com/champyin/p/12198515.html
@@ -54,7 +54,7 @@ function hash_simple(filename, characteristic) {
 	if (characteristic)
 		_hash += (_hash << 5) + suffix.hashCode();
 
-	return nxkit.hash(_hash);
+	return somes.hash(_hash);
 }
 
 class ManifestPlugin {
@@ -171,7 +171,7 @@ class ManifestPlugin {
 		 */
 		var _autoId = 0;
 		var _retainRaws = [
-			'low', 'nxkit_bigint', 'runtime',
+			'low', 'somes_bigint', 'runtime',
 		];
 
 		compiler.hooks.compilation.tap("ManifestChunkIds", compilation => {

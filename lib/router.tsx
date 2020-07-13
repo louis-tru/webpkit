@@ -28,12 +28,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import utils from 'nxkit';
+import utils from 'somes';
 import * as React from 'react';
 import { Component } from 'react';
 import { Router as RouterRaw, Route as RouteRaw, Switch } from 'react-router-dom';
 import handles from './errno_handles';
-import nxkit from 'nxkit';
+import somes from 'somes';
 import Page, {History, Loading} from './page';
 import NotFound from './404';
 import * as _history from 'history';
@@ -51,7 +51,7 @@ function route(router: Router, { path, page, ...args }: { path: string, page: ()
 			if (!this.state.isLoaded) {
 				try {
 					var com = (await page()).default;
-					nxkit.assert(nxkit.equalsClass(Page, com), 'Page TypeError, nxkit.equalsClass(Page, com)');
+					somes.assert(somes.equalsClass(Page, com), 'Page TypeError, somes.equalsClass(Page, com)');
 					this.setState({ com, isLoaded: true });
 				} catch(err) {
 					handles(err);

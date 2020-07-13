@@ -1,10 +1,10 @@
 
-import utils from 'nxkit';
+import utils from 'somes';
 import Header from '../util/header';
 import {React, NavPage} from 'webpkit/mobile';
 import sdk from '../sdk';
 import { ConBar } from '../util/bar';
-import { Monitor } from 'nxkit/monitor';
+import { Monitor } from 'somes/monitor';
 
 // const piper720p = require('../res/piper720p.mp4');
 

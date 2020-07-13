@@ -1,6 +1,6 @@
 
 import * as config from '../config';
-import { Params, Options } from 'nxkit/request';
+import { Params, Options } from 'somes/request';
 import { Request as RequestBase } from 'dphoto-lib/request';
 import { store } from './sdk';
 import storage from './storage';

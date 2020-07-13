@@ -29,7 +29,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 import { Component } from 'react';
-import storage from 'nxkit/storage';
+import storage from 'somes/storage';
 
 var global_state_components = new Map<GlobalState, Set<string>>();
 var global_states: Dict = {};

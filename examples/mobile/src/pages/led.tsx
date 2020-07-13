@@ -2,7 +2,7 @@
 import Header from '../util/header';
 import { React, NavPage } from 'webpkit/mobile';
 import sdk from '../sdk';
-import {Monitor} from 'nxkit/monitor';
+import {Monitor} from 'somes/monitor';
 import '../css/led.css';
 
 export default class extends NavPage<{auto?: boolean}> {

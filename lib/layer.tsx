@@ -29,11 +29,11 @@
  * ***** END LICENSE BLOCK ***** */
 
 import './layer.css';
-import utils from 'nxkit';
+import utils from 'somes';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { ViewController } from './ctr';
-import {EventNoticer,Event} from 'nxkit/event';
+import {EventNoticer,Event} from 'somes/event';
 import {getDefaultId, Options } from './dialog';
 import {Activity} from '../isolate/ctr';
 

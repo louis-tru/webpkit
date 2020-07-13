@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import utils from 'nxkit';
+import utils from 'somes';
 import {ViewController} from '../lib/ctr';
 import { NavPage } from './nav';
 import { DataPage, IDataPage } from '../lib/page';

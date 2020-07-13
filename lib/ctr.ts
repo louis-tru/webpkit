@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import utils from 'nxkit';
+import utils from 'somes';
 import * as React from 'react';
 import GlobalState from './state';
 import { Component } from 'react';

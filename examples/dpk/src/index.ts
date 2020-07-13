@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import utils from 'nxkit';
+import utils from 'somes';
 import './utils.scss';
 import {Application} from 'webpkit/isolate';
 import {store,initialize} from './sdk';

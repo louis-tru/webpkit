@@ -30,12 +30,12 @@
 
 import './util.css';
 import './dialog.css';
-import utils from 'nxkit';
+import utils from 'somes';
 import { ViewController } from './ctr';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
-import {EventNoticer,Event} from 'nxkit/event';
-import {List,ListItem} from 'nxkit/event';
+import {EventNoticer,Event} from 'somes/event';
+import {List,ListItem} from 'somes/event';
 import {Activity} from '../isolate/ctr';
 import {InputProps,Input} from './keyboard';
 

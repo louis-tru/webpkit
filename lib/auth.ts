@@ -31,9 +31,9 @@
 const crypto = require('crypto-tx');
 const hash_js = require('hash.js');
 
-import buffer, { IBuffer, Zero } from 'nxkit/buffer';
-import { Signer } from 'nxkit/request';
-import storage from 'nxkit/storage';
+import buffer, { IBuffer, Zero } from 'somes/buffer';
+import { Signer } from 'somes/request';
+import storage from 'somes/storage';
 
 var privateKeyBytes: IBuffer = Zero;
 var publicKeyBytes: IBuffer = Zero;

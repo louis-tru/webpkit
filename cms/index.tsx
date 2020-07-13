@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import 'nxkit';
+import 'somes';
 import * as React from 'react';
 import CMSPage, {CMSDataPage} from './page';
 import './util.css';

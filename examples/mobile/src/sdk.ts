@@ -1,6 +1,6 @@
 
 import * as config from '../config';
-import Store from 'nxkit/store';
+import Store from 'somes/store';
 import {make} from 'webpkit/lib/store';
 
 export const store = new Store('examples/mobile');

@@ -28,8 +28,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import nxkit from 'nxkit';
-import path from 'nxkit/path';
+import somes from 'somes';
+import path from 'somes/path';
 import * as React from 'react';
 import {ViewController} from './ctr';
 import store from './store';
@@ -103,7 +103,7 @@ export async function uploadQiniu(file: File, params: Dict = {}) {
 	var url = await new Promise((resolve, reject)=>{
 		// var mat = file.name.match(/\.[a-z0-9]+$/i);
 		var extname = path.extname(file.name);
-		var key = `${new Date().toString('yyyyMMdd')}/${nxkit.random()}${nxkit.random()}${extname}`;
+		var key = `${new Date().toString('yyyyMMdd')}/${somes.random()}${somes.random()}${extname}`;
 		var subscription = qiniu.upload(file, key, uptoken.token, {
 			fname: '',
 			params: params,
@@ -182,7 +182,7 @@ export default class Upload extends ViewController<UploadProps, Dict> {
 	}
 
 	triggerLoad() {
-		this.m_id = `upload_${nxkit.getId()}`;
+		this.m_id = `upload_${somes.getId()}`;
 		this.setState({ src: this.props.src || this.props.value || '' });
 	}
 

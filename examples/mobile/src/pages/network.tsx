@@ -2,9 +2,9 @@
 import Header from '../util/header';
 import { React, NavPage } from 'webpkit/mobile';
 import sdk from '../sdk';
-import {Monitor} from 'nxkit/monitor';
-import req from 'nxkit/request';
-import utils from 'nxkit';
+import {Monitor} from 'somes/monitor';
+import req from 'somes/request';
+import utils from 'somes';
 
 export default class extends NavPage<{auto?: boolean}> {
 	state = { list: [] as string[] };

@@ -1,8 +1,8 @@
 
-import utils from 'nxkit';
-import {IBuffer} from 'nxkit/buffer';
-import {Request as RequestBase ,Params,Options, Signer} from 'nxkit/request';
-import {IStorage} from 'nxkit/storage';
+import utils from 'somes';
+import {IBuffer} from 'somes/buffer';
+import {Request as RequestBase ,Params,Options, Signer} from 'somes/request';
+import {IStorage} from 'somes/storage';
 
 export class Request extends RequestBase {
 

@@ -30,7 +30,7 @@
 
 import 'normalize.css';
 import './util.css';
-import utils from 'nxkit';
+import utils from 'somes';
 import { Router, Route, history } from './router';
 import Page, { DataPage } from './page';
 import * as ReactDom from 'react-dom';
