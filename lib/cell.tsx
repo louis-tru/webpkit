@@ -19,6 +19,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	bounce?: boolean;
 	preloading?: number;
 	transitionDuration?: number;
+	className?: string;
 }> {
 
 	private _count = 0;
@@ -150,6 +151,10 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		return this._index;
 	}
 
+	get reallyIndex() {
+		return this._reallyIndex(this._index);
+	}
+
 	set index(val: number) {
 		this.switchAt(val);
 	}
@@ -181,7 +186,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 	render() {
 		var cells = this._renderChild();
 		return (
-			<div ref="root" className="_cells_panel">
+			<div ref="root" className={"_cells_panel "+(this.props.className?this.props.className:'')}>
 				<div ref="cells" className="_cells" style={{
 					transform: `translateX(${(-this._index)*100}%)`,
 				}}>{cells}</div>

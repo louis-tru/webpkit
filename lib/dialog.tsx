@@ -76,7 +76,7 @@ export class DialogStack {
 		this._panel.appendChild(div);
 
 		var instance = await new Promise<Dialog>(r=>
-			ReactDom.render(<D {...opts} __activity={act} />, div, function(this: any) { r(this) })
+			ReactDom.render(<D {...opts} __activity={act} __panel={div} />, div, function(this: any) { r(this) })
 		);
 
 		var prev = this._dialogStack.last;
@@ -130,6 +130,7 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 	readonly onClose = new EventNoticer<Event<any, Dialog>>('Close', this);
 
 	private __activity?: Activity = (this.props as any).__activity;
+	private __panel?: HTMLDivElement = (this.props as any).__panel;
 
 	get preventCover() {
 		return true;
@@ -163,6 +164,7 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 	}
 
 	private async _enableAnimate(animate: boolean) {
+		if (!this.refs.root) return;
 		if (animate) {
 			(this.refs.root as HTMLElement).style.transitionDuration = '300ms';
 			(this.refs.core as HTMLElement).style.transitionDuration = '300ms';
@@ -197,13 +199,15 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 	}
 
 	async close(animate = true) {
-		if (!this.refs.root) return;
-		this.onClose.trigger({animate});
-		await this.hide(animate);
-		if (!this.refs.root) return
-		var div = (this.refs.root as HTMLElement).parentNode as HTMLElement;
-		ReactDom.unmountComponentAtNode(div);
-		(div.parentNode as HTMLElement).removeChild(div);
+		if (this.refs.root) {
+			this.onClose.trigger({animate});
+			await this.hide(animate);
+		}
+		if (this.__panel) {
+			ReactDom.unmountComponentAtNode(this.__panel);
+			(this.__panel.parentNode as HTMLElement).removeChild(this.__panel);
+			this.__panel = undefined;
+		}
 	}
 
 	get noMask() {

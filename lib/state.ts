@@ -120,10 +120,6 @@ export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
 			}
 		}
 
-		if (self) {
-			Component.prototype.setState.call(self, state, callback);
-		}
-
 		if (global_state.length) {
 			for (var [com,set] of global_state_components) {
 				if (com !== self) {
@@ -140,6 +136,10 @@ export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
 					}
 				}
 			}
+		}
+
+		if (self) {
+			Component.prototype.setState.call(self, state, callback);
 		}
 	}
 

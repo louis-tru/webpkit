@@ -80,8 +80,8 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 	private _begin_y = 0;
 	private _x = 0;
 	private _y = 0;
-	private _width = 0;
-	private _height = 0;
+	// private _width = 0;
+	// private _height = 0;
 	private _speed = 0;
 	private _time = 0;
 	private _ev: Event | null = null;
@@ -90,11 +90,11 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 	private _begin_direction = 0;
 
 	get clientWidth() {
-		return this._width;
+		return this.$el.clientWidth;
 	}
 
 	get clientHeight() {
-		return this._height;
+		return this.$el.clientHeight;;
 	}
 
 	private static _selectTouch(self: Gesture, e: TouchEvent) {
@@ -294,8 +294,8 @@ export default abstract class Gesture<P = {}, S = {}> extends ViewController<P, 
 
 	triggerMounted() {
 		var el = this.$el;
-		this._width = el.clientWidth;
-		this._height = el.clientHeight;
+		// this._width = el.clientWidth;
+		// this._height = el.clientHeight;
 		if ('ontouchstart' in globalThis.document.body) {
 			el.addEventListener('touchstart', (e)=>Gesture._handleTouchstart(this, e));
 			el.addEventListener('touchmove', e=>Gesture._handleTouchmove(this, e));

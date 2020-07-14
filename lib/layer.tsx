@@ -63,7 +63,7 @@ export class LayerGroup {
 		this._panel.appendChild(div);
 
 		var instance = await new Promise<Layer>(r=>
-			ReactDom.render(<D {...opts} __activity={act} />, div, function(this: any) { r(this) })
+			ReactDom.render(<D {...opts} __activity={act} __panel={div} />, div, function(this: any) { r(this) })
 		);
 
 		instance.onClose.on(()=>this._IDs.delete(id));
@@ -102,6 +102,7 @@ export abstract class Layer<P = {}, S = {}> extends ViewController<P, S> {
 	private __show = false;
 	private __close = false;
 	private __activity?: Activity = (this.props as any).__activity;
+	private __panel?: HTMLDivElement = (this.props as any).__panel;
 
 	get preventCover() {
 		return this.fullScreen;
@@ -120,6 +121,7 @@ export abstract class Layer<P = {}, S = {}> extends ViewController<P, S> {
 	}
 
 	private async _enableAnimate(animate: boolean) {
+		if (!this.refs.root) return;
 		if (animate) {
 			(this.refs.root as HTMLElement).style.transitionDuration = '300ms';
 		} else {
@@ -131,14 +133,13 @@ export abstract class Layer<P = {}, S = {}> extends ViewController<P, S> {
 
 	private async _hide(animate: boolean) {
 		await this._enableAnimate(animate);
+		if (!this.refs.root) return;
 		(this.refs.root as HTMLElement).style.opacity = '0';
 		await utils.sleep(300);
 	}
 
 	async show(animate = true, delay = 0) {
-		if (delay) {
-			await utils.sleep(delay);
-		}
+		if (delay) await utils.sleep(delay);
 		if (this.__close) return;
 		this.__show = true;
 		this.forceUpdate(async ()=>{
@@ -151,15 +152,15 @@ export abstract class Layer<P = {}, S = {}> extends ViewController<P, S> {
 	}
 
 	async close(animate = true) {
-		if (this.__close) return;
-		this.__close = true;
-		this.onClose.trigger({animate});
-		var root = this.refs.root as HTMLElement;
-		if (root) {
+		if (!this.__close) {
+			this.__close = true;
+			this.onClose.trigger({animate});
 			await this._hide(animate);
-			var div = (root as HTMLElement).parentNode as HTMLElement;
-			ReactDom.unmountComponentAtNode(div);
-			(div.parentNode as HTMLElement).removeChild(div);
+		}
+		if (this.__panel) {
+			ReactDom.unmountComponentAtNode(this.__panel);
+			(this.__panel.parentNode as HTMLElement).removeChild(this.__panel);
+			this.__panel = undefined;
 		}
 	}
 
