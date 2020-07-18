@@ -60,6 +60,7 @@ declare class ViewControllerDefine<P = {}, S = {}> {
 	};
 	readonly isLoaded: boolean;
 	readonly isMounted: boolean;
+	readonly isDestroy: boolean;
 	protected triggerLoad(): void;
 	protected triggerMounted(): void;
 	protected triggerUpdate(prevProps: Readonly<P>, prevState: Readonly<S>): void;
@@ -70,6 +71,7 @@ declare class ViewControllerDefine<P = {}, S = {}> {
 class ViewControllerIMPL<P = {}, S = {}> extends GlobalState<P, S> {
 	private m_mounted?: boolean;
 	private m_loaded?: boolean;
+	private _destroy?: boolean;
 
 	get isLoaded() {
 		return !!this.m_loaded;
@@ -77,6 +79,10 @@ class ViewControllerIMPL<P = {}, S = {}> extends GlobalState<P, S> {
 
 	get isMounted() {
 		return !!this.m_mounted;
+	}
+
+	get isDestroy() {
+		return !!this._destroy;
 	}
 
 	get persistentID() {
@@ -122,6 +128,7 @@ class ViewControllerIMPL<P = {}, S = {}> extends GlobalState<P, S> {
 	}
 
 	componentWillUnmount() {
+		this._destroy = true;
 		var state = this.saveState();
 		if (state) {
 			persistentState.set(this.persistentID, state);
