@@ -4,7 +4,7 @@ import './haishii.scss';
 import * as React from 'react';
 import Activity from 'dphoto-lib/activity';
 import {Dialog} from 'webpkit/lib/dialog';
-import req from '../request';
+import req from '../models';
 import {PosterItem} from '../models/poster';
 import {Traceability} from '../models/traceability';
 import * as utils from '../utils';

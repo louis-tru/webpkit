@@ -13,7 +13,7 @@ import {sign} from 'dphoto-lib/request';
 import {querystringStringify} from 'somes/request';
 import {Cell,CellPanel} from 'webpkit/lib/cell';
 import {DelayCall} from 'somes/delay_call';
-import req from '../request';
+import req from '../models';
 import sdk, {store} from '../sdk';
 import * as utils from '../utils';
 import {Poster} from '../models/poster';

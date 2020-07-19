@@ -5,7 +5,7 @@ import Activity from 'dphoto-lib/activity';
 import Alert from 'dphoto-lib/alert';
 import qrcode from 'dphoto-lib/qrcode';
 import sdk from '../sdk';
-import req from '../request';
+import req from '../models';
 import * as utils from '../utils';
 import {PosterItem,Poster} from '../models/poster';
 import {incomeExpression} from '../dialog/income_expression';

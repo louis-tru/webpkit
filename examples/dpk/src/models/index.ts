@@ -1,9 +1,9 @@
 
-import * as config from '../config';
+import * as config from '../../config';
 import { Params, Options } from 'somes/request';
 import { Request as RequestBase } from 'dphoto-lib/request';
-import { store } from './sdk';
-import storage from './storage';
+import { store } from '../sdk';
+import storage from '../storage';
 
 class Request extends RequestBase {
 	async request(name: string, method: string = 'GET', params?: Params, options?: Options) {
@@ -11,8 +11,8 @@ class Request extends RequestBase {
 	}
 }
 
-var app = new Request(config.prefixer, store, storage);
+var database = new Request(config.prefixer, store, storage);
 
-app.urlencoded = false;
+database.urlencoded = false;
 
 export default app;

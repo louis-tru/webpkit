@@ -1,5 +1,5 @@
 
-import req from './request';
+import req from './models';
 
 // 获取精灵信息
 export function getMinerInfo(hash: string) {

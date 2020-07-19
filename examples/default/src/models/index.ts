@@ -1,5 +1,5 @@
 
-import * as config from '../config';
+import * as config from '../../config';
 import { Params, Options } from 'somes/request';
 import { Request as RequestBase } from 'webpkit/lib/request';
 import storage from 'somes/storage';
@@ -9,9 +9,9 @@ class Request extends RequestBase {
 		return super.request(name, method, { ...params }, options);
 	}
 }
+ 
+var database = new Request(config.prefixer, storage.shared);
 
-var app = new Request(config.prefixer, storage.shared);
+database.urlencoded = false;
 
-app.urlencoded = false;
-
-export default app;
+export default database;
