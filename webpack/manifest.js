@@ -206,25 +206,34 @@ class ManifestPlugin {
 			const hashDigestLength = 4;
 			const usedIds = new Map();
 			const useMd4 = true;
+
 			compilation.hooks.beforeModuleIds.tap("ManifestModuleIds", modules => {
 				for (var module of modules) {
+					var rawModule = module;
 					var resource = module.resource;
 					if (!resource && module.rootModule)
-						module = module.rootModule; //.resource;
+						module = module.rootModule;
 
 					if (module.resource) {
 						var hashId = (useMd4 ? hash_md4: hash_simple)(module.resource, module.rawRequest.indexOf('!') ? '!': '');
 						var len = hashDigestLength;
 						while (usedIds.has(hashId.substr(0, len)))
 							len++;
-						module.id = hashId.substr(0, len);
+							rawModule.id = hashId.substr(0, len);
 					} else {
-						module.id = config.productName + '_mod_' + (_autoId++);
+						rawModule.id = config.productName + '_mod_' + (_autoId++);
 					}
-					usedIds.set(module.id);
+
+					usedIds.set(rawModule.id);
 					// console.log(module.id);
 				}
 			});
+
+			compilation.hooks.moduleIds.tap("ManifestModuleIds", modules => {
+				// TODO ...
+			});
+
+			// end
 		});
 	}
 
