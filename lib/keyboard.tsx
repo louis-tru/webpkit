@@ -369,6 +369,7 @@ export interface InputProps {
 	type?: string;
 	placeholder?: string;
 	initFocus?: boolean;
+	maxLength?: number;
 }
 
 export class Input extends ViewController<InputProps> {
@@ -480,10 +481,11 @@ export class Input extends ViewController<InputProps> {
 	}
 
 	render() {
-		var {value,className,type,style,placeholder} = this.props;
+		var {value,className,type,style,placeholder,maxLength} = this.props;
 		var focusCls = this._focus ? ' focus': ''
 		return (
 			<input 
+				maxLength={maxLength}
 				placeholder={placeholder}
 				className={className + focusCls} 
 				defaultValue={value} 
