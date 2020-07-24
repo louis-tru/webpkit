@@ -52,7 +52,7 @@ function hash_simple(filename, characteristic) {
 	fs.closeSync(fd);
 
 	if (characteristic)
-		_hash += (_hash << 5) + suffix.hashCode();
+		_hash += (_hash << 5) + characteristic.hashCode();
 
 	return somes.hash(_hash);
 }
@@ -69,6 +69,7 @@ class ManifestPlugin {
 	applyManifest(compiler) {
 
 		var options = {};
+
 		options.assets = false;
 		options.version = false;
 		options.timings = false;
@@ -200,12 +201,16 @@ class ManifestPlugin {
 		 * 这会影响到配置 optimization.moduleIds
 		 */
 
+		const configPath = `${process.cwd()}/config.js`;
+		var configHash = '';
+
 		var _autoId = 0;
 
 		compiler.hooks.compilation.tap("ManifestModuleIds", compilation => {
 			const hashDigestLength = 4;
-			const usedIds = new Map();
+			const usedIds = new Set();
 			const useMd4 = true;
+			const genHashCode = useMd4 ? hash_md4: hash_simple;
 
 			compilation.hooks.beforeModuleIds.tap("ManifestModuleIds", modules => {
 				for (var module of modules) {
@@ -215,22 +220,53 @@ class ManifestPlugin {
 						module = module.rootModule;
 
 					if (module.resource) {
-						var hashId = (useMd4 ? hash_md4: hash_simple)(module.resource, module.rawRequest.indexOf('!') ? '!': '');
-						var len = hashDigestLength;
-						while (usedIds.has(hashId.substr(0, len)))
-							len++;
-							rawModule.id = hashId.substr(0, len);
+						rawModule.id = genHashCode(module.resource, module.rawRequest.indexOf('!') ? '!': '');
 					} else {
 						rawModule.id = config.productName + '_mod_' + (_autoId++);
 					}
-
-					usedIds.set(rawModule.id);
-					// console.log(module.id);
+					if (!configHash && module.resource == configPath) {
+						configHash = rawModule.id;
+						rawModule._isConfig = true;
+						module._isConfig = true;
+					}
 				}
 			});
 
+			function hasDependencieConfig(module, set) {
+				for (var depe of module.dependencies) {
+					if (depe.module) {
+						var depe_module = depe.module;
+						if (!set.has(depe_module)) {
+							set.add(depe_module);
+							if (
+								module._markDependencieConfig || 
+								depe_module._isConfig || 
+								hasDependencieConfig(depe_module, set)
+							) {
+								module._markDependencieConfig = true;
+								return true;
+							}
+						}
+					}
+				}
+				return false;
+			}
+
 			compilation.hooks.moduleIds.tap("ManifestModuleIds", modules => {
-				// TODO ...
+				for (var module of modules) {
+					var ids = [String(module.id)];
+					if (hasDependencieConfig(module, new Set)) {
+						ids.push(configHash);
+					}
+					var id = crypto.createHash('md4').update(ids.join('')).digest('base64');
+					var len = hashDigestLength;
+					while (usedIds.has(id.substr(0, len)))
+						len++;
+					id = id.substr(0, len);
+					usedIds.add(id);
+
+					module.id = id;
+				}
 			});
 
 			// end
@@ -239,4 +275,4 @@ class ManifestPlugin {
 
 }
 
-exports.ManifestPlugin = ManifestPlugin;
+exports.ManifestPlugin = ManifestPlugin;	

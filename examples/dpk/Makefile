@@ -10,11 +10,12 @@ elif [ -f .cfg_$(1).js ]; then \
 	cat .cfg_$(1).js > config.js; \
 fi
 
-.PHONY: build dev config
+.PHONY: build build2 dev config
 
 .SECONDEXPANSION:
 
-build: config
+build build2: config
+	@rm -rf out/public
 	@npm run $@
 	@cd out/public; tar cfvz ../$(NAME).dpk ./*
 
