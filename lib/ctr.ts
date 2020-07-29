@@ -39,8 +39,9 @@ interface ViewControllerDefine<P = {}, S = {}> {
 	shouldComponentUpdate?(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean;
 }
 
-declare class ViewControllerDefine<P = {}, S = {}> {
-	static contextType?: React.Context<any>;
+class _ { static contextType?: React.Context<any>; }
+
+declare class ViewControllerDefine<P = {}, S = {}> extends _ {
 	readonly context: any;
 	readonly persistentID: string;
 	constructor(props: Readonly<P>);
