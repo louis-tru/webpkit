@@ -46,7 +46,7 @@ utils.onUnhandledRejection.on((e)=>{
 initialize().catch(console.error);
 
 ReactDom.render(
-	<Root initSDK={false} routes={router} />,
+	<Root routes={router} />,
 	document.querySelector('#app')
 );
 
