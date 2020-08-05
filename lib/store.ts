@@ -28,20 +28,24 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import Store from 'somes/store';
+import Store, {Descriptors} from 'somes/store';
 import path from 'somes/path';
 import {Signer} from 'somes/request';
 
 export async function make({
-	url = 'http://127.0.0.1:8091/service-api', signer, name, store }: { 
-	url?: string; signer?: Signer; name?: string, store?: Store 
+	url = 'http://127.0.0.1:8091/service-api', signer, name, store, descriptors }: { 
+	url?: string; signer?: Signer; name?: string; store?: Store; descriptors?: Dict<Descriptors>,
 }) {
 	var _store = store || new Store(name);
 	if (_store.isLoaded) return _store;
 	var urlObj = new path.URL(url);
-	await _store.initialize(urlObj.hostname, 
-		urlObj.port, /^(http|ws)s/.test(urlObj.protocol), urlObj.filename
-	);
+	await _store.initialize({
+		host: urlObj.hostname, 
+		port: urlObj.port,
+		ssl: /^(http|ws)s/.test(urlObj.protocol), 
+		prefix: urlObj.filename,
+		descriptors,
+	});
 	if (signer) {
 		_store.setSigner(signer);
 	}
