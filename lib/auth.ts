@@ -62,8 +62,10 @@ function genAccessKey() {
  */
 class H5Signer extends Signer {
 
+	private _extra: any;
+
 	setExtra(extra: any) {
-		this.options = extra;
+		this._extra = extra;
 	}
 
 	sign(url: string, data?: any) {
@@ -85,7 +87,7 @@ class H5Signer extends Signer {
 
 		return Object.assign({
 			st, sign: sign.toString('base64'),
-		}, this.options);
+		}, this._extra);
 	}
 }
 
