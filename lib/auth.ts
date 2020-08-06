@@ -60,7 +60,7 @@ function genAccessKey() {
 /**
  * @class H5Signer
  */
-class H5Signer extends Signer {
+class H5Signer implements Signer {
 
 	private _extra: any;
 
