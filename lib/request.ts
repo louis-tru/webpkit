@@ -27,7 +27,7 @@ export class Request extends RequestBase {
 		}
 	}
 
-	withoutErr(hold: any, fullname: string) {
+	withoutErr(hold: any, fullname: string, isPost?: boolean) {
 		utils.assert(hold && typeof hold == 'object');
 
 		var self = this;
@@ -41,7 +41,7 @@ export class Request extends RequestBase {
 
 		var name = fullname.split('#')[0];
 
-		return function(params?: Params, options?: Options, isPost?: boolean) { // get
+		return function(params?: Params, options?: Options) { // get
 			return new Promise<any>(async function(resolve, reject) {
 				var ok = false;
 				handle.cancel = function() {
