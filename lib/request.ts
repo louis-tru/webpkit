@@ -41,7 +41,7 @@ export class Request extends RequestBase {
 
 		var name = fullname.split('#')[0];
 
-		return function(params?: Params, options?: Options) { // get
+		return function(params?: Params, options?: Options, isPost?: boolean) { // get
 			return new Promise<any>(async function(resolve, reject) {
 				var ok = false;
 				handle.cancel = function() {
@@ -52,7 +52,9 @@ export class Request extends RequestBase {
 				};
 				while(!ok) {
 					try {
-						var r = await self.get(name, params, options);
+						var r = isPost ?
+							await self.post(name, params, options):
+							await self.get(name, params, options);
 						if (!ok) {
 							ok = true;
 							resolve(r);
@@ -71,11 +73,14 @@ export class Request extends RequestBase {
 		name: string,
 		params?: Params,
 		options?: Options,
+		isPost?: boolean
 	) {
 		var data = null;
 		var key = '_callApi_' + name + Object.hashCode(params);
 		try {
-			var {data} = await this.get(name, params, options);
+			var {data} = isPost ? 
+				await this.post(name, params, options): 
+				await this.get(name, params, options);
 			this._storage.set(key, data);
 		} catch(err) {
 			data = this._storage.get(key);
