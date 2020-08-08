@@ -9,6 +9,6 @@
 		"build": "NODE_ENV=prod node node_modules/webpkit/webpack/build.js"
 	},
 	"dependencies": {
-		"webpkit": "~0.2.83"
+		"webpkit": "~0.2.90"
 	}
 }

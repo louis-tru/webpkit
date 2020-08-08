@@ -25,10 +25,10 @@ export function getMyStars(account_address: string) {
 }
 
 export function getMinerPlanet(hash: string) {
-	return req.useCacheAfterError('device/space/minerSpace', {miner_hash: hash.substring(2) });
+	return req.useCacheAfterErr('device/space/minerSpace', {miner_hash: hash.substring(2) });
 }
 
 // 获取binding用户信息
 export function getUserInfo(account_address: string) {
-	return req.useCacheAfterError('device/account/detail', {account_address});
+	return req.useCacheAfterErr('device/account/detail', {account_address});
 }

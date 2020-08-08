@@ -1,7 +1,7 @@
 
 import utils from 'somes';
 import {IBuffer} from 'somes/buffer';
-import {Request as RequestBase ,Params,Options, Signer} from 'somes/request';
+import {Request as RequestBase ,Params,Options, Signer, Result} from 'somes/request';
 import {IStorage} from 'somes/storage';
 
 export class Request extends RequestBase {
@@ -27,7 +27,7 @@ export class Request extends RequestBase {
 		}
 	}
 
-	withoutErr(hold: any, fullname: string, isPost?: boolean) {
+	withoutErr(hold: any, fullname: string, useCacheAfterEetry = Infinity/**/, interval = 5e3) {
 		utils.assert(hold && typeof hold == 'object');
 
 		var self = this;
@@ -44,50 +44,65 @@ export class Request extends RequestBase {
 		return function(params?: Params, options?: Options) { // get
 			return new Promise<any>(async function(resolve, reject) {
 				var ok = false;
+				var key = '_callApi_' + name + Object.hashCode(params);
+
 				handle.cancel = function() {
 					if (!ok) {
 						ok = true;
 						reject(Error.new(`cancel request, ${name}`));
 					}
 				};
+
 				while(!ok) {
 					try {
-						var r = isPost ?
-							await self.post(name, params, options):
-							await self.get(name, params, options);
+						var data = await self.request(name, options?.method, params, options);
 						if (!ok) {
-							ok = true;
-							resolve(r);
+							if (useCacheAfterEetry !== Infinity) {
+								self._storage.set(key, data);
+							}
+							ok = true; resolve(data);
 						}
 						break;
 					} catch(err) {
+						if (ok) {
+							break;
+						} else if (useCacheAfterEetry === 0) {
+							data = self._storage.get(key);
+							if (data) { // use cache
+								data.cached = true;
+								ok = true; resolve(data);
+								break;
+							}
+						}
 						console.warn(err);
 					}
-					await utils.sleep(5e3); // 5s retry
+
+					if (useCacheAfterEetry) {
+						useCacheAfterEetry--;
+					}
+					await utils.sleep(interval); // 5s retry
 				}
 			});
 		}
 	}
 
-	async useCacheAfterError(
+	async useCacheAfterErr(
 		name: string,
 		params?: Params,
 		options?: Options,
-		isPost?: boolean
 	) {
-		var data = null;
+		var data: Result;
 		var key = '_callApi_' + name + Object.hashCode(params);
 		try {
-			var {data} = isPost ? 
-				await this.post(name, params, options): 
-				await this.get(name, params, options);
+			data = await this.request(name, options?.method, params, options);
 			this._storage.set(key, data);
 		} catch(err) {
 			data = this._storage.get(key);
 			if (!data)
 				throw err;
+			data.cached = true;
 		}
-		return {data};
+		return data;
 	}
 
 }
