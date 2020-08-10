@@ -275,4 +275,4 @@ class ManifestPlugin {
 
 }
 
-exports.ManifestPlugin = ManifestPlugin;	
+module.exports = ManifestPlugin;

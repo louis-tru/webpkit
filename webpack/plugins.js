@@ -7,7 +7,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin") ;
-const ManifestPlugin = require('./manifest').ManifestPlugin;
+const ManifestPlugin = require('./manifest');
+const ApplicationInfo = require('./app');
 const views = require('./views');
 const path = require('path');
 
@@ -65,6 +66,7 @@ const prod_plugins = [
 
 const plugins = [
 	new ManifestPlugin(),
+	new ApplicationInfo(),
 	new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/),
 	new webpack.DefinePlugin({ 'process.env': { NODE_ENV: `"${NODE_ENV}"` } }),
 	// copy custom static assets
