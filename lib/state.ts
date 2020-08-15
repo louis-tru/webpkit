@@ -46,7 +46,7 @@ function set_global_state_value(name: string, value: any) {
  */
 export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
 
-	private _fill_global_state_value() {
+	private _fillGlobalStateValue() {
 		var set = new Set<string>();
 		var state = this.state;
 		if (state) {
@@ -91,7 +91,7 @@ export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
 
 	protected __initialize__() {
 		if (!global_state_components.has(this)) {
-			var set = this._fill_global_state_value();
+			var set = this._fillGlobalStateValue();
 			if (set.size) {
 				global_state_components.set(this, set);
 				this._is_global = true;
@@ -105,7 +105,11 @@ export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
 	}
 
 	static getGlobalState(name: string) {
-		return global_states[name];
+		var r = global_states[name];
+		if (r === undefined) {
+			global_states[name] = r = storage.get('global_state_' + name);
+		}
+		return r;
 	}
 
 	static setGlobalState(state: any, self?: GlobalState, callback?: ()=>void) {
