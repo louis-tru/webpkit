@@ -288,6 +288,10 @@ export class Cell<P = {}, S = {}> extends ViewController<P & { style?: React.CSS
 		return this._panel;
 	}
 
+	get isPause() {
+		return this._isPause;
+	}
+
 	triggerResume() {
 		this.onResume.trigger();
 	}
