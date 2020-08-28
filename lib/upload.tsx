@@ -32,7 +32,6 @@ import somes from 'somes';
 import path from 'somes/path';
 import * as React from 'react';
 import {ViewController} from './ctr';
-import store from './store';
 import './utils.css';
 import access from './auth';
 import Loading from './loading';
@@ -47,8 +46,12 @@ export interface QiniuUptoken {
 
 var uploadUrl = '/service-api/utils/uploadFile';
 var qiniuUptoken = async function () {
-	var uptoken = await store.utils.methods.qiniuUptoken();
-	return uptoken as QiniuUptoken;
+	// var uptoken = await store.utils.methods.qiniuUptoken();
+	// return uptoken as QiniuUptoken;
+	return {
+		token: '',
+		domain: '',
+	} as QiniuUptoken;
 }
 
 export function setConfig(uptoken: ()=>Promise<QiniuUptoken>, upload_url: string) {
