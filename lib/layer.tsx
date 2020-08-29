@@ -77,10 +77,12 @@ export class LayerGroup {
 
 	close(id: typeof Layer | string, animate = true) {
 		var _id: string = typeof id == 'string' ? String(id): getDefaultId(id);
-		utils.assert(this._IDs.has(_id), `Dialog no exists, "${id}"`);
+		// utils.assert(this._IDs.has(_id), `Dialog no exists, "${id}"`);
 		var l = this._IDs.get(_id);
 		if (l) {
 			l.close(animate);
+		} else {
+			console.warn(`Layer no exists, "${id}"`);
 		}
 	}
 
