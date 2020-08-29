@@ -12,8 +12,14 @@ const appInfo = appCfg.app || {};
 appInfo.name = appInfo.name || pkg.name;
 appInfo.displayName = appInfo.displayName || pkg.name;
 appInfo.appId = appInfo.appId || pkg.name;
-appInfo.appKey = appInfo.appKey || crypto.genPrivateKey().toString('base64');
+appInfo.appKey = appInfo.appKey;
 appInfo.version = pkg.version;
+
+if (cfg.isProd || !appInfo.appKey) {
+	appCfg.app = appInfo;
+	appInfo.appKey = crypto.genPrivateKey().toString('base64');
+	fs.writeFileSync(path.resolve('./config.js'), `module.exports = ${JSON.stringify(appCfg, null, 2)}`);
+}
 
 const private = Buffer.from(appInfo.appKey, 'base64');
 const appKey = crypto.getPublic(private, true);
