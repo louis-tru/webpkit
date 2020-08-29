@@ -106,10 +106,12 @@ export class DialogStack {
 
 	close(id: typeof Dialog | string, animate = true) {
 		var _id: string = typeof id == 'string' ? String(id): getDefaultId(id);
-		utils.assert(this._IDs.has(_id), `Dialog no exists, "${id}"`);
+		// utils.assert(this._IDs.has(_id), `Dialog no exists, "${id}"`);
 		var item = this._IDs.get(_id);
 		if (item) {
 			(item.value as Dialog).close(animate);
+		} else {
+			console.warn(`Dialog no exists, "${id}"`);
 		}
 	}
 
@@ -327,19 +329,20 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 
 	static alert(In: DialogIn, cb?: ()=>void, stack?: DialogStack) {
 		var _cb = cb || function() {}
-		var o = typeof In == 'string' ? { text: In, title: '' }: In;
-		var { text, title } = o;
+		var o = typeof In == 'string' ? { text: In, title: '', id: '' }: In;
+		var { text, title, id } = o;
 		return this.show({
-			title, text, buttons: {
+			id, title, text, 
+			buttons: {
 			'@确定': ()=>{ _cb() },
 		}}, stack);
 	}
 
 	static confirm(In: DialogIn, cb?: (ok: boolean)=>void, stack?: DialogStack) {
 		var _cb = cb || function() {};
-		var o = typeof In == 'string' ? { text: In, title: '' } : In;
-		var { text, title } = o;
-		return this.show({title, text, buttons: {
+		var o = typeof In == 'string' ? { text: In, title: '', id: '' } : In;
+		var { text, title, id } = o;
+		return this.show({ id, title, text, buttons: {
 			'取消': ()=>_cb(false),
 			'@确定': ()=>_cb(true),
 		}}, stack);
@@ -347,9 +350,9 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 
 	static prompt(In: PromptIn, cb?: (value: string, ok: boolean)=>void, stack?: DialogStack) {
 		var _cb = cb || function() {}
-		var o = typeof In == 'string' ? { text: In, title: '', value: '', type: 'text' }: In;
-		var { text, title, value, type, input, placeholder } = o;
-		return this.show({title, text, buttons: {
+		var o = typeof In == 'string' ? { text: In, title: '', value: '', type: 'text', id: '' }: In;
+		var { text, title, value, type, input, placeholder, id } = o;
+		return this.show({ id, title, text, buttons: {
 			'取消': e=> _cb(e.refs.prompt.value, false),
 			'@确定': e=> _cb(e.refs.prompt.value, true),
 		}, prompt: {value, type, input, placeholder }}, stack);
@@ -360,6 +363,7 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 export type DialogIn = string | {
 	text?: React.ReactNode;
 	title?: React.ReactNode;
+	id?: string;
 }
 
 export interface InputConstructor {
@@ -373,6 +377,7 @@ export type PromptIn = string | {
 	type?: string;
 	input?: InputConstructor;
 	placeholder?: string;
+	id?: string;
 }
 
 export function show(opts: DefaultOptions, stack?: DialogStack) {
