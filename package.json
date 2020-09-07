@@ -1,6 +1,6 @@
 {
 	"name": "webpkit",
-	"version": "0.2.101",
+	"version": "0.2.102",
 	"description": "Web Page KIT Framework",
 	"main": "index.js",
 	"types": "index.ts",
@@ -48,7 +48,7 @@
 		"babel-loader": "^8.0.6",
 		"chalk": "^2.0.1",
 		"copy-webpack-plugin": "^5.0.5",
-		"cport-nifty": "~0.1.2",
+		"cport-nifty": "~0.1.3",
 		"crypto-tx": "~0.2.8",
 		"css-loader": "^3.2.0",
 		"fastclick": "~1.0.6",
