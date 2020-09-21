@@ -41,7 +41,7 @@ module.exports = {
 			}],
 		},
 		{
-			test: /\.(png|jpe?g|gif|svg|mp4|webm|ogg|mp3|wav|flac|aac|woff2?|eot|ttf|otf)(\?.*)?$/,
+			test: /\.(png|jpe?g|gif|svg|mp4|webm|ogg|mp3|wav|flac|aac|woff2?|eot|ttf|otf|pdf)(\?.*)?$/,
 			loader: 'url-loader',
 			options: {
 				limit: config.limit,
