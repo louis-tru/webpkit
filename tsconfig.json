@@ -21,6 +21,7 @@
 		"jsx": "react",
 		"jsxFactory": "React.createElement",
 		// "esModuleInterop": true,
+		"resolveJsonModule": true,
 	},
 	"include": [
 		"**/*",

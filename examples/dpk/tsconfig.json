@@ -22,6 +22,7 @@
 		"jsxFactory": "React.createElement",
 		"resolveJsonModule": true,
 		// "esModuleInterop": true,
+		"resolveJsonModule": true,
 	},
 	"include": [
 		"**/*",
