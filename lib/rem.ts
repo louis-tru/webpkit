@@ -29,17 +29,34 @@
  * ***** END LICENSE BLOCK ***** */
 
 var win = window;
-var document = win.document;
-var docEl = document.documentElement;
+var doc = win.document;
+var docEl = doc.documentElement;
 var dpr = window.devicePixelRatio || 1;
-var is_initialize = 0;
 var atomPixel = 1;
-var rootFontSize = 12;
-var scale = 7.5
+var rootFontSize = 0;
+var scale = 0
 
-document.addEventListener("touchstart", function(){}, true);
+doc.addEventListener("touchstart", function(){}, true);
 
-function refreshRem() {
+var _unlock: (()=>void) | null = null;
+
+var tid: any;
+
+function resize() {
+	clearTimeout(tid);
+	tid = setTimeout(refreshRem, 300);
+}
+
+function pageshow(e: any) {
+	if (e.persisted) {
+		clearTimeout(tid);
+		tid = setTimeout(refreshRem, 300);
+	}
+}
+
+export function refreshRem() {
+	if (!_unlock) return;
+
 	var width = docEl.getBoundingClientRect().width;
 	if (width / dpr > 980) {
 		width = 980 * dpr;
@@ -47,46 +64,40 @@ function refreshRem() {
 	rootFontSize = width / scale;
 	docEl.style.fontSize = rootFontSize + 'px';
 	atomPixel = width / (scale * 100);
-
-	// if (doc.body && window.orientation == 0) {
-	// 	var _rem = rem;
-	// 	var html_width = width;
-	// 	var body_width = doc.body.getBoundingClientRect().width;
-	// 	if (html_width != body_width) { // 系统字体放大
-	// 		_rem = rem * (html_width / body_width);
-	// 		docEl.style.fontSize = _rem + 'px';
-	// 	}
-	// }
 }
 
-function initialize(_scale?: number) {
+export function lock(_scale?: number) {
+	scale = _scale || 7.5;
 
-	if (is_initialize) return;
-	is_initialize = 1;
+	if (!_unlock) {
+		win.addEventListener('resize', resize, false);
+		win.addEventListener('pageshow', pageshow, false);
+		doc.addEventListener('DOMContentLoaded', refreshRem, false);
 
-	scale = _scale || scale;
-
-	var tid: any;
-	win.addEventListener('resize', function() {
-		clearTimeout(tid);
-		tid = setTimeout(refreshRem, 300);
-	}, false);
-
-	win.addEventListener('pageshow', function(e) {
-		if (e.persisted) {
-			clearTimeout(tid);
-			tid = setTimeout(refreshRem, 300);
-		}
-	}, false);
-
-	document.addEventListener('DOMContentLoaded', refreshRem, false);
+		_unlock = ()=>{
+			win.removeEventListener('resize', resize, false);
+			win.removeEventListener('pageshow', pageshow, false);
+			doc.removeEventListener('DOMContentLoaded', refreshRem, false);
+			docEl.style.fontSize = 'initial';
+			_unlock = null;
+			atomPixel = 1;
+			rootFontSize = 0;
+		};
+	}
 
 	refreshRem();
+}
+
+export function unlock() {
+	if (_unlock)
+		_unlock();
 }
 
 export default {
 	get atomPixel() { return atomPixel },
 	get rootFontSize() { return rootFontSize },
 	refreshRem,
-	initialize,
+	initialize: function(_scale?: number) {
+		lock(_scale);
+	},
 }
