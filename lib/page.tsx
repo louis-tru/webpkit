@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import utils from 'somes';
+// import utils from 'somes';
 import * as React from 'react';
 import {ViewController} from './ctr';
 import GlobalState from './state';
@@ -37,7 +37,7 @@ import {Location} from 'history';
 import {Router} from './router';
 import { match } from 'react-router';
 
-export type History = _history.History<_history.History.PoorMansUnknown>;
+export type History = _history.History;//<_history.History.PoorMansUnknown>;
 
 export interface PageProps {
 	router: Router;
