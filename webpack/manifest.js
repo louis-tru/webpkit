@@ -17,6 +17,8 @@ function mkdirp(dir) {
 	}
 }
 
+// console.log('config.configOsmosis', config.configOsmosis);
+
 const hash_buf_len = 256*256;// 65536b = 64kb
 const hash_buf = Buffer.from({length: hash_buf_len});
 
@@ -255,8 +257,10 @@ class ManifestPlugin {
 			compilation.hooks.moduleIds.tap("ManifestModuleIds", modules => {
 				for (var module of modules) {
 					var ids = [String(module.id)];
-					if (hasDependencieConfig(module, new Set)) {
-						ids.push(configHash);
+					if (config.configOsmosis) {
+						if (hasDependencieConfig(module, new Set)) {
+							ids.push(configHash); // module id 间接受/config.js内容影响（config渗透），一般情况下不需要开启
+						}
 					}
 					var id = crypto.createHash('md4').update(ids.join('')).digest('base64');
 					var len = hashDigestLength;

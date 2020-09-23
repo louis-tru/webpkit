@@ -7,21 +7,17 @@ const utils = require('webpkit/webpack/utils');
 const fs = require('somes/fs');
 const pkg = require(`${process.cwd()}/package.json`);
 
-const appInfo = appCfg.app || {};
+const app = appCfg.app = appCfg.app || {};
 
-appInfo.name = appInfo.name || pkg.name;
-appInfo.displayName = appInfo.displayName || pkg.name;
-appInfo.appId = appInfo.appId || pkg.name;
-appInfo.appKey = appInfo.appKey;
-appInfo.version = pkg.version;
+app.name = app.name || pkg.name;
+app.displayName = app.displayName || pkg.name;
+app.appId = app.appId || pkg.name;
+app.appKey = app.appKey || crypto.genPrivateKey().toString('base64');
+app.version = pkg.version;
 
-if (cfg.isProd || !appInfo.appKey) {
-	appCfg.app = appInfo;
-	appInfo.appKey = crypto.genPrivateKey().toString('base64');
-	fs.writeFileSync(path.resolve('./config.js'), `module.exports = ${JSON.stringify(appCfg, null, 2)}`);
-}
+fs.writeFileSync(path.resolve('./config.js'), `module.exports = ${JSON.stringify(appCfg, null, 2)}`);
 
-const private = Buffer.from(appInfo.appKey, 'base64');
+const private = Buffer.from(app.appKey, 'base64');
 const appKey = crypto.getPublic(private, true);
 
 class ApplicationInfo {
@@ -36,16 +32,16 @@ class ApplicationInfo {
 		compiler.hooks.done.tap('ApplicationInfo', ()=>{
 			var path_str = path.resolve(cfg.output, utils.assetsPath('app.json'));
 
-			if (appInfo.icon) {
-				var icon = path.resolve(appInfo.icon);
+			if (app.icon) {
+				var icon = path.resolve(app.icon);
 				if (fs.existsSync(icon)) {
 					var basename = path.basename(icon);
 					fs.copyFileSync(icon, path.resolve(cfg.output, utils.assetsPath(basename)) );
-					appInfo.icon = appInfo.appId + '/' + basename;
+					app.icon = app.appId + '/' + basename;
 				}
 			}
 
-			fs.writeFileSync(path_str, JSON.stringify({...appInfo, appKey: appKey.toString('base64') }, null, 2));
+			fs.writeFileSync(path_str, JSON.stringify({...app, appKey: appKey.toString('base64') }, null, 2));
 		});
 	}
 

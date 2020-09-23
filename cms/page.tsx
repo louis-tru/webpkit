@@ -63,4 +63,4 @@ class CMSDataPageIMPL extends CMSPage {}
 
 somes.extendClass(CMSDataPageIMPL, DataPage, ViewController.prototype);
 
-export const CMSDataPage = CMSDataPageIMPL as typeof CMSDataPageDefine;
+export const CMSDataPage = CMSDataPageIMPL as unknown as typeof CMSDataPageDefine;

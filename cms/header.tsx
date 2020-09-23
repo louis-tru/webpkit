@@ -156,7 +156,7 @@ export default class extends ViewController {
 									<li className="bg-gray">
 										<a className="media" href="#">
 											<div className="media-left">
-												<img className="img-circle img-sm" alt="Profile Picture" src="cport-nifty/img/profile-photos/9.png"/>
+												<img className="img-circle img-sm" alt="Profile Picture" src={require('cport-nifty/img/profile-photos/9.png')}/>
 											</div>
 											<div className="media-body">
 												<div className="text-nowrap">Lucy sent you a message</div>
@@ -169,7 +169,7 @@ export default class extends ViewController {
 									<li className="bg-gray">
 										<a className="media" href="#">
 											<div className="media-left">
-												<img className="img-circle img-sm" alt="Profile Picture" src="cport-nifty/img/profile-photos/3.png"/>
+												<img className="img-circle img-sm" alt="Profile Picture" src={require('cport-nifty/img/profile-photos/3.png')}/>
 											</div>
 											<div className="media-body">
 												<div className="text-nowrap">Jackson sent you a message</div>
@@ -280,22 +280,22 @@ export default class extends ViewController {
 								<ul className="list-unstyled list-inline text-justify">
 
 									<li className="pad-btm">
-										<img src="cport-nifty/img/thumbs/mega-menu-2.jpg" alt="thumbs"/>
+										<img src={require('cport-nifty/img/thumbs/mega-menu-2.jpg')} alt="thumbs"/>
 									</li>
 									<li className="pad-btm">
-										<img src="cport-nifty/img/thumbs/mega-menu-3.jpg" alt="thumbs"/>
+										<img src={require('cport-nifty/img/thumbs/mega-menu-3.jpg')} alt="thumbs"/>
 									</li>
 									<li className="pad-btm">
-										<img src="cport-nifty/img/thumbs/mega-menu-1.jpg" alt="thumbs"/>
+										<img src={require('cport-nifty/img/thumbs/mega-menu-1.jpg')} alt="thumbs"/>
 									</li>
 									<li className="pad-btm">
-										<img src="cport-nifty/img/thumbs/mega-menu-4.jpg" alt="thumbs"/>
+										<img src={require('cport-nifty/img/thumbs/mega-menu-4.jpg')} alt="thumbs"/>
 									</li>
 									<li className="pad-btm">
-										<img src="cport-nifty/img/thumbs/mega-menu-5.jpg" alt="thumbs"/>
+										<img src={require('cport-nifty/img/thumbs/mega-menu-5.jpg')} alt="thumbs"/>
 									</li>
 									<li className="pad-btm">
-										<img src="cport-nifty/img/thumbs/mega-menu-6.jpg" alt="thumbs"/>
+										<img src={require('cport-nifty/img/thumbs/mega-menu-6.jpg')} alt="thumbs"/>
 									</li>
 								</ul>
 								<a href="#" className="btn btn-sm btn-block btn-default">Browse Gallery</a>
@@ -318,7 +318,7 @@ export default class extends ViewController {
 				<li className="dropdown">
 					<a id="demo-lang-switch" className="lang-selector dropdown-toggle" href="#" data-toggle="dropdown">
 						<span className="lang-selected">
-							<img className="lang-flag" src="cport-nifty/img/flags/united-kingdom.png" alt="English" />
+							<img className="lang-flag" src={require('cport-nifty/img/flags/united-kingdom.png')} alt="English" />
 						</span>
 					</a>
 
@@ -327,7 +327,7 @@ export default class extends ViewController {
 						<li>
 							{/*--English--*/}
 							<a href="#" className="active">
-								<img className="lang-flag" src="cport-nifty/img/flags/united-kingdom.png" alt="English"/>
+								<img className="lang-flag" src={require('cport-nifty/img/flags/united-kingdom.png')} alt="English"/>
 								<span className="lang-id">EN</span>
 								<span className="lang-name">English</span>
 							</a>
@@ -335,7 +335,7 @@ export default class extends ViewController {
 						<li>
 							{/*--France--*/}
 							<a href="#">
-								<img className="lang-flag" src="cport-nifty/img/flags/france.png" alt="France"/>
+								<img className="lang-flag" src={require('cport-nifty/img/flags/france.png')} alt="France"/>
 								<span className="lang-id">FR</span>
 								<span className="lang-name">Fran&ccedil;ais</span>
 							</a>
@@ -343,7 +343,7 @@ export default class extends ViewController {
 						<li>
 							{/*--Germany--*/}
 							<a href="#">
-								<img className="lang-flag" src="cport-nifty/img/flags/germany.png" alt="Germany"/>
+								<img className="lang-flag" src={require('cport-nifty/img/flags/germany.png')} alt="Germany"/>
 								<span className="lang-id">DE</span>
 								<span className="lang-name">Deutsch</span>
 							</a>
@@ -351,7 +351,7 @@ export default class extends ViewController {
 						<li>
 							{/*--Italy--*/}
 							<a href="#">
-								<img className="lang-flag" src="cport-nifty/img/flags/italy.png" alt="Italy"/>
+								<img className="lang-flag" src={require('cport-nifty/img/flags/italy.png')} alt="Italy"/>
 								<span className="lang-id">IT</span>
 								<span className="lang-name">Italiano</span>
 							</a>
@@ -359,7 +359,7 @@ export default class extends ViewController {
 						<li>
 							{/*--Spain--*/}
 							<a href="#">
-								<img className="lang-flag" src="cport-nifty/img/flags/spain.png" alt="Spain"/>
+								<img className="lang-flag" src={require('cport-nifty/img/flags/spain.png')} alt="Spain"/>
 								<span className="lang-id">ES</span>
 								<span className="lang-name">Espa&ntilde;ol</span>
 							</a>
@@ -376,7 +376,7 @@ export default class extends ViewController {
 				<li id="dropdown-user" className="dropdown">
 					<a href="#" data-toggle="dropdown" className="dropdown-toggle text-right">
 						<span className="pull-right">
-							{/*--<img className="img-circle img-user media-object" src="cport-nifty/img/profile-photos/1.png" alt="Profile Picture">--*/}
+							{/*--<img className="img-circle img-user media-object" src={require('cport-nifty/img/profile-photos/1.png')} alt="Profile Picture">--*/}
 							<i className="demo-pli-male ic-user"></i>
 						</span>
 						<div className="username hidden-xs">Aaron Chavez</div>
@@ -450,7 +450,7 @@ export default class extends ViewController {
 		return (
 			<div className="navbar-header">
 				<a href="/" className="navbar-brand">
-					<img src="cport-nifty/img/logo.png" alt="Nifty Logo" className="brand-icon" />
+					<img src={require('cport-nifty/img/logo.png')} alt="Nifty Logo" className="brand-icon" />
 					<div className="brand-title">
 						<span className="brand-text">{this.title}</span>
 					</div>

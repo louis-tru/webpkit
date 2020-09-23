@@ -39,9 +39,10 @@ const prot = Number(process.env.PORT) || 8080;
 const assetsPublicPath = process.env.VIRTUAL || '';
 const source = path.resolve(process.env.ROOT_DIR || process.cwd());
 const output = path.resolve(process.env.OUTPUT ||  'out/public', assetsPublicPath);
-const sourceMap = process.env.MAP === 'false' ? false: true;
+const sourceMap = process.env.MAP === 'true' ? true: false;
 const isMinimizer = process.env.MINIM === 'false' ? false: true;
 const limit = Number(process.env.LIMIT) || 10240;
+const osmosis = process.env.OSMOSIS === 'true' ? true: false;
 
 const NODE_ENV = 
 	process.env.NODE_ENV == 'prod' ? 'production': 
@@ -81,6 +82,7 @@ module.exports = {
 	isProd: isProd,
 	NODE_ENV: NODE_ENV,
 	limit: limit,
+	configOsmosis: osmosis, // 文件 module-id 间接受/config.js内容影响（config渗透），一般情况下不需要开启，
 
 	/**
 	 * Source Maps

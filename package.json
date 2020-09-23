@@ -1,9 +1,9 @@
 {
 	"name": "webpkit",
-	"version": "0.2.106",
+	"version": "0.3.0",
 	"description": "Web Page KIT Framework",
 	"main": "index.js",
-	"types": "index.ts",
+	"types": "index.d.ts",
 	"author": "louistru@hotmail.com",
 	"bin": {
 		"webpkit": "shell.js"

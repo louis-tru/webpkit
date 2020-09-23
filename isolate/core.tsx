@@ -269,7 +269,7 @@ export default class ApplicationLauncher extends Gesture<{
 			}
 		}
 		if (!win) {
-			var app = this._sys;
+			app = this._sys as Application;
 			win = type == CoverType.TOP ? app.top(): app.bottom();
 		}
 		return { app, win };

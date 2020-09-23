@@ -211,14 +211,14 @@ export default abstract class Login<P = {}> extends ViewController<Props & P> {
 				<div className="demo-bg">
 					<div id="demo-bg-list">
 						<div className="demo-loading"><i className="psi-repeat-2"></i></div>
-						<img className="demo-chg-bg bg-trans active" src="cport-nifty/img/bg-img/thumbs/bg-trns.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-1.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-2.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-3.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-4.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-5.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-6.jpg" alt="Background Image" />
-						<img className="demo-chg-bg" src="cport-nifty/img/bg-img/thumbs/bg-img-7.jpg" alt="Background Image" />
+						<img className="demo-chg-bg bg-trans active" src={require('cport-nifty/img/bg-img/thumbs/bg-trns.jpg')} alt="Background Image" />
+						<img className="demo-chg-bg" src={require('cport-nifty/img/bg-img/thumbs/bg-img-1.jpg')} alt="Background Image" />
+						<img className="demo-chg-bg" src={require('cport-nifty/img/bg-img/thumbs/bg-img-2.jpg')} alt="Background Image" />
+						<img className="demo-chg-bg" src={require('cport-nifty/img/bg-img/thumbs/bg-img-3.jpg')} alt="Background Image" />
+						<img className="demo-chg-bg" src={require('cport-nifty/img/bg-img/thumbs/bg-img-4.jpg')} alt="Background Image" />
+						<img className="demo-chg-bg" src={require('cport-nifty/img/bg-img/thumbs/bg-img-5.jpg')} alt="Background Image" />
+						<img className="demo-chg-bg" src={require('cport-nifty/img/bg-img/thumbs/bg-img-6.jpg')} alt="Background Image" />
+						<img className="demo-chg-bg" src={require('cport-nifty/img/bg-img/thumbs/bg-img-7.jpg')} alt="Background Image" />
 					</div>
 				</div>
 				{/* <!--===================================================--> */}

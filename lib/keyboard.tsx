@@ -171,7 +171,7 @@ export class DefaultKeyboard extends Keyboard {
 					<view>[</view>
 					<view>]</view>
 					<view>{'{'}</view>
-					<view>}</view>
+					<view>{'}'}</view>
 					<view>#</view>
 					<view>%</view>
 					<view>^</view>
@@ -185,7 +185,7 @@ export class DefaultKeyboard extends Keyboard {
 					<view>\</view>
 					<view>|</view>
 					<view>{'<'}</view>
-					<view>></view>
+					<view>{'>'}</view>
 					<view>¥</view>
 					<view>€</view>
 					<view>£</view>
