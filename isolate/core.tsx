@@ -455,8 +455,17 @@ export default class ApplicationLauncher extends Gesture<{
 			var [panel, stack] = this._genPanel(target);
 			var New = window as any;
 
-			var win = await new Promise<Window>(r=>
-				ReactDom.render(<New {...args} __app__={app} id={id} />, panel, function(this: any) { r(this) })
+			var win = await new Promise<Window>((r,j)=>
+				ReactDom.render(<New {...args} __app__={app} id={id} />, panel, function(this: any) { 
+					if (this) {
+						r(this);
+					}
+					else {
+						ReactDom.unmountComponentAtNode(panel);
+						panel.parentNode?.removeChild(panel);
+						j(new Error('isolate.ApplicationLauncher._load.ReactDom.render fail'));
+					}
+				})
 			);
 
 			var info: Info = {
