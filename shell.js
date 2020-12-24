@@ -38,7 +38,7 @@ async function exec_cmd(cmd) {
 
 function install() {
 	console.log('install depes ...');
-	fs.copySync(__dirname + '/node_modules', process.cwd() + '/node_modules');
+	// fs.copySync(__dirname + '/node_modules', process.cwd() + '/node_modules');
 	exec_cmd(`npm install`);
 }
 
