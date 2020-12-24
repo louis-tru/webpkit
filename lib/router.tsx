@@ -116,7 +116,7 @@ export class Router extends Component<{notFound?: typeof Page, routes?: Route[] 
 		return (
 			<RouterRaw history={this.history}>
 				<Switch>
-					{Object.values(this._routes).map(e=>route(this, e))}
+					{Object.values(this._routes).map(e=>route(this, {exact: true, ...e}))}
 					{route(this, notFound)}
 				</Switch>
 			</RouterRaw>
