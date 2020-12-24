@@ -4,7 +4,7 @@
  * @date 2018-11-05
  */
 
-var arguments = require('somes/arguments');
+var argument = require('somes/arguments');
 var fs = require('somes/fs');
 var path = require('path');
 var {exec} = require('somes/syscall');
@@ -12,9 +12,9 @@ var {exec} = require('somes/syscall');
 const args = process.argv.slice(2);
 const cmd = args.shift() || 'dev';
 const cfg = args.shift() || '';
-const opts = arguments.options;
-const help_info = arguments.helpInfo;
-const def_opts = arguments.defOpts;
+const opts = argument.options;
+const help_info = argument.helpInfo;
+const def_opts = argument.defOpts;
 
 def_opts(['help', 'h'],       0,   '--help, -h         print help info');
 
@@ -42,16 +42,21 @@ function install() {
 	exec_cmd(`npm install`);
 }
 
+function print_help() {
+	process.stdout.write('Usage:\n');
+	process.stdout.write('     \n  webpkit init [default|mobile|cms|dpk]\n');
+	process.stdout.write('     \n  webpkit dev [cfg]\n');
+	process.stdout.write('     \n  webpkit build [cfg]\n');
+	process.stdout.write('     \n  webpkit install\n');
+	process.stdout.write('Options:');
+	process.stdout.write('\n  ' + help_info.join('\n  ') + '\n\n');
+	process.exit();
+}
+
 function main() {
 
 	if (opts.help) {
-		process.stdout.write('Usage:\n  webpkit\n');
-		process.stdout.write('     :\n  webpkit init [default|mobile|cms|dpk]\n');
-		process.stdout.write('     :\n  webpkit dev [cfg]\n');
-		process.stdout.write('     :\n  webpkit build [cfg]\n');
-		process.stdout.write('     :\n  webpkit install\n');
-		process.stdout.write('  ' + help_info.join('\n  ') + '\n');
-		process.exit();
+		print_help();
 	}
 
 	if (cmd == 'init') {
@@ -67,8 +72,9 @@ function main() {
 		cp_cfg(cfg || 'prod');
 		exec_cmd(`npm run build`);
 	} else { // dev
-		cp_cfg(cfg || 'dev');
-		exec_cmd(`npm run dev`);
+		// cp_cfg(cfg || 'dev');
+		// exec_cmd(`npm run dev`);
+		print_help();
 	}
 }
 
