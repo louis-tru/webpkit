@@ -20,8 +20,8 @@
 		"removeComments": true,
 		"jsx": "react",
 		"jsxFactory": "React.createElement",
-		"esModuleInterop": true,
 		"resolveJsonModule": true,
+		"esModuleInterop": true,
 	},
 	"include": [
 		"**/*",
@@ -30,11 +30,9 @@
 		"out",
 		"var",
 		".git",
-		".svn",
 		"node_modules",
 		"_.js",
 		"webpack",
-		"nifty",
 		"examples",
 	]
 }

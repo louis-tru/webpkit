@@ -21,8 +21,6 @@
 		"jsx": "react",
 		"jsxFactory": "React.createElement",
 		"resolveJsonModule": true,
-		// "esModuleInterop": true,
-		"resolveJsonModule": true,
 	},
 	"include": [
 		"**/*",
@@ -31,9 +29,7 @@
 		"out",
 		"var",
 		".git",
-		".svn",
 		"node_modules",
 		"_.js",
-		"nifty",
 	]
 }

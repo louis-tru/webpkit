@@ -4,7 +4,7 @@
 		"module": "esnext",
 		"target": "ES2018",
 		"moduleResolution": "node",
-		"sourceMap": true,
+		"sourceMap": false,
 		"outDir": "out/dist",
 		"declaration": false,
 		"alwaysStrict": true,
@@ -29,9 +29,7 @@
 		"out",
 		"var",
 		".git",
-		".svn",
 		"node_modules",
 		"_.js",
-		"nifty",
 	]
 }
