@@ -70,16 +70,16 @@ declare class ViewControllerDefine<P = {}, S = {}> extends _ {
 }
 
 class ViewControllerIMPL<P = {}, S = {}> extends GlobalState<P, S> {
-	private m_mounted?: boolean;
-	private m_loaded?: boolean;
+	private _mounted?: boolean;
+	private _loaded?: boolean;
 	private _destroy?: boolean;
 
 	get isLoaded() {
-		return !!this.m_loaded;
+		return !!this._loaded;
 	}
 
 	get isMounted() {
-		return !!this.m_mounted;
+		return !!this._mounted;
 	}
 
 	get isDestroy() {
@@ -114,17 +114,17 @@ class ViewControllerIMPL<P = {}, S = {}> extends GlobalState<P, S> {
 		var r = this.triggerLoad() as any; // trigger event Load
 		if (r instanceof Promise) {
 			r.then(()=>{
-				this.m_loaded = true;
+				this._loaded = true;
 				this.forceUpdate();
 			});
 		} else {
-			this.m_loaded = true;
+			this._loaded = true;
 			this.forceUpdate();
 		}
 	}
 
 	async componentDidMount() {
-		this.m_mounted = true;
+		this._mounted = true;
 		this.triggerMounted();
 	}
 

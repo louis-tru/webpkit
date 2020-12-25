@@ -33,7 +33,7 @@ import path from 'somes/path';
 import {Signer} from 'somes/request';
 
 export async function make({
-	url = 'http://127.0.0.1:8091/service-api', signer, name, store, descriptors }: { 
+	url = 'http://127.0.0.1:8091/service-api', signer, name, store, descriptors }: {
 	url?: string; signer?: Signer; name?: string; store?: Store; descriptors?: Dict<Descriptors>,
 }) {
 	var _store = store || new Store(name);

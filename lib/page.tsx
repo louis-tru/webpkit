@@ -37,29 +37,31 @@ import {Location} from 'history';
 import {Router} from './router';
 import { match } from 'react-router';
 
-export type History = _history.History;//<_history.History.PoorMansUnknown>;
+export type History = _history.History; //<_history.History.PoorMansUnknown>;
 
-export interface PageProps {
+export interface PageInit {
 	router: Router;
 	history: History;
 	location: Location;
 	match: match;
 }
 
-export default class Page<P = {}, S = {}> extends ViewController<PageProps & P, S> {
+export default class Page<Params = {}, S = {}> extends ViewController<number, S> {
 	private _url = '';
-	private _params: P = {} as P;
 	private _router?: Router;
+	private _pageInit: PageInit;
+	private _params: Params = {} as Params;
 
-	constructor(props: P & PageProps) {
-		super(props);
+	constructor(props: Readonly<Params & PageInit>) {
+		super(0);
+		this._pageInit = props;
 		// utils.assert(this.props.router, 'no router');
-		if (!this.props.router)
+		if (!props.router)
 			return;
-		this._router = this.props.router;
-		this._url = this.props.location.pathname + this.props.location.search;
-		this._params = Object.assign({}, this.props.match && this.props.match.params) as P;
-		var search = this.props.location.search.substr(1);
+		this._router = props.router;
+		this._url = props.location.pathname + props.location.search;
+		this._params = Object.assign({}, props.match && props.match.params) as Params;
+		var search = props.location.search.substr(1);
 		if (search) {
 			search.split('&').forEach(e=>{
 				var [key,...value] = e.split('=');
@@ -84,15 +86,15 @@ export default class Page<P = {}, S = {}> extends ViewController<PageProps & P, 
 	}
 	
 	get history() {
-		return this.props.history as History;
+		return this._pageInit.history as History;
 	}
 
 	get location() {
-		return this.props.location as Location;
+		return this._pageInit.location as Location;
 	}
 
 	get match() {
-		return this.props.match as match;
+		return this._pageInit.match as match;
 	}
 
 	get params() {
@@ -142,7 +144,7 @@ export default class Page<P = {}, S = {}> extends ViewController<PageProps & P, 
 
 export class Loading extends Page<{content?:string}, {}> {
 	render() {
-		return <div> {this.props.content||''} </div>
+		return <div> {this.params.content||''} </div>
 	}
 }
 

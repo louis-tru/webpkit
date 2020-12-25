@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 
 const isProd = config.isProd;
+const babelTS = config.babelTS;
 
 var babelOptions;
 var babelrc = [utils.resolve('.babelrc'), path.join(__dirname + '/../.babelrc')];
@@ -32,10 +33,12 @@ module.exports = {
 		{
 			test: /\.(ts|tsx)$/,
 			include: [path.resolve('..')],
-			use: [{
-				loader: 'babel-loader',
-				options: babelOptions,
-			},{
+			use: [(babelTS ? [
+				{
+					loader: 'babel-loader',
+					options: babelOptions,
+				}
+			]: []), {
 				loader: 'ts-loader',
 				options: { 
 					allowTsInNodeModules: false,

@@ -39,11 +39,9 @@ import NotFound from './404';
 import * as _history from 'history';
 import { match } from 'react-router';
 
-export const history: History = _history.createBrowserHistory();
+function newRoute(router: Router, { path, page, ...args }: { path: string, page: ()=>Promise<{ default: typeof Page }> } & Dict) {
 
-function route(router: Router, { path, page, ...args }: { path: string, page: ()=>Promise<{ default: typeof Page }> } & Dict) {
-
-	class _Route extends Component<{location: any, match: match}> {
+	class InlRoute extends Component<{location: any, match: match}> {
 
 		state = { com: Loading, isLoaded: false };
 
@@ -60,7 +58,7 @@ function route(router: Router, { path, page, ...args }: { path: string, page: ()
 		}
 
 		render() {
-			var Com = this.state.com;
+			var Com = this.state.com as any;
 			return (
 				<Com
 					router={router}
@@ -72,7 +70,7 @@ function route(router: Router, { path, page, ...args }: { path: string, page: ()
 		}
 	}
 
-	return <RouteRaw path={path} key={path} {...args} component={_Route}/>
+	return <RouteRaw path={path} key={path} {...args} component={InlRoute}/>
 }
 
 export interface Route extends Dict {
@@ -85,6 +83,7 @@ export class Router extends Component<{notFound?: typeof Page, routes?: Route[] 
 	private _routes: Dict = {};
 	private _notFound: typeof Page;
 	private _current: Page | null = null;
+	private _history: History;
 
 	constructor(props: any) {
 		super(props);
@@ -99,6 +98,7 @@ export class Router extends Component<{notFound?: typeof Page, routes?: Route[] 
 				}
 			}
 		});
+		this._history = _history.createBrowserHistory();
 		this._notFound = this.props.notFound || NotFound as typeof Page;
 	}
 
@@ -108,16 +108,16 @@ export class Router extends Component<{notFound?: typeof Page, routes?: Route[] 
 	}
 
 	get history() {
-		return history;
+		return this._history;
 	}
 
 	render() {
 		var notFound = { path: '', page: async ()=>({ default: this._notFound }) };
 		return (
-			<RouterRaw history={this.history}>
+			<RouterRaw history={this._history}>
 				<Switch>
-					{Object.values(this._routes).map(e=>route(this, {exact: true, ...e}))}
-					{route(this, notFound)}
+					{Object.values(this._routes).map(e=>newRoute(this, {exact: true, ...e}))}
+					{newRoute(this, notFound)}
 				</Switch>
 			</RouterRaw>
 		);

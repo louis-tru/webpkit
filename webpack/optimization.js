@@ -4,7 +4,7 @@ const os = require('os');
 const config = require('./cfg');
 
 module.exports = {
-	minimizer: [
+	minimizer: config.isProd ? [
 		new TerserPlugin({
 			cache: true,
 			parallel: os.cpus().length - 1,
@@ -14,7 +14,7 @@ module.exports = {
 			},
 			exclude: config.isMinimizer ? /somes_bigint/: /.*/,
 		}),
-	],
+	]: [],
 	runtimeChunk: {
 		name: 'runtime',
 	},

@@ -31,7 +31,7 @@
 import 'normalize.css';
 import './util.css';
 import utils from 'somes';
-import { Router, Route, history } from './router';
+import { Router, Route } from './router';
 import Page, { DataPage } from './page';
 import * as ReactDom from 'react-dom';
 import * as React from 'react';
@@ -55,7 +55,8 @@ export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S>
 	}
 
 	get history() {
-		return history;
+		var r = this.refs.router as unknown as Router;
+		return r.history;
 	}
 
 	render() {
