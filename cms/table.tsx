@@ -45,7 +45,7 @@ export interface TableProps {
 export default class extends CMSPage<TableProps> {
 
 	async triggerLoad() {
-		const flag = this.props.initial === undefined ? true : this.props.initial
+		const flag = this.params.initial === undefined ? true : this.params.initial
 
 		// await import('cport-nifty/plugins/datatables/media/js/jquery.dataTables.min.js');
 		// await import('cport-nifty/plugins/datatables/media/css/jquery.dataTables.min.css');
@@ -62,7 +62,7 @@ export default class extends CMSPage<TableProps> {
 	}
 
 	renderHeader() {
-		let { operating, header } = this.props;
+		let { operating, header } = this.params;
 		
 		if (operating && header.indexReverse(0) !== '操作' ) {
 			header.push('操作')
@@ -78,7 +78,7 @@ export default class extends CMSPage<TableProps> {
 	}
 
 	renderLists() {
-		let { lists, header, operating, renderLists } = this.props
+		let { lists, header, operating, renderLists } = this.params
 		// debugger
 		return renderLists(header, lists, operating);
 	}
