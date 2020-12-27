@@ -8,7 +8,7 @@
 		"dev": "DEV_INLINE=false node node_modules/webpkit/webpack/dev --inline --progress --config node_modules/webpkit/webpack/index.js",
 		"build": "NODE_ENV=prod node node_modules/webpkit/webpack/build.js"
 	},
-	"dependencies": {
-		"webpkit": "~0.3.0"
+	"devDependencies": {
+		"webpkit": "file:webpkit"
 	}
 }

@@ -10,7 +10,7 @@
 		"build2": "LIMIT=1024 NODE_ENV=prod MINIM=false MAP=false node node_modules/dphoto-lib/webpack/build.js"
 	},
 	"devDependencies": {
-		"dphoto-lib": "file:../dphoto-lib",
-		"dphoto-core": "file:../dphoto-core"
+		"dphoto-lib": "file:dphoto-lib",
+		"dphoto-core": "file:dphoto-core"
 	}
 }
