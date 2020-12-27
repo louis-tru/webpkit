@@ -23,7 +23,7 @@ module.exports = {
 	rules: [
 		{
 			test: /\.(js|jsx)$/,
-			include: [path.resolve('..')],
+			include: [path.resolve('.')],
 			exclude: /(typeof|_bigint)\.js/,
 			use: [{
 				loader: 'babel-loader',
@@ -32,8 +32,8 @@ module.exports = {
 		},
 		{
 			test: /\.(ts|tsx)$/,
-			include: [path.resolve('..')],
-			use: [(babelTS ? [
+			include: [path.resolve('.')],
+			use: [...(babelTS ? [
 				{
 					loader: 'babel-loader',
 					options: babelOptions,

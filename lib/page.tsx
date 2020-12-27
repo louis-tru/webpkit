@@ -46,14 +46,14 @@ export interface PageInit {
 	match: match;
 }
 
-export default class Page<Params = {}, S = {}> extends ViewController<number, S> {
+export default class Page<Params = {}, S = {}> extends ViewController<{}, S> {
 	private _url = '';
 	private _router?: Router;
 	private _pageInit: PageInit;
 	private _params: Params = {} as Params;
 
 	constructor(props: Readonly<Params & PageInit>) {
-		super(0);
+		super(props);
 		this._pageInit = props;
 		// utils.assert(this.props.router, 'no router');
 		if (!props.router)

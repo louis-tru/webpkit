@@ -30,7 +30,7 @@
 
 import { React, Link } from '../lib';
 import {ViewController} from '../lib/ctr';
-import {history} from '../lib/router';
+import {Root} from '..';
 
 export interface MenuInfo {
 	icon?: string;
@@ -47,7 +47,7 @@ export default class Menu extends ViewController {
 
 	private m_UnregisterCallback: any;
 
-	state = { pathname: history.location.pathname };
+	state = { pathname: Root.current.history.location.pathname };
 
 	constructor(props: any) {
 		super(props);
@@ -68,8 +68,8 @@ export default class Menu extends ViewController {
 	}
 
 	triggerLoad() {
-		this.m_UnregisterCallback = history.listen(()=> {
-			this.setState({ pathname: history.location.pathname });
+		this.m_UnregisterCallback = Root.current.history.listen(()=> {
+			this.setState({ pathname: Root.current.history.location.pathname });
 		});
 	}
 

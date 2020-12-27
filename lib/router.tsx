@@ -39,6 +39,8 @@ import NotFound from './404';
 import * as _history from 'history';
 import { match } from 'react-router';
 
+export const history = _history.createBrowserHistory();
+
 function newRoute(router: Router, { path, page, ...args }: { path: string, page: ()=>Promise<{ default: typeof Page }> } & Dict) {
 
 	class InlRoute extends Component<{location: any, match: match}> {
@@ -70,7 +72,7 @@ function newRoute(router: Router, { path, page, ...args }: { path: string, page:
 		}
 	}
 
-	return <RouteRaw path={path} key={path} {...args} component={InlRoute}/>
+	return <RouteRaw path={path} key={path} {...args} component={InlRoute} />
 }
 
 export interface Route extends Dict {
@@ -98,7 +100,7 @@ export class Router extends Component<{notFound?: typeof Page, routes?: Route[] 
 				}
 			}
 		});
-		this._history = _history.createBrowserHistory();
+		this._history = history;//_history.createBrowserHistory();
 		this._notFound = this.props.notFound || NotFound as typeof Page;
 	}
 

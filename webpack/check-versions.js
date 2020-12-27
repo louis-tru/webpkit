@@ -77,7 +77,7 @@ module.exports = function () {
 			console.log('  ' + warning)
 		}
 
-		console.log()
+		console.log('--------------- exit --------------')
 		process.exit(1)
 	}
 }
