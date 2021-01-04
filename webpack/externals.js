@@ -53,10 +53,10 @@ var externals = [
 	'module',
 	'vm',
 	'fs',
-	'net',
-	'http',
-	'https',
-	'crypto',
+	// 'net',
+	// 'http',
+	// 'https',
+	// 'crypto',
 	'dev-client',
 ];
 
