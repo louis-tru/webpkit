@@ -1,6 +1,6 @@
 {
 	"name": "webpkit",
-	"version": "0.3.3",
+	"version": "0.3.4",
 	"description": "Web Page KIT Framework",
 	"main": "index.js",
 	"types": "index.d.ts",
@@ -42,7 +42,7 @@
 		"@types/react": "~16.9.35",
 		"@types/react-dom": "~16.9.8",
 		"@types/react-router-dom": "~5.1.5",
-		"antd": "^4.2.5",
+		"antd": "~4.9.4",
 		"antd-mobile": "~2.2.12",
 		"autoprefixer": "~9.7.5",
 		"babel-loader": "^8.0.6",
