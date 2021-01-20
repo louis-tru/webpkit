@@ -4,7 +4,7 @@
 	"description": "Web Page KIT Framework",
 	"main": "index.js",
 	"types": "index.d.ts",
-	"author": "louistru@hotmail.com",
+	"author": "louistru@hotmail.com", 
 	"bin": {
 		"webpkit": "shell.js"
 	},
