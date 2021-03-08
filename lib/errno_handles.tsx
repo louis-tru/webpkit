@@ -29,21 +29,27 @@
  * ***** END LICENSE BLOCK ***** */
 
 import {alert} from './dialog';
+import * as React from 'react';
 
 const dialog_handles: Dict<any> = {};
 
 var _handle = function(e: any) {
 	var err = Error.new(e);
 	var errno = err.errno as number;
+	var text = err.message ? (
+		<span>
+			{err.message}<br/>{err.description}
+		</span>
+	): <span>An unknown exception</span>;
 	if (errno) {
 		if ( !dialog_handles[errno] ) {
-			var dag = alert(err.message || 'An unknown exception', ()=>{
+			var dag = alert({text}, ()=>{
 				delete dialog_handles[errno];
 			});
 			dialog_handles[errno] = dag;
 		}
 	} else {
-		alert(err.message || 'An unknown exception');
+		alert({text});
 	}
 };
 
