@@ -31,7 +31,7 @@
 import { React } from '.';
 import { Layer } from './layer';
 
-import './utils.css';
+import './util.css';
 
 export default class Loading extends Layer<{text?: string}> {
 
@@ -46,7 +46,7 @@ export default class Loading extends Layer<{text?: string}> {
 	}
 
 	static show(text = 'Loading..', id?: string) {
-		Loading.globaLayerGroup.show(Loading, { text, id });
+		return Loading.globaLayerGroup.show(Loading, { text, id });
 	}
 
 	static close(id?: string) {
