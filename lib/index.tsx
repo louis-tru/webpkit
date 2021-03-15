@@ -37,7 +37,7 @@ import * as ReactDom from 'react-dom';
 import * as React from 'react';
 import {Component} from 'react';
 import {Link} from 'react-router-dom';
-import * as _history from 'history';
+// import * as _history from 'history';
 import {ViewController} from './ctr';
 
 var current: Root | null = null;
