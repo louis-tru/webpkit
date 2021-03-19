@@ -159,8 +159,8 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 		return (
 			<div ref="root" className="dialog" style={style} onClick={this._maskClick}>
 				<div className="core" ref="core">
-				{this.renderBody()}
-			</div>
+					{this.renderBody()}
+				</div>
 			</div>
 		)
 	}
@@ -246,11 +246,11 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 			var props = this.props;
 			var input = this.refs.prompt as HTMLInputElement;
 			input.value = typeof props.prompt=='string'? props.prompt : '';
-			}
+		}
 		super.triggerMounted();
-			}
+	}
 
-	private _handleClick_1(cb: (s:any)=>void) {
+	protected _handleClick_1(cb: (s:any)=>void) {
 		var root = this.refs.root;
 		if (root) {
 			cb(this);
