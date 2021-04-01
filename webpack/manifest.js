@@ -3,7 +3,6 @@ const path = require('path');
 const utils = require('./utils');
 const fs = require('fs');
 const config = require('./cfg');
-const somes = require('somes').default;
 const crypto = require('crypto');
 
 // https://www.cnblogs.com/champyin/p/12198515.html
@@ -15,6 +14,18 @@ function mkdirp(dir) {
 			fs.mkdirSync(dir);
 		}
 	}
+}
+
+const base64_chars =
+	'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-'.split('');
+
+function hash(str) {
+	var value = str;
+	var retValue = '';
+	do
+		retValue += base64_chars[value & 0x3F];
+	while ( value >>>= 6 );
+	return retValue;
 }
 
 // console.log('config.configOsmosis', config.configOsmosis);
@@ -41,22 +52,7 @@ function hash_md4(filename, characteristic) {
 }
 
 function hash_simple(filename, characteristic) {
-	var fd = fs.openSync(filename.replace(/\?.*$/, ''));
-	var size = 0;
-	var _hash = 0;
-
-	while ( (size = fs.readSync(fd, hash_buf, 0, hash_buf_len)) > 0 ) {
-		var code = Buffer.from(hash_buf.buffer, 0, size).hashCode();
-		_hash += (_hash << 5) + code;
-		if (size < hash_buf_len)
-			break;
-	}
-	fs.closeSync(fd);
-
-	if (characteristic)
-		_hash += (_hash << 5) + characteristic.hashCode();
-
-	return somes.hash(_hash);
+	return hash(hashCode(hash_md4(filename, characteristic)));
 }
 
 class ManifestPlugin {

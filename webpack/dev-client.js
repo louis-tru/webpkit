@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var path = require('somes/path').default;
+var path = require('path');
 var url = require('url');
 var stripAnsi = require('strip-ansi');
 var log = require('loglevel').getLogger('webpack-dev-server');
@@ -36,7 +36,7 @@ var socket = require('webpack-dev-server/client/socket');
 var overlay = require('webpack-dev-server/client/overlay');
 
 var pathname = location.pathname.match(/^\/[^\/]+\//);
-var __resourceQuery = '?' + path.resolve('http://0.0.0.0', pathname ? pathname[0] : '', 'sockjs-node');	
+var __resourceQuery = '?' + path.resolve('/http://0.0.0.0', pathname ? pathname[0] : '', 'sockjs-node').slice(1);
 
 var urlParts = void 0;
 var hotReload = true;
