@@ -36,14 +36,12 @@ const path = require('path');
 const devinline = process.env.DEV_INLINE == 'false' ? false: true;
 const productName = process.env.PRODUCT_NAME || readPackageJson().name || 'app';
 const prot = Number(process.env.PORT) || 8080;
-const assetsPublicPath = process.env.VIRTUAL || '';
-const source = path.resolve(process.env.ROOT_DIR || process.cwd());
-const output = path.resolve(process.env.OUTPUT ||  'out/public', assetsPublicPath);
 const sourceMap = process.env.MAP === 'true' ? true: false;
 const isMinimizer = process.env.MINIM === 'false' ? false: true;
 const limit = Number(process.env.LIMIT) || 10240;
 const osmosis = process.env.OSMOSIS === 'true' ? true: false;
 const babelTS = process.env.BABEL_TS === 'true' ? true: false;
+const source = path.resolve(process.env.ROOT_DIR || process.cwd());
 
 const NODE_ENV = 
 	process.env.NODE_ENV == 'prod' ? 'production': 
@@ -57,6 +55,10 @@ try {
 		publicPath = require(source + '/config').publicPath || '';
 	}
 } catch(err) {}
+
+const assetsPublicPath = process.env.VIRTUAL || 
+	(publicPath && !/^https?:\/\//i.test(publicPath)) ? publicPath: '';
+const output = path.resolve(process.env.OUTPUT ||  'out/public', assetsPublicPath);
 
 var staticAssets = [];
 
