@@ -1,5 +1,5 @@
 
-.PHONY: build
+.PHONY: build pull
 
 .SECONDEXPANSION:
 
