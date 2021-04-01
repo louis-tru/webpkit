@@ -10,16 +10,19 @@ elif [ -f .cfg_$(1).js ]; then \
 	cat .cfg_$(1).js > config.js; \
 fi
 
-.PHONY: build dev config
+.PHONY: build dev pull
 
 .SECONDEXPANSION:
 
-build: config
+build:
+	@$(call cfg,$(ENV))
 	@npm run $@
 	@cd out/public; tar cfvz ../$(NAME).dpk ./*
 
-dev: config
+dev:
+	@$(call cfg,$(ENV))
 	@npm run $@
 
-config:
-	@$(call cfg,$(ENV))
+pull:
+	git pull
+	git submodule update --init --recursive

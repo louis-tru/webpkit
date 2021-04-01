@@ -10,39 +10,19 @@ elif [ -f .cfg_$(1).js ]; then \
 	cat .cfg_$(1).js > config.js; \
 fi
 
-.PHONY: build build2 dev config
+.PHONY: build dev pull
 
 .SECONDEXPANSION:
 
-build build2: config
-	@rm -rf out/public
+build:
+	@$(call cfg,$(ENV))
 	@npm run $@
 	@cd out/public; tar cfvz ../$(NAME).dpk ./*
 
-dev: config
+dev:
+	@$(call cfg,$(ENV))
 	@npm run $@
 
-config:
-	@$(call cfg,$(ENV))
-
-#####################################
-
-.PHONY: pull install
-
-pull = \
-	if [ ! -d ../dphoto-$(1) ]; then \
-		cd .. && git clone http://gitlab.stars-mine.com/hardware/dphoto-$(1).git; \
-	else \
-		cd ../dphoto-$(1) && git pull; \
-	fi
-
 pull:
-	@git pull
-	@$(call pull,lib)
-	@$(call pull,core)
-
-install: pull
-	@$(call cfg,$(ENV))
-	@npm install
-	@cd ../dphoto-core && make install
-	@rm -rf ../node_modules && ln -s dphoto-lib/node_modules ../node_modules
+	git pull
+	git submodule update --init --recursive

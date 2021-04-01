@@ -1,6 +1,6 @@
 [submodule "dphoto-core"]
-	path = dphoto-core
+	path = deps/dphoto-core
 	url = http://gitlab.stars-mine.com/hardware/dphoto-core.git
 [submodule "dphoto-lib"]
-	path = dphoto-lib
+	path = deps/dphoto-lib
 	url = http://gitlab.stars-mine.com/hardware/dphoto-lib.git
