@@ -36,10 +36,10 @@ import { DataPage, IDataPage } from '../lib/page';
 export declare class NavDataPageDefine<P = {}, S = {}, Data = Dict> extends NavPage<P, S> implements IDataPage<Data> {
 	name: string;
 	dataPage: number;
-	readonly dataPageCount: number
+	readonly dataPageCount: number;
 	data: Data[];
 	readonly indexPage: number;
-	index: number
+	get index(): number;
 	total: number;
 	readonly length: number;
 	readonly hasMore: boolean;

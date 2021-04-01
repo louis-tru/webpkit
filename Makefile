@@ -12,3 +12,7 @@ build:
 	@cp -rf examples out/webpkit/
 	@tsc
 	@tar cfz out/webpkit.tgz out/webpkit
+
+pull:
+	git pull
+	git submodule update --init --recursive

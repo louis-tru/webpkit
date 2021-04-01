@@ -341,7 +341,7 @@ function getPanel() {
 
 async function keyboardInstance() {
 	if (!keyboard) {
-		await new Promise(function(resolve, reject) {
+		await new Promise<void>(function(resolve, reject) {
 			ReactDom.render<{}>(<GlobalKeyboard />, getPanel(), function(this: any) {
 				keyboard = this;
 				resolve();
