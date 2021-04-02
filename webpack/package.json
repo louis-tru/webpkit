@@ -1,0 +1,7 @@
+{
+	"name": "webpack_tools",
+	"dependencies": {
+		"somes": "0.10.117",
+		"crypto-tx": "0.4.3"
+	}
+}

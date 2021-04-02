@@ -11,3 +11,4 @@ nohup.out
 var
 demo/nifty
 !examples/node_modules
+webpack/node_modules

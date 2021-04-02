@@ -24,7 +24,7 @@ module.exports = {
 		{
 			test: /\.(js|jsx)$/,
 			include: [path.resolve('.')],
-			exclude: /(typeof|_bigint)\.js/,
+			exclude: [/(typeof|_bigint)\.js/],
 			use: [{
 				loader: 'babel-loader',
 				options: babelOptions,

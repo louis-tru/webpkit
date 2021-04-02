@@ -1,4 +1,5 @@
 
+const somes = require('somes').default;
 const path = require('path');
 const utils = require('./utils');
 const fs = require('fs');
@@ -14,18 +15,6 @@ function mkdirp(dir) {
 			fs.mkdirSync(dir);
 		}
 	}
-}
-
-const base64_chars =
-	'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-'.split('');
-
-function hash(str) {
-	var value = str;
-	var retValue = '';
-	do
-		retValue += base64_chars[value & 0x3F];
-	while ( value >>>= 6 );
-	return retValue;
 }
 
 // console.log('config.configOsmosis', config.configOsmosis);
@@ -52,7 +41,15 @@ function hash_md4(filename, characteristic) {
 }
 
 function hash_simple(filename, characteristic) {
-	return hash(hashCode(hash_md4(filename, characteristic)));
+	return somes.hash(hash_md4(filename, characteristic));
+}
+
+function relativePath(path) {
+	var ignored = 'ignored ';
+	if (path.substr(0, ignored.length) == ignored) {
+		path = path.substr(ignored.length);
+	}
+	return path.substr(config.source.length + 1);
 }
 
 class ManifestPlugin {
@@ -156,6 +153,15 @@ class ManifestPlugin {
 					hash: e.hash,
 					parents: e.parents,
 					modules: e.modules.map(e=>e.id),
+					includes: e.modules.map(e=>{
+						var id = e.identifier;
+						var i = id.lastIndexOf('!');
+						id = i == -1 ? id: id.substr(i + 1);
+						id = relativePath(id);
+						if (!id)
+							id = e.identifier;
+						return id;
+					}),
 				};
 			}), null, 2));
 		});
@@ -219,6 +225,7 @@ class ManifestPlugin {
 
 					if (module.resource) {
 						rawModule.id = genHashCode(module.resource, module.rawRequest.indexOf('!') ? '!': '');
+						rawModule._resource = module.resource;
 					} else {
 						rawModule.id = config.productName + '_mod_' + (_autoId++);
 					}
