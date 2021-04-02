@@ -4,7 +4,7 @@ const crypto = require('crypto-tx');
 const cfg = require('webpkit/webpack/cfg');
 const appCfg = require(path.resolve('./config'));
 const utils = require('webpkit/webpack/utils');
-const fs = require('somes/fs');
+const fs = require('fs');
 const pkg = require(`${process.cwd()}/package.json`);
 
 const app = appCfg.app = appCfg.app || {};
