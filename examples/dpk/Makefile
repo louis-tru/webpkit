@@ -19,6 +19,7 @@ build: cfg
 	@cd out/public; tar cfvz ../$(NAME).dpk ./*
 
 dev: cfg
+	@$(MAKE) -C deps/dphoto-core cfg
 	@npm run $@
 
 cfg:
