@@ -308,6 +308,17 @@ app中的activity表示一个独占屏幕，一个app可以拥有多个activiet�
 `Cover`下拉与卡拉覆盖层，每个app都可有自己的上拉与下拉覆盖层菜单
 
 
+更多细节可以参考这几个项目：
+
+`http://gitlab.stars-mine.com/hardware/dphoto-lib.git` 这是dphoto设备app程序使用的一个基础库
+
+`http://gitlab.stars-mine.com/hardware/dphoto-core.git` 这是dphoto设备系统app项目，依赖`dphoto-lib`
+
+`http://gitlab.stars-mine.com/hardware/dphoto-art.git` 这是为dphoto设备开发的一个三方app，依赖`dphoto-lib`
+
+`http://gitlab.stars-mine.com/hardware/dpc-run.git` 这是dphoto设备的app安装与卸载工具
+
+
 # webpack
 
 对webpack的默认配置，可直接引用`webpack/index`使用打包工具
