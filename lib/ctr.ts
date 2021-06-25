@@ -64,6 +64,7 @@ declare class ViewControllerDefine<P = {}, S = {}> extends _ {
 	readonly isDestroy: boolean;
 	protected triggerLoad(): void;
 	protected triggerMounted(): void;
+	protected triggerPropsUpdate(nextProps: Readonly<P>, nextContext: any): void;
 	protected triggerUpdate(prevProps: Readonly<P>, prevState: Readonly<S>): void;
 	protected triggerRemove(): void;
 	protected triggerError(error: Error, errorInfo: React.ErrorInfo): void;
@@ -140,6 +141,10 @@ class ViewControllerIMPL<P = {}, S = {}> extends GlobalState<P, S> {
 		this.triggerRemove();
 	}
 
+	componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
+		this.triggerPropsUpdate(nextProps, nextContext);
+	}
+
 	componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>): void {
 		this.triggerUpdate(prevProps, prevState);
 	}
@@ -150,6 +155,7 @@ class ViewControllerIMPL<P = {}, S = {}> extends GlobalState<P, S> {
 
 	protected triggerLoad() { /* overwrite */ }
 	protected triggerMounted(): void { /* overwrite */ }
+	protected triggerPropsUpdate(nextProps: Readonly<P>, nextContext: any) { /* overwrite */ }
 	protected triggerUpdate(prevProps: Readonly<P>, prevState: Readonly<S>) { /* overwrite */ }
 	protected triggerRemove() { /* overwrite */ }
 	protected triggerError(error: Error, errorInfo: React.ErrorInfo) { /* overwrite */ }
