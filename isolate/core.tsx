@@ -129,16 +129,31 @@ export default class ApplicationLauncher extends Gesture<{
 		return this._cur ? (this._cur.value as Info).app.name: '';
 	}
 
+	/**
+	 * 
+	 * app在初始的时间需要调用此方法来把自己注册安装到系统
+	 * 
+	 * @func install
+	 */
 	install(appName: string, app: ()=>Promise<{default:NewApplication}>) {
 		utils.assert(!this._installed.has(appName));
 		this._installed.set(appName, app);
 	}
 
+	/**
+	 * 
+	 * 调用后会卸载app，以后不能再唤起该app提供的activity
+	 * 
+	 * @func uninstall
+	*/
 	uninstall(appName: string) {
 		utils.assert(this._installed.has(appName));
 		this._installed.delete(appName);
 	}
 
+	/**
+	 * 启动一个app并呈现app的第一个activity
+	*/
 	async launch(appName: string, args?: any) {
 		var app = this._apps.get(appName);
 		var isLoad = false;
@@ -231,6 +246,12 @@ export default class ApplicationLauncher extends Gesture<{
 		}
 	}
 
+	/**
+	 * 
+	 * 呈现一个app内的window，这包括activity或Widget
+	 * 
+	 * @func show
+	*/
 	async show<T extends Window>(app: Application, window: NewWindow<T>, args?: Options, animate = true): Promise<T> {
 		if (window.type == Type.ACTIVITY) {
 			this.closeCoverAll();
@@ -242,6 +263,12 @@ export default class ApplicationLauncher extends Gesture<{
 		}
 	}
 
+	/**
+	 * 
+	 * 关闭一个window
+	 * 
+	 * @func close
+	*/
 	async close<T extends Window>(app: Application, id: string | NewWindow<T>, animate = true) {
 		var item = this._getInfo(app, id);
 		if (item) {
@@ -281,6 +308,12 @@ export default class ApplicationLauncher extends Gesture<{
 	// 	this._disableCover = disable;
 	// }
 
+	/**
+	 * 
+	 * 呈现一个cover
+	 * 
+	 * @func showCover
+	*/
 	async showCover(type: CoverType = CoverType.TOP, animate = true) {
 		var {app,win} = this._getCoverConstructor(type);
 		if (!win) return;
@@ -293,6 +326,12 @@ export default class ApplicationLauncher extends Gesture<{
 		}
 	}
 
+	/**
+	 * 
+	 * 关闭一个Cover
+	 * 
+	 * @func closeCover
+	*/
 	async closeCover(type: CoverType = CoverType.TOP, animate = true) {
 		if (type == CoverType.TOP) {
 			var item = this._topHistory.first;
@@ -307,6 +346,12 @@ export default class ApplicationLauncher extends Gesture<{
 		}
 	}
 
+	/**
+	 * 
+	 * 关闭当前所有打开的cover
+	 * 
+	 * @func closeCoverAll
+	*/
 	closeCoverAll() {
 		this.closeCover(CoverType.TOP);
 		this.closeCover(CoverType.BOTTOM);
@@ -514,6 +559,12 @@ export default class ApplicationLauncher extends Gesture<{
 		return item || null;
 	}
 
+	/**
+	 * 
+	 * 通过id与app获取窗口实体
+	 * 
+	 * @func getWindow
+	*/
 	getWindow(app: Application, id: string | NewWindow<Window>): Window | null {
 		return this._getInfo(app, id)?.value?.window || null;
 	}
@@ -714,11 +765,23 @@ export default class ApplicationLauncher extends Gesture<{
 		}
 	}
 
+	/**
+	 * 
+	 * 表态全局属性，获取当前运行的ApplicationLauncher实体
+	 * 
+	 * @get current
+	*/
 	static get current() {
 		utils.assert(_launcher, 'No the ApplicationLauncher instance');
 		return _launcher as ApplicationLauncher;
 	}
 
+	/**
+	 * 
+	 * 表态方法。快捷方式启动一个app，等于`ApplicationLauncher.current.launch(appName, args)`
+	 * 
+	 * @func launch
+	*/
 	static launch(appName: string, args?: any) {
 		return ApplicationLauncher.current.launch(appName, args);
 	}
