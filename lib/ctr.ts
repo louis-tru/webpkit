@@ -43,7 +43,7 @@ class _ { static contextType?: React.Context<any>; }
 
 declare class ViewControllerDefine<P = {}, S = {}> extends _ {
 	readonly context: any;
-	readonly persistentID: string;
+	get persistentID(): string;
 	constructor(props: Readonly<P>);
 	constructor(props: P, context?: any);
 	setState<K extends keyof S>(
