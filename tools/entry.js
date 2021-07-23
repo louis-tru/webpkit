@@ -5,7 +5,7 @@ const views = require('./views');
 var devClient = [];
 
 if (!config.isProd && config.dev.inline === false) {
-	devClient.push('webpkit/webpack/dev-client');
+	devClient.push('webpkit/tools/dev-client');
 	if (config.dev.hotOnly) {
 		devClient.push('webpack/hot/only-dev-server');
 	} else if (config.dev.hot) {
@@ -14,5 +14,5 @@ if (!config.isProd && config.dev.inline === false) {
 }
 
 views.forEach(({name,path})=>{
-	exports[name] = ['webpkit/webpack/low', ...devClient, path ];
+	exports[name] = ['webpkit/tools/low', ...devClient, path ];
 });
