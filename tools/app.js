@@ -1,9 +1,9 @@
 
 const path = require('path');
 const crypto = require('crypto-tx');
-const cfg = require('webpkit/webpack/cfg');
+const cfg = require('./cfg');
 const appCfg = require(path.resolve('./config'));
-const utils = require('webpkit/webpack/utils');
+const utils = require('./utils');
 const fs = require('fs');
 const pkg = require(`${process.cwd()}/package.json`);
 
