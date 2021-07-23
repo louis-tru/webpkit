@@ -5,7 +5,7 @@
 		"target": "ES2018",
 		"moduleResolution": "node",
 		"sourceMap": false,
-		"outDir": "out/tools",
+		"outDir": "out/webpkit",
 		"declaration": false,
 		"alwaysStrict": true,
 		"allowJs": true,
