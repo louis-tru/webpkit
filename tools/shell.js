@@ -61,11 +61,11 @@ function main() {
 
 	if (cmd == 'init') {
 		console.log('init ...');
-		fs.copySync(__dirname + '/examples/' + (cfg || 'default'), process.cwd());
+		fs.copySync(__dirname + '/../examples/' + (cfg || 'default'), process.cwd());
 		var name = path.basename(process.cwd());
 		var json = fs.readFileSync(process.cwd() + '/package.json', 'utf8').replace('"examples"', `"${name}"`);
 		fs.writeFileSync(process.cwd() + '/package.json', json);
-		install();
+		// install();
 	} else if (cmd == 'install') { // build
 		install();
 	} else if (cmd == 'build') { // build

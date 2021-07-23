@@ -1,3 +1,10 @@
+
 [submodule "webpkit"]
 	path = deps/webpkit
+	# url = http://gitlab.stars-mine.com/hardware/webpkit.git
 	url = https://github.com/louis-tru/webpkit.git
+
+[submodule "crypto-tx"]
+	path = deps/crypto-tx
+	url = http://gitlab.stars-mine.com/hardware/crypto-tx.git
+	# url = https://github.com/louis-tru/crypto-tx.git
