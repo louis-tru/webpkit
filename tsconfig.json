@@ -5,7 +5,7 @@
 		"target": "ES2018",
 		"moduleResolution": "node",
 		"sourceMap": false,
-		"outDir": "out/webpkit",
+		"outDir": "out/tools",
 		"declaration": false,
 		"alwaysStrict": true,
 		"allowJs": true,
@@ -28,7 +28,7 @@
 	],
 	"exclude": [
 		".git",
-		"webpack",
+		"tools",
 		"out",
 		"var",
 		"node_modules",

@@ -6,7 +6,7 @@
 	"types": "index.d.ts",
 	"author": "louistru@hotmail.com",
 	"bin": {
-		"webpkit": "shell.js"
+		"webpkit": "tools/shell.js"
 	},
 	"dependencies": {
 		"@babel/cli": "^7.7.0",
@@ -61,7 +61,7 @@
 		"normalize.css": "^7.0.0",
 		"crypto-tx": "file:deps/crypto-tx",
 		"somes": "file:deps/somes",
-		"webpack_tools": "file:webpack",
+		"tools": "file:tools",
 		"optimize-css-assets-webpack-plugin": "^5.0.3",
 		"ora": "~4.0.3",
 		"postcss-import": "^11.0.0",
