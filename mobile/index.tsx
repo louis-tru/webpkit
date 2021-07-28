@@ -40,6 +40,10 @@ import { Component } from 'react';
 import _404 from './404';
 import {ViewController} from '../lib/ctr';
 import {NavDataPage} from './page';
+import path from 'somes/path';
+import somes from 'somes';
+
+var current: Root | null = null;
 
 export interface RootProps {
 	scale?: number;
@@ -49,10 +53,11 @@ export interface RootProps {
 }
 
 export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S> {
-	loadingText = 'Loading..';
-	protected startupPath: string = '/';
+	protected startupPath: string = '';
+	protected isHashRoutes = true;
 
 	async triggerLoad() {
+		current = this;
 		rem.initialize(this.props.scale);
 		window.addEventListener('hashchange', (e)=>{
 			(this.refs.nav as Nav).current.popPage(true); // 不管前进或后退都当成后退处理
@@ -61,34 +66,51 @@ export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S>
 
 	triggerNav(e: NavArgs) {
 		var title = this.props.title as string || '';
-		if (e.action == 'pop') {
-			// window.history.go(-e.count);
-		} else if (e.action == 'push') {
-			window.history.pushState({}, title, '#' + e.pathname);
-		} else { // replace
-			window.history.replaceState({}, title, '#' + e.pathname);
-		}
+		var u = new path.URL(e.pathname);
+		u.params = e.params;
+		globalThis.history.replaceState({}, title, (this.isHashRoutes ? '#' : '') + u.path);
 	}
 
 	triggerEnd() {
 		// console.log('closeApp');
 	}
 
+	private _LocationHref() {
+		var u = new path.URL(location.href);
+		return this.isHashRoutes ? u.hash || '/': u.path;
+	}
+
 	render() {
-		var url = this.startupPath || (location.hash ? location.hash.replace(/^#/, '') : '/');
+		var url = this.startupPath || this._LocationHref();
 		var routes = this.props.routes as Route[] || [];
 		return (
 			this.isLoaded ?
-			<Nav 
-				ref="nav"
-				notFound={this.props.notFound || _404}
-				routes={routes}
-				onNav={e=>this.triggerNav(e)}
-				onEnd={()=>this.triggerEnd()}
-				initURL={url}
-			/>:
-			<div className="init-loading">{this.loadingText}</div>
+			<div>
+				<Nav 
+					ref="nav"
+					notFound={this.props.notFound || _404}
+					routes={routes}
+					onNav={e=>this.triggerNav(e)}
+					onEnd={()=>this.triggerEnd()}
+					initURL={url}
+				/>
+				{this.renderTools()}
+			</div>:
+			this.renderLoading()
 		);
+	}
+
+	protected renderTools(): React.ReactNode {
+		return null;
+	}
+
+	protected renderLoading(): React.ReactNode {
+		return <div className="init-loading">Loading..</div>;
+	}
+
+	static get current() {
+		somes.assert(current);
+		return current as Root;
 	}
 }
 
