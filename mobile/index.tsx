@@ -59,7 +59,7 @@ export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S>
 	async triggerLoad() {
 		current = this;
 		rem.initialize(this.props.scale);
-		window.addEventListener('hashchange', (e)=>{
+		window.addEventListener(this.isHashRoutes ? 'hashchange': 'popstate', ()=>{
 			(this.refs.nav as Nav).current.popPage(true); // 不管前进或后退都当成后退处理
 		});
 	}
@@ -68,7 +68,14 @@ export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S>
 		var title = this.props.title as string || '';
 		var u = new path.URL(e.pathname);
 		u.params = e.params;
-		globalThis.history.replaceState({}, title, (this.isHashRoutes ? '#' : '') + u.path);
+		var s = (this.isHashRoutes ? '#' : '') + u.path;
+		if (e.action == 'push') {
+			globalThis.history.pushState({}, title, s);
+		} else if (e.action == 'replace') {
+			globalThis.history.replaceState({}, title, s);
+		} else {
+			globalThis.history.back();
+		}
 	}
 
 	triggerEnd() {
@@ -77,7 +84,7 @@ export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S>
 
 	private _LocationHref() {
 		var u = new path.URL(location.href);
-		return this.isHashRoutes ? u.hash || '/': u.path;
+		return this.isHashRoutes ? u.hash.substr(1) || '/': u.path;
 	}
 
 	render() {

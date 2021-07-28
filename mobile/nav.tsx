@@ -182,7 +182,7 @@ class PrivPage extends ViewController<PrivPageProps> {
 			background: #fff;
 			position: absolute;
 			z-index: ${this.m_index};
-			` + styleStr;
+			` + styleStr.replace('translateZ(1px)', `translateZ(${this.m_index + 1}px)`);
 	}
 
 	intoBackground(time: number) {
