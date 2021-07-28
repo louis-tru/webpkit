@@ -55,12 +55,18 @@ export interface RootProps {
 export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S> {
 	protected startupPath: string = '';
 	protected isHashRoutes = true;
+	private _external: boolean = false;
 
 	async triggerLoad() {
 		current = this;
 		rem.initialize(this.props.scale);
 		window.addEventListener(this.isHashRoutes ? 'hashchange': 'popstate', ()=>{
-			(this.refs.nav as Nav).current.popPage(true); // 不管前进或后退都当成后退处理
+			try {
+				this._external = true;
+				(this.refs.nav as Nav).current.popPage(true); // 不管前进或后退都当成后退处理
+			} finally {
+				this._external = false;
+			}
 		});
 	}
 
@@ -74,7 +80,8 @@ export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S>
 		} else if (e.action == 'replace') {
 			globalThis.history.replaceState({}, title, s);
 		} else {
-			globalThis.history.back();
+			if (!this._external)
+				globalThis.history.back();
 		}
 	}
 
