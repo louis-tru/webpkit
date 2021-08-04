@@ -351,6 +351,8 @@ export class Nav extends ViewController<NavProps> {
 			cls_1 += '_iphonex ';
 		} else if (Nav.platform == 'iphone') {
 			cls_1 += '_iphone ';
+		} else {
+			cls_1 += `${Nav.platform} `;
 		}
 		return cls_1;
 	}
