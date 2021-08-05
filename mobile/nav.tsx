@@ -592,6 +592,11 @@ interface BaseProps<P> {
 	params: P;
 }
 
+interface TriggerShowData {
+	active?: 'pop' | 'init';
+	[key: string]: any;
+}
+
 export class NavPage<P = {}, S = {}> extends ViewController<BaseProps<P>, S> {
 
 	get nav() {
@@ -625,7 +630,7 @@ export class NavPage<P = {}, S = {}> extends ViewController<BaseProps<P>, S> {
 			this.triggerHide();
 	}
 
-	triggerShow(data: { active?: 'init', [key: string]: any } = {}) {
+	triggerShow(data: TriggerShowData = {}) {
 		// overwrite
 	}
 
