@@ -1,5 +1,6 @@
 {
 	"name": "tools",
+	"version": "0.0.0",
 	"dependencies": {
 		"somes": "0.10.119",
 		"crypto-tx": "0.4.3"
