@@ -74,6 +74,10 @@ view {
 	color: #444;
 }
 
+.g_loading .text span {
+	position: absolute;
+}
+
 .g_upload {
 	position: relative;
 	background-repeat: no-repeat;

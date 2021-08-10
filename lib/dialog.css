@@ -16,6 +16,7 @@
 	/* transform: translateZ(2px); */
 	transform-style: preserve-3d;
 	display: none;
+	transform: translateZ(99px);
 }
 
 .dialog .core {

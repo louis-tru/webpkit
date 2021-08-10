@@ -35,12 +35,32 @@ import './util.css';
 
 export default class Loading extends Layer<{text?: string}> {
 
+	_id: any;
+	_load = 0;
+	_text = '';
+
+	triggerLoad() {
+		this._id = setInterval(()=>this.updateText(), 1e3);
+		// return super.triggerLoad();
+	}
+
+	triggerRemove() {
+		clearInterval(this._id);
+		// super.triggerRemove();
+	}
+
+	updateText() {
+		this._load = this._load >= 3 ? 0: this._load + 1;
+		this._text = Array.from({ length: this._load + 1 }).join('.');
+		this.forceUpdate();
+	}
+
 	renderBody() {
-		var { text } = this.props;
+		var text = this.props.text || 'Loading';
 		return (
 			<div ref="root" className="g_loading">
 				{/* <Icon type="loading" size="lg" /> */}
-				<div className="text">{text||'Loading..'}</div>
+				<div className="text">{text}<span>{this._text}</span></div>
 			</div>
 		);
 	}
