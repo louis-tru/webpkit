@@ -20,7 +20,7 @@ module.exports = {
 	port: config.dev.port,
 	open: config.dev.autoOpenBrowser,
 	overlay: config.dev.errorOverlay ? { warnings: false, errors: true }: false,
-	publicPath: path.join('/', config.assetsPublicPath),
+	publicPath: path.posix.join('/', config.virtualPath),
 	proxy: config.dev.proxyTable,
 	quiet: true, // necessary for FriendlyErrorsPlugin
 	watchOptions: { poll: config.dev.poll, },

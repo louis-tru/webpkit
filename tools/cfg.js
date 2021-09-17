@@ -56,9 +56,9 @@ try {
 	}
 } catch(err) {}
 
-const assetsPublicPath = process.env.VIRTUAL || 
-	(publicPath && !/^https?:\/\//i.test(publicPath)) ? publicPath: '';
-const output = path.resolve(process.env.OUTPUT ||  'out/public', assetsPublicPath);
+const virtualPath = process.env.VIRTUAL || '';
+	// (publicPath && !/^https?:\/\//i.test(publicPath)) ? publicPath: '';
+const output = path.resolve(process.env.OUTPUT ||  'out/public', virtualPath);
 
 var staticAssets = [];
 
@@ -78,7 +78,7 @@ module.exports = {
 	productName: productName,
 	source: source,
 	output: output,
-	assetsPublicPath: assetsPublicPath,
+	virtualPath: virtualPath,
 	staticAssets: staticAssets,
 	publicPath: publicPath,
 	isMinimizer: isMinimizer,
@@ -99,12 +99,7 @@ module.exports = {
 		hotOnly: false,
 		hot: true,
 
-		proxyTable: assetsPublicPath ? (e=>{
-			var proxyTable = {};
-			for (var e of staticAssets)
-				proxyTable[path.join('/', e)] = path.join('/', assetsPublicPath, e);
-			return proxyTable;
-		})():{},
+		proxyTable: {},
 		
 		// Various Dev Server settings
 		host: '0.0.0.0', // can be overwritten by process.env.HOST
