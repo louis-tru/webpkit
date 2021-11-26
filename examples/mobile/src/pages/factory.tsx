@@ -113,7 +113,7 @@ export default class extends NavPage {
 			try {
 				if (index % 5 === 0)
 					await sdk.device.methods.activate();
-			} catch(err) {}
+			} catch(err: any) {}
 		}
 		return true;
 	}
@@ -134,7 +134,7 @@ export default class extends NavPage {
 
 		try {
 			await sdk.wallet.methods.exchangeMiner({ minerSN });
-		} catch(err) {
+		} catch(err: any) {
 			await new Promise(ok=>alert(err.message, ok));
 			await new Promise((ok,reject)=>{
 				confirm(`出错了是否要继续？${err.message}`, e=>{
@@ -150,7 +150,7 @@ export default class extends NavPage {
 			// try {
 			// 	if (index % 5 === 0)
 			// 		await sdk.wallet.exchangeMiner({ minerSN });
-			// } catch(err) {}
+			// } catch(err: any) {}
 			await utils.sleep(5e3);
 			this.setState({ loadingText: `Exchange Miner ${++index} ...` });
 		}

@@ -99,7 +99,7 @@ export abstract class Layer<P = {}, S = {}> extends ViewController<P, S> {
 	
 	fullScreen = true;
 
-	readonly onClose = new EventNoticer<Event<any, Layer>>('Close', this);
+	readonly onClose = new EventNoticer<Event<Layer<P, S>, any>>('Close', this);
 
 	private __show = false;
 	private __close = false;

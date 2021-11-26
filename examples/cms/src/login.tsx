@@ -14,7 +14,7 @@ export default class extends Login {
 	protected async signin() {
 		try {
 			await this._signin();
-		} catch(err) {
+		} catch(err: any) {
 			alert(err.message);
 		}
 	}

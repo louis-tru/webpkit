@@ -15,7 +15,7 @@ export default class extends NavPage {
 			try {
 				this.setState({ loading: 1 });
 				this.setState({ details: await sdk.wallet.methods.ethereum({ ignoreCache: true }), loading: 0 });
-			} catch(e) {
+			} catch(e: any) {
 				this.setState({ loading: 0 });
 			}
 		});

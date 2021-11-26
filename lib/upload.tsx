@@ -74,7 +74,7 @@ export async function uploadFile(file: File, params?: Dict) {
 	xhr.open('POST', url, true);
 	xhr.responseType = 'json';
 
-	var sign = access.signer.sign(url);
+	var sign = await access.signer.sign(url);
 	for (var i in sign) {
 		xhr.setRequestHeader(i, sign[i]);
 	}
