@@ -55,7 +55,7 @@ class MyRoot<P> extends Root<P> {
 
 		try {
 			await initialize();
-		} catch(err) {
+		} catch(err: any) {
 			dialog.alert(err.message + ', ' + err.code + ',' + err.stack);
 			throw err;
 		}

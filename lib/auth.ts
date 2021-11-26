@@ -39,22 +39,29 @@ var privateKeyBytes: IBuffer = Zero;
 var publicKeyBytes: IBuffer = Zero;
 var publicKey: string = '';
 
-var hex = storage.get('access_auth_key');
-if (hex) { // use priv 
-	gen_access_key(buffer.from(hex, 'hex'));
-} else {
-	genAccessKey();
-}
-
 function gen_access_key(privatekey: IBuffer) {
 	privateKeyBytes = privatekey;
 	publicKeyBytes = crypto.getPublic(privatekey, true);
 	publicKey = '0x' + publicKeyBytes.toString('hex');
 }
 
-function genAccessKey() {
-	gen_access_key(crypto.genPrivateKey());
+async function genAccessKey() {
+	var key: any;
+	if (privateKeyBytes === Zero) {
+		var hex = await storage.get('access_auth_key');
+		if (hex) { // use priv 
+			key = buffer.from(hex + '', 'hex')
+		}
+	}
+	if (!key) {
+		key = crypto.genPrivateKey();
+	}
+	gen_access_key(key);
 	storage.set('access_auth_key', privateKeyBytes.toString('hex'));
+}
+
+async function privateKey() {
+	return privateKeyBytes === Zero ? await genAccessKey(): privateKeyBytes;
 }
 
 /**
@@ -68,7 +75,7 @@ class H5Signer implements Signer {
 		this._extra = extra;
 	}
 
-	sign(url: string, data?: any) {
+	async sign(url: string, data?: any) {
 		var st = Date.now();
 		var fuzz_key = '0a37eb70c1737777bc111d03af4fcd091bc6d913baa2f90316511c61943dbce2';
 		var sha256 = hash_js.sha256();
@@ -79,7 +86,7 @@ class H5Signer implements Signer {
 		sha256.update(st + fuzz_key + url);
 
 		var message = buffer.from(sha256.digest());
-		var { signature, recovery } = crypto.sign(message, privateKeyBytes);
+		var { signature, recovery } = crypto.sign(message, await privateKey());
 		var sign = buffer.alloc(65);
 
 		signature.copy(sign);

@@ -37,7 +37,7 @@ export default class extends CMSPage {
 	triggerLoad() {
 		try {
 			(Root.current as CMSRoot)._404();
-		} catch(err) {}
+		} catch(err: any) {}
 		return super.triggerLoad();
 	}
 

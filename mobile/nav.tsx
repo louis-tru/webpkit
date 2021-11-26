@@ -126,7 +126,7 @@ class PrivPage extends ViewController<PrivPageProps> {
 	onShow(data = {}) {
 		try {
 			(this.refs.self as unknown as NavPage).triggerShow(data);
-		} catch(err) {
+		} catch(err: any) {
 			console.error(err);
 		}
 	}
@@ -134,7 +134,7 @@ class PrivPage extends ViewController<PrivPageProps> {
 	onHide() {
 		try {
 			(this.refs.self as unknown as NavPage).triggerHide();
-		} catch(err) {
+		} catch(err: any) {
 			console.error(err);
 		}
 	}
@@ -335,8 +335,8 @@ export class Nav extends ViewController<NavProps> {
 	private m_routes: Dict<Route> = {};
 	private m_animating = false;
 
-	readonly onNav = new EventNoticer<Event<NavArgs, Nav>>('Nav', this);
-	readonly onEnd = new EventNoticer<Event<void, Nav>>('End', this);
+	readonly onNav = new EventNoticer<Event<Nav, NavArgs>>('Nav', this);
+	readonly onEnd = new EventNoticer<Event<Nav, void>>('End', this);
 
 	static platform = '';
 

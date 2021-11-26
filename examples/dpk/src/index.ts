@@ -52,7 +52,7 @@ export default class extends Application {
 			try {
 				await initialize();
 				break;
-			} catch(e) { // 300ms 后重试 
+			} catch(e: any) { // 300ms 后重试 
 				await utils.sleep(300);
 			}
 		}

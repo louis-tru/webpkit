@@ -63,11 +63,11 @@ export class Request extends RequestBase {
 							ok = true; resolve(data);
 						}
 						break;
-					} catch(err) {
+					} catch(err: any) {
 						if (ok) {
 							break;
 						} else if (useCacheAfterEetry === 0) {
-							data = self._storage.get(key);
+							data = await self._storage.get(key);
 							if (data) { // use cache
 								data.cached = true;
 								ok = true; resolve(data);
@@ -96,8 +96,8 @@ export class Request extends RequestBase {
 		try {
 			data = await this.request(name, options?.method, params, options);
 			this._storage.set(key, data);
-		} catch(err) {
-			data = this._storage.get(key);
+		} catch(err: any) {
+			data = await this._storage.get(key);
 			if (!data)
 				throw err;
 			data.cached = true;
