@@ -53,7 +53,7 @@ function newRoute(router: Router, { path, page, ...args }: { path: string, page:
 					var com = (await page()).default;
 					somes.assert(somes.equalsClass(Page, com), 'Page TypeError, somes.equalsClass(Page, com)');
 					this.setState({ com, isLoaded: true });
-				} catch(err) {
+				} catch(err: any) {
 					handles(err);
 				}
 			}

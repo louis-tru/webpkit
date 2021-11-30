@@ -137,7 +137,7 @@ export class CellPanel<P = {}> extends Gesture<P & {
 		});
 	}
 
-	readonly onSwitch = new EventNoticer<Event<number, CellPanel<P>>>('Switch', this);
+	readonly onSwitch = new EventNoticer<Event<CellPanel<P>, number>>('Switch', this);
 
 	get transitionDuration() {
 		return Number(this.props.transitionDuration) || transitionDuration;
@@ -271,8 +271,8 @@ export class Cell<P = {}, S = {}> extends ViewController<P & { style?: React.CSS
 	private _panel: CellPanel;
 	private _isPause = true;
 
-	readonly onResume = new EventNoticer<Event<void, Cell<P>>>('Resume', this);
-	readonly onPause = new EventNoticer<Event<void, Cell<P>>>('Pause', this);
+	readonly onResume = new EventNoticer<Event<Cell<P>, void>>('Resume', this);
+	readonly onPause = new EventNoticer<Event<Cell<P>, void>>('Pause', this);
 
 	constructor(props: any) {
 		super(props);

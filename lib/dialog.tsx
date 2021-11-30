@@ -130,7 +130,7 @@ var _globaDialogStack: DialogStack | null;
 
 export abstract class Dialog<P = {}> extends ViewController<P> {
 
-	readonly onClose = new EventNoticer<Event<any, Dialog>>('Close', this);
+	readonly onClose = new EventNoticer<Event<Dialog, any>>('Close', this);
 
 	private __activity?: Activity = (this.props as any).__activity;
 	private __panel?: HTMLDivElement = (this.props as any).__panel;

@@ -414,7 +414,7 @@ export class Input extends ViewController<InputProps> {
 				try {
 					input.focus();
 					input.setSelectionRange(len, len);
-				} catch(err) {}
+				} catch(err: any) {}
 			}, 50);
 
 			this.props.onChange();

@@ -23,7 +23,7 @@ export default class extends NavPage<{auto?: boolean}> {
 				var data = await req.get(url, { headers: { 'device-id': device_id } });
 				utils.assert(data.data.toString().indexOf('ok') >= 0);
 				this.state.list[i] = `${url} ${Date.now() - st} ms ok`;
-			} catch(e) {
+			} catch(e: any) {
 				this.state.list[i] = `<span style="color:#f00">${url} ${Date.now() - st} ms fail</span>`;
 			}
 			this.setState({ list: this.state.list });
