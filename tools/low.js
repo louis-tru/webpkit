@@ -1,15 +1,7 @@
 
 (function() {
 
-	if (typeof globalThis == 'undefined') {
-		if (typeof global == "object" ? global: 0) {
-			(globa).globalThis = globa;
-		} else if (typeof window == 'object') {
-			(window).globalThis = window;
-		}
-	}
-
-	var This = globalThis;
+	var This = window;
 
 	if (!This.WeakSet) {
 		This.WeakSet = function() {this.m_set = {}}
