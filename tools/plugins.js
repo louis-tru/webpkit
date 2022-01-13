@@ -12,7 +12,7 @@ const ApplicationInfo = require('./app');
 const views = require('./views');
 const path = require('path');
 
-const {NODE_ENV,isProd} = config;
+const {isProd,env} = config;
 const HOST = config.dev.host;
 const PORT = config.dev.port;
 
@@ -68,7 +68,7 @@ const plugins = [
 	new ManifestPlugin(),
 	new ApplicationInfo(),
 	new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/),
-	new webpack.DefinePlugin({ 'process.env': { NODE_ENV: `"${NODE_ENV}"` } }),
+	new webpack.DefinePlugin({ 'process.env': env }),
 	// copy custom static assets
 	new CopyWebpackPlugin(config.staticAssets.map(e=>({
 		from: utils.resolve(e),

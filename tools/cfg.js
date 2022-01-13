@@ -87,6 +87,9 @@ module.exports = {
 	limit: limit,
 	babelTS: babelTS,
 	configOsmosis: osmosis, // 文件 module-id 间接受/config.js内容影响（config渗透），一般情况下不需要开启，
+	env: {
+		NODE_ENV: `"${NODE_ENV}"`,
+	},
 
 	/**
 	 * Source Maps
