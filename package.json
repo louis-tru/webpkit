@@ -57,7 +57,7 @@
 		"jquery": "~3.3.1",
 		"mini-css-extract-plugin": "^0.8.0",
 		"node-notifier": "^5.1.2",
-		"node-sass": "^4.13.0",
+		"node-sass": "^7.0.1",
 		"normalize.css": "^7.0.0",
 		"crypto-tx": "file:deps/crypto-tx",
 		"somes": "file:deps/somes",
