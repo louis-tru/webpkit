@@ -57,7 +57,7 @@
 		"jquery": "~3.3.1",
 		"mini-css-extract-plugin": "^0.8.0",
 		"node-notifier": "^5.1.2",
-		"node-sass": "^4.14.1",
+		"node-sass": "file:deps/node-sass",
 		"normalize.css": "^7.0.0",
 		"crypto-tx": "file:deps/crypto-tx",
 		"somes": "file:deps/somes",
@@ -91,7 +91,7 @@
 		"webpack-cli": "^3.3.10",
 		"webpack-dev-server": "^3.9.0",
 		"babel-polyfill": "^6.26.0",
-		"@types/node": "~14.14.22"
+		"@types/node": "~16.11.7"
 	},
 	"engines": {
 		"node": ">= 6.0.0",
