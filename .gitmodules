@@ -7,3 +7,7 @@
 	path = deps/crypto-tx
 	url = http://gitlab.stars-mine.com/hardware/crypto-tx.git
 	# url = https://github.com/louis-tru/crypto-tx.git
+
+[submodule "node-sass"]
+	path = deps/node-sass
+	url = http://gitlab.stars-mine.com/chuxuewen/node-sass.git
