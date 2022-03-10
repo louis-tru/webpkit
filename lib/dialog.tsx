@@ -88,7 +88,7 @@ export class DialogStack {
 		var item = this._dialogStack.push(instance);
 
 		instance.onClose.on(({ data }) => {
-			this._dialogStack.del(item);
+			this._dialogStack.delete(item);
 			this._IDs.delete(id);
 			utils.sleep(200).then(() => {
 				var last = this._dialogStack.last;
