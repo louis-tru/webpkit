@@ -36,7 +36,7 @@ import {ViewController} from '../lib/ctr';
 import error from '../lib/errno_handles';
 import {EventNoticer, Event} from 'somes/event';
 
-var loading = '正在载入数据..';
+var loading = 'Loading..';
 
 export interface Route {
 	path: string | string[];
