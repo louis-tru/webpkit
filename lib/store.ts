@@ -31,6 +31,36 @@
 import Store, {Descriptors} from 'somes/store';
 import path from 'somes/path';
 import {Signer} from 'somes/request';
+import { sha256 } from 'somes/hash';
+import buffer, { IBuffer } from 'somes/buffer';
+
+const crypto_tx = require('crypto-tx');
+
+export class DefaultSigner implements Signer {
+	readonly authName: string;
+	readonly privKey: IBuffer;
+
+	constructor(user: string, keyHex: string) {
+		this.authName = user;
+		this.privKey = buffer.from(keyHex, 'hex');
+	}
+
+	sign(path: string, data: string) {
+		var st = Date.now();
+		var key = "a4dd53f2fefde37c07ac4824cf7085439633e1a357daacc3aaa16418275a9e40";
+		var msg = (data) + st + key;
+		var hash = sha256(msg);
+
+		var signature = crypto_tx.sign(hash, this.privKey);
+		var sign = buffer.concat([signature.signature, [signature.recovery]]).toString('base64');
+
+		return {
+			st: String(st),
+			sign: sign,
+			'auth-name': this.authName,
+		};
+	}
+}
 
 export async function make({
 	url = 'http://127.0.0.1:8091/service-api', signer, name, store, descriptors }: {
