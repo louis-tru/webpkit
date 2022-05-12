@@ -41,21 +41,13 @@ import { InputProps, Input } from './keyboard';
 
 var DEFAULT_SCALE = 1;
 
-export function getDefaultId(obj: any) {
-	utils.assert(obj);
-	if (!(obj as any).hasOwnProperty('__default_id')) {
-		(obj as any).__default_id = String(utils.getId());
-	}
-	return String((obj as any).__default_id);
-}
-
 export interface Options extends Dict {
 	id?: string;
 }
 
 export class DialogStack {
 	private _dialogStack = new List<Dialog>();
-	private _IDs: Map<string, ListItem<Dialog>> = new Map();
+	private _IDs: Map<symbol, ListItem<Dialog>[]> = new Map();
 	private _panel: HTMLElement;
 
 	constructor(panel: HTMLElement = document.body) {
@@ -68,15 +60,15 @@ export class DialogStack {
 	}
 
 	async show(D: typeof Dialog, opts?: Options, animate = true, act?: Activity) {
-		var id = opts?.id ? String(opts.id) : getDefaultId(D);
-		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id}"`);
+		var id = Symbol(opts?.id ? String(opts.id) : D as any);
+		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id.toString()}"`);
 
 		var div = document.createElement('div');
 		div.setAttribute('id', opts?.id || '');
 
 		this._panel.appendChild(div);
 
-		var instance = await new Promise<Dialog>(r =>
+		var dialog = await new Promise<Dialog>(r =>
 			ReactDom.render(<D {...opts} __activity={act} __panel={div} />, div, function (this: any) { r(this) })
 		);
 
@@ -85,11 +77,13 @@ export class DialogStack {
 			(prev.value as Dialog).hide();
 		}
 
-		var item = this._dialogStack.push(instance);
+		var item = this._dialogStack.push(dialog);
 
-		instance.onClose.on(({ data }) => {
+		dialog.onClose.on(({ data }) => {
+			this._IDs.get(id)!.deleteOf(item);
+			this._IDs.get(id)!.length || this._IDs.delete(id);
 			this._dialogStack.delete(item);
-			this._IDs.delete(id);
+
 			utils.sleep(200).then(() => {
 				var last = this._dialogStack.last;
 				if (last) {
@@ -98,21 +92,21 @@ export class DialogStack {
 			});
 		});
 
-		this._IDs.set(id, item);
+		let items = this._IDs.get(id);
+		if (!items) this._IDs.set(id, (items = []));
+		items.push(item);
 
-		instance.show(animate);
+		dialog.show(animate);
 
-		return instance;
+		return dialog;
 	}
 
 	close(id: typeof Dialog | string, animate = true) {
-		var _id: string = typeof id == 'string' ? String(id) : getDefaultId(id);
+		var sym = typeof id == 'string' ? Symbol(id) : Symbol(id as any);
 		// utils.assert(this._IDs.has(_id), `Dialog no exists, "${id}"`);
-		var item = this._IDs.get(_id);
-		if (item) {
-			(item.value as Dialog).close(animate);
-		} else {
-			console.warn(`Dialog no exists, "${id}"`);
+
+		for (let item of this._IDs.get(sym) || []) {
+			item.value.close(animate);
 		}
 	}
 

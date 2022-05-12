@@ -34,11 +34,11 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { ViewController } from './ctr';
 import {EventNoticer,Event} from 'somes/event';
-import {getDefaultId, Options } from './dialog';
+import {Options } from './dialog';
 import {Activity} from '../isolate/ctr';
 
 export class LayerGroup {
-	private _IDs: Map<string, Layer> = new Map();
+	private _IDs: Map<symbol, Layer[]> = new Map();
 	private _panel: HTMLElement;
 
 	constructor(panel: HTMLElement = document.body) {
@@ -47,48 +47,53 @@ export class LayerGroup {
 	}
 
 	get preventCover() {
-		for (var [,l] of this._IDs) {
-			if (l.preventCover)
-				return true;
+		for (let [,v] of this._IDs) {
+			for (let l of v)
+				if (l.preventCover)
+					return true;
 		}
 		return false;
 	}
 
 	async show(D: typeof Layer, opts?: Options, animate = true, delay = 0, act?: Activity) {
-		var id = opts?.id ? String(opts.id): getDefaultId(D);
-		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id}"`);
+		var id = opts?.id ? Symbol(opts.id): Symbol(D as any);
+		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id.toString()}"`);
 
 		var div = document.createElement('div');
 
 		this._panel.appendChild(div);
 
-		var instance = await new Promise<Layer>(r=>
+		var obj = await new Promise<Layer>(r=>
 			ReactDom.render(<D {...opts} __activity={act} __panel={div} />, div, function(this: any) { r(this) })
 		);
 
-		instance.onClose.on(()=>this._IDs.delete(id));
+		obj.onClose.on(()=>{
+			this._IDs.get(id)!.deleteOf(obj);
+			this._IDs.get(id)!.length || this._IDs.delete(id);
+		});
 
-		this._IDs.set(id, instance);
+		let items = this._IDs.get(id);
+		if (!items) this._IDs.set(id, (items = []));
+		items.push(obj);
 
-		instance.show(animate, delay);
+		obj.show(animate, delay);
 
-		return instance;
+		return obj;
 	}
 
 	close(id: typeof Layer | string, animate = true) {
-		var _id: string = typeof id == 'string' ? String(id): getDefaultId(id);
-		// utils.assert(this._IDs.has(_id), `Dialog no exists, "${id}"`);
-		var l = this._IDs.get(_id);
-		if (l) {
-			l.close(animate);
-		} else {
-			console.warn(`Layer no exists, "${id}"`);
+		var sym = typeof id == 'string' ? Symbol(id): Symbol(id as any);
+		// utils.assert(this._IDs.has(_id), `Layer no exists, "${id}"`);
+
+		for (let item of this._IDs.get(sym) || []) {
+			item.close(animate);
 		}
 	}
 
 	closeAll() {
-		for (var [,b] of this._IDs) {
-			b.close();
+		for (var [,v] of this._IDs) {
+			for (let l of v)
+				l.close();
 		}
 	}
 }
