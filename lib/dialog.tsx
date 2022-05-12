@@ -41,6 +41,14 @@ import { InputProps, Input } from './keyboard';
 
 var DEFAULT_SCALE = 1;
 
+export function getDefaultId(obj: any) {
+	utils.assert(obj);
+	if (!(obj as any).hasOwnProperty('__default_id')) {
+		(obj as any).__default_id = String(utils.getId());
+	}
+	return String((obj as any).__default_id);
+}
+
 export interface Options extends Dict {
 	id?: string;
 }
