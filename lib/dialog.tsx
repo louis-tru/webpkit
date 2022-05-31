@@ -88,8 +88,8 @@ export class DialogStack {
 		var item = this._dialogStack.push(dialog);
 
 		dialog.onClose.on(({ data }) => {
-			this._IDs.get(id)!.deleteOf(item);
-			this._IDs.get(id)!.length || this._IDs.delete(id);
+			this._IDs.get(id)?.deleteOf(item);
+			this._IDs.get(id)?.length || this._IDs.delete(id);
 			this._dialogStack.delete(item);
 
 			utils.sleep(200).then(() => {
