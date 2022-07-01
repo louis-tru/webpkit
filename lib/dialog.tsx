@@ -68,7 +68,7 @@ export class DialogStack {
 	}
 
 	async show(D: typeof Dialog, opts?: Options, animate = true, act?: Activity) {
-		var id = Symbol(opts?.id ? String(opts.id) : D as any);
+		var id = opts?.id ? opts.id : D as any;
 		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id.toString()}"`);
 
 		var div = document.createElement('div');
@@ -110,9 +110,8 @@ export class DialogStack {
 	}
 
 	close(id: typeof Dialog | string, animate = true) {
-		var sym = typeof id == 'string' ? Symbol(id) : Symbol(id as any);
+		var sym = id as any;
 		// utils.assert(this._IDs.has(_id), `Dialog no exists, "${id}"`);
-
 		for (let item of this._IDs.get(sym) || []) {
 			item.value.close(animate);
 		}
