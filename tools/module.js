@@ -14,9 +14,7 @@ for (var src of babelrc) {
 	try {
 		babelOptions = eval('(' + fs.readFileSync(src, 'utf-8') + ')');
 		break;
-	} catch(err) {
-		// console.warn(err);
-	}
+	} catch(err) {}
 }
 
 module.exports = {
@@ -24,16 +22,22 @@ module.exports = {
 		{
 			test: /\.(js|jsx)$/,
 			include: [path.resolve('.')],
-			exclude: [/(typeof|_bigint)\.js/],
-			use: [{
+			exclude: [/((typeof|_bigint)\.js)|node_modules/],
+			use: [babelOptions ? {
 				loader: 'babel-loader',
 				options: babelOptions,
+			}: {
+				loader: 'ts-loader',
+				options: { 
+					allowTsInNodeModules: false,
+					onlyCompileBundledFiles: true,
+				},
 			}],
 		},
 		{
 			test: /\.(ts|tsx)$/,
 			include: [path.resolve('.')],
-			use: [...(babelTS ? [
+			use: [...(babelTS && babelOptions ? [
 				{
 					loader: 'babel-loader',
 					options: babelOptions,
