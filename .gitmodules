@@ -1,13 +1,16 @@
 [submodule "somes"]
 	path = deps/somes
-	url = http://gitlab.stars-mine.com/hardware/somes.git
+	# url = http://gitlab.stars-mine.com/hardware/somes.git
 	# url = https://github.com/louis-tru/somes.git
+	url = https://gitlab.com/louis-tru/somes.git
 
 [submodule "crypto-tx"]
 	path = deps/crypto-tx
-	url = http://gitlab.stars-mine.com/hardware/crypto-tx.git
+	# url = http://gitlab.stars-mine.com/hardware/crypto-tx.git
 	# url = https://github.com/louis-tru/crypto-tx.git
+	url = https://gitlab.com/louis-tru/crypto-tx.git
 
 [submodule "node-sass"]
 	path = deps/node-sass
-	url = http://gitlab.stars-mine.com/chuxuewen/node-sass.git
+	# url = http://gitlab.stars-mine.com/chuxuewen/node-sass.git
+	url = https://gitlab.com/louis-tru/node-sass.git
