@@ -2,7 +2,7 @@
 	"name": "tools",
 	"version": "0.1.0",
 	"dependencies": {
-		"somes": "0.10.119",
+		"somes": "0.11.11",
 		"crypto-tx": "0.4.3"
 	}
 }

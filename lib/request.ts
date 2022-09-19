@@ -15,7 +15,7 @@ export class Request extends RequestBase {
 			this.signer = signer;
 	}
 
-	parseResponseData(buf: IBuffer) {
+	parseResponseData(buf: IBuffer, r: Result) {
 		var json = buf.toString('utf8');
 		var res = JSON.parse(json);
 		if (res.code == 200) {
