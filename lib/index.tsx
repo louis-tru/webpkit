@@ -59,6 +59,10 @@ export class Root<P extends RootProps = {}, S = {}> extends ViewController<P, S>
 		return history;
 	}
 
+	get router() {
+		return this.refs.router as any as Router;
+	}
+
 	render() {
 		return (
 			this.isLoaded ?

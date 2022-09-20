@@ -61,7 +61,7 @@ export default class Page<Params = {}, S = {}> extends ViewController<{}, S> {
 		this._router = props.router;
 		this._url = props.location.pathname + props.location.search;
 		this._params = Object.assign({}, props.match && props.match.params) as Params;
-		var search = props.location.search.substr(1);
+		var search = props.location.search.substring(1);
 		if (search) {
 			search.split('&').forEach(e=>{
 				var [key,...value] = e.split('=');
