@@ -130,11 +130,11 @@ export default class Page<Params = {}, S = {}> extends ViewController<{}, S> {
 			var search = '';
 			var index = url.indexOf('?');
 			if (index >= 0) {
-				pathname = url.substr(0, index);
+				pathname = url.substring(0, index);
 				search = url.substring(index);
 			}
 			for (var i in params) {
-				search += '&' + i + '=' + encodeURIComponent(params[i]);
+				search += (search?'&':'') + i + '=' + encodeURIComponent(params[i]);
 			}
 			history.push({ pathname, search });
 		}
@@ -150,6 +150,12 @@ export class Loading extends Page<{content?:string}, {}> {
 
 var default_data_page = 10;
 
+export interface DataPageParams {
+	fetchTotal: boolean,
+	limit: [number,number],
+	[key: string]: any,
+}
+
 export interface IDataPage<Data> {
 	name: string;
 	dataPage: number;
@@ -161,36 +167,21 @@ export interface IDataPage<Data> {
 	readonly length: number;
 	readonly hasMore: boolean;
 	loadMore(): Promise<void>;
-	reload(params: Dict, page?: number): Promise<void>;
-	loadData(params: Dict): Promise<{ value: Data[]; total?: number; index?: number }>;
+	reload(params: DataPageParams, page?: number): Promise<void>;
+	loadData(params: DataPageParams): Promise<{ value: Data[]; total?: number; index?: number }>;
 }
 
 export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements IDataPage<Data> {
-	private m_name?: string;
-	private m_dataPage?: number;
 	private m_index?: number;
 	private m_total?: number;
-	private m_load_data_params?: Dict;
+	private m_load_data_params?: DataPageParams;
 
 	static setDefaultDataPage(page: number) {
 		default_data_page = Number(page) || default_data_page;
 	}
 
-	get name() {
-		return this.m_name || '';
-	}
-
-	set name(value: string) {
-		this.m_name = value || '';
-	}
-
-	get dataPage() {
-		return this.m_dataPage || default_data_page;
-	}
-
-	set dataPage(value) {
-		this.m_dataPage = Number(value) || default_data_page;
-	}
+	readonly name: string = '';
+	readonly dataPage = default_data_page;
 
 	get dataPageCount() {
 		return Math.ceil(this.total / this.dataPage);
@@ -244,18 +235,19 @@ export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements
 		this.m_load_data_params = {
 			...this.m_load_data_params,
 			limit: [rawData.length, this.dataPage],
+			fetchTotal: false,
 		};
 		var { value, total } = await this.loadData(this.m_load_data_params);
 		this.total = total || value.length;
 		this.data = rawData.concat(value);
 	}
 
-	async reload(params?: Dict, page = 0) {
+	async reload(params?: DataPageParams, page = 0) {
 		var dataPage = this.dataPage;
 		this.m_load_data_params = {
 			...this.m_load_data_params,
 			limit: [Math.max(0, Number(page)||0) * dataPage, dataPage],
-			fetchTotal: 1,
+			fetchTotal: true,
 			...params,
 		};
 		var { value, total, index } = await this.loadData(this.m_load_data_params);
@@ -264,7 +256,7 @@ export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements
 		this.data = value;
 	}
 
-	async loadData(params: Dict): Promise<{ value: Data[]; total?: number; index?: number }> {
+	async loadData(params: DataPageParams): Promise<{ value: Data[]; total?: number; index?: number }> {
 		return { value: [] };
 	}
 

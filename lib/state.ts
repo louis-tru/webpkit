@@ -41,48 +41,89 @@ function set_global_state_value(name: string, value: any) {
 	}
 }
 
+function fillGlobalStateValue(self: GlobalState) {
+	var set = new Set<string>();
+	var state = self.state;
+	if (state) {
+		var change = false;
+		for (var name of Object.keys(state)) {
+			if (name[0] == '$') {
+				if ( name[1] == '$' ) {
+					if (!(name in global_states)) {
+						global_states[name] = storage.get('global_state_' + name);
+					}
+				}
+				if (name in global_states) {
+					var fill_value = global_states[name];
+					if (fill_value !== state[name]) {
+						change = true;
+						state[name] = fill_value;
+					}
+				} else {
+					set_global_state_value(name, state[name]);
+				}
+				set.add(name);
+			}
+		}
+		if (change) {
+			Component.prototype.setState.call(self, state);
+		}
+	}
+	return set;
+}
+
+export function getGlobalState(name: string) {
+	var r = global_states[name];
+	if (r === undefined) {
+		global_states[name] = r = storage.get('global_state_' + name);
+	}
+	return r;
+}
+
+export function setGlobalState(state: any, self?: GlobalState, callback?: ()=>void) {
+	if (!state) return;
+
+	var global_state = [];
+
+	for (var name of Object.keys(state)) {
+		if (name[0] == '$') {
+			global_state.push(name);
+			set_global_state_value(name, state[name]);
+		}
+	}
+
+	if (global_state.length) {
+		for (var [com,set] of global_state_components) {
+			if (com !== self) {
+				var _state: Dict = {}, update = false;
+
+				for ( var name of global_state ) {
+					if (set.has(name)) {
+						update = true;
+						_state[name] = global_states[name];
+					}
+				}
+				if (update) {
+					Component.prototype.setState.call(com, _state);
+				}
+			}
+		}
+	}
+
+	if (self) {
+		Component.prototype.setState.call(self, state, callback);
+	}
+}
+
 /**
  * @class GlobalState
  */
 export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
-
-	private _fillGlobalStateValue() {
-		var set = new Set<string>();
-		var state = this.state;
-		if (state) {
-			var change = false;
-			for (var name of Object.keys(state)) {
-				if (name[0] == '$') {
-					if ( name[1] == '$' ) {
-						if (!(name in global_states)) {
-							global_states[name] = storage.get('global_state_' + name);
-						}
-					}
-					if (name in global_states) {
-						var fill_value = global_states[name];
-						if (fill_value !== state[name]) {
-							change = true;
-							state[name] = fill_value;
-						}
-					} else {
-						set_global_state_value(name, state[name]);
-					}
-					set.add(name);
-				}
-			}
-			if (change) {
-				Component.prototype.setState.call(this, state);
-			}
-		}
-		return set;
-	}
-
-	private _is_global?: boolean;
-
-	state = {} as any;
+	private _IsGlobal?: boolean;
+	public state = {} as any;
 
 	setState(state: S, callback?: ()=>void) {
-		GlobalState.setGlobalState(state, this, callback);
+		GlobalState.setGlobalState(state, this as GlobalState, callback);
 	}
 
 	UNSAFE_componentWillMount() {
@@ -90,61 +131,26 @@ export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
 	}
 
 	protected __initialize__() {
-		if (!global_state_components.has(this)) {
-			var set = this._fillGlobalStateValue();
+		if (!global_state_components.has(this as GlobalState)) {
+			var set = fillGlobalStateValue(this as GlobalState);
 			if (set.size) {
-				global_state_components.set(this, set);
-				this._is_global = true;
+				global_state_components.set(this as GlobalState, set);
+				this._IsGlobal = true;
 			}
 		}
 	}
 
 	componentWillUnmount() {
-		if (this._is_global)
-			global_state_components.delete(this);
+		if (this._IsGlobal)
+			global_state_components.delete(this as GlobalState);
 	}
 
 	static getGlobalState(name: string) {
-		var r = global_states[name];
-		if (r === undefined) {
-			global_states[name] = r = storage.get('global_state_' + name);
-		}
-		return r;
+		return getGlobalState(name);
 	}
 
 	static setGlobalState(state: any, self?: GlobalState, callback?: ()=>void) {
-		if (!state) return;
-
-		var global_state = [];
-
-		for (var name of Object.keys(state)) {
-			if (name[0] == '$') {
-				global_state.push(name);
-				set_global_state_value(name, state[name]);
-			}
-		}
-
-		if (global_state.length) {
-			for (var [com,set] of global_state_components) {
-				if (com !== self) {
-					var _state: Dict = {}, update = false;
-
-					for ( var name of global_state ) {
-						if (set.has(name)) {
-							update = true;
-							_state[name] = global_states[name];
-						}
-					}
-					if (update) {
-						Component.prototype.setState.call(com, _state);
-					}
-				}
-			}
-		}
-
-		if (self) {
-			Component.prototype.setState.call(self, state, callback);
-		}
+		setGlobalState(state, self, callback);
 	}
 
 }
