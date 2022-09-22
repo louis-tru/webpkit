@@ -57,7 +57,7 @@ declare class ViewControllerDefine<P = {}, S = {}> extends _ {
 	readonly props: Readonly<P> & Readonly<{ children?: React.ReactNode }>;
 	state: Readonly<S>;
 	readonly refs: {
-		[key: string]: ViewControllerDefine<any,any> | Element;
+		[key: string]: ViewControllerDefine<any,any> | HTMLElement;
 	};
 	readonly isLoaded: boolean;
 	readonly isMounted: boolean;
