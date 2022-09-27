@@ -36,13 +36,13 @@
 	padding-top: 0.4rem;
 }
 
-.dialog .a {
+.dialog .default .a {
 	color: #333;
 	font-size: 0.36rem;
 	text-align: center;
 }
 
-.dialog .b {
+.dialog .default .b {
 	color: #666;
 	font-size: 0.32rem;
 	text-align: center;
@@ -58,14 +58,14 @@
 	flex-direction: column;
 }
 
-.dialog .btns {
+.dialog .default .btns {
 	display: flex;
 	height: 1rem;
 	border-top: solid 0.015rem #e8e8e8;
 	justify-content: space-around;
 }
 
-.dialog .btns > div {
+.dialog .default .btns > div {
 	color: #999;
 	font-size: 0.32rem;
 	flex: 1;
@@ -74,20 +74,20 @@
 	border-right: solid 0.015rem #e8e8e8;
 }
 
-.dialog .btns > div:active {
+.dialog .default .btns > div:active {
 	/*opacity: 0.5;*/
 	background: #eee;
 }
 
-.dialog .btns > div:first-child {
+.dialog .default .btns > div:first-child {
 	border-bottom-left-radius: 0.3rem;
 }
 
-.dialog .btns > div:last-child {
+.dialog .default .btns > div:last-child {
 	border-right: none;
 	border-bottom-right-radius: 0.3rem;
 }
 
-.dialog .btns .ok {
+.dialog .default .btns .ok {
 	color: #28d19d;
 }

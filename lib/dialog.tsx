@@ -132,6 +132,7 @@ var _globaDialogStack: DialogStack | null;
 export abstract class Dialog<P = {}> extends ViewController<P> {
 
 	readonly onClose = new EventNoticer<Event<Dialog, any>>('Close', this);
+	readonly maskColor = {r:0,g:0,b:0,a:0.75};
 
 	private __activity?: Activity = (this.props as any).__activity;
 	private __panel?: HTMLDivElement = (this.props as any).__panel;
@@ -181,10 +182,11 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 	}
 
 	async hide(animate = true) {
+		let {r,g,b} = this.maskColor;
 		await this._enableAnimate(animate);
 		if (!this.refs.root) return;
 		if (!this.noMask)
-			(this.refs.root as HTMLElement).style.background = 'rgba(0,0,0,0.01)';
+			(this.refs.root as HTMLElement).style.background = `rgba(${r},${g},${b},0.01)`;
 		(this.refs.core as HTMLElement).style.opacity = '0';
 		(this.refs.core as HTMLElement).style.transform = 'scale(0.3)';
 		await utils.sleep(300);
@@ -193,10 +195,11 @@ export abstract class Dialog<P = {}> extends ViewController<P> {
 	}
 
 	async show(animate = true) {
+		let {r,g,b,a} = this.maskColor;
 		await this._enableAnimate(animate);
 		if (!this.refs.root) return;
 		if (!this.noMask)
-			(this.refs.root as HTMLElement).style.background = 'rgba(0,0,0,0.75)';
+			(this.refs.root as HTMLElement).style.background = `rgba(${r},${g},${b},${a})`;
 		(this.refs.core as HTMLElement).style.opacity = '1';
 		(this.refs.core as HTMLElement).style.transform = 'scale(1)';
 		await utils.sleep(300);
@@ -241,7 +244,7 @@ export interface DefaultOptions extends Options {
 	noMask?: boolean;
 }
 
-export default class DefaultDialog extends Dialog<DefaultOptions> {
+export default class DefaultDialog<T = {}> extends Dialog<DefaultOptions & T> {
 
 	protected triggerMounted() {
 		if (this.refs.prompt) {
@@ -252,10 +255,10 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 		super.triggerMounted();
 	}
 
-	protected _handleClick_1(cb: (s: any) => void) {
+	protected _handleClick_1(cb?: (s: any) => void) {
 		var root = this.refs.root;
 		if (root) {
-			cb(this);
+			cb&&cb(this);
 			this.close();
 		}
 	}
@@ -265,10 +268,10 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 	}
 
 	protected renderButtons() {
-		var buttons = this.props.buttons || { '@确定': (e) => { } };
+		var buttons = (this.props as DefaultOptions).buttons || { '@Ok': (e) => {} };
 		var r = [];
 		for (let i in buttons) {
-			var t = i[0] == '@' ? i.substr(1) : i;
+			var t = i[0] == '@' ? i.substring(1) : i;
 			var cls = i[0] == '@' ? 'ok' : '';
 			r.push(
 				<div key={i} className={cls} onClick={() => this._handleClick_1(buttons[i])}>{t}</div>
@@ -325,18 +328,18 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 		return DEFAULT_SCALE;
 	}
 
-	static show(opts: DefaultOptions, stack?: DialogStack) {
+	static show(opts?: DefaultOptions, stack?: DialogStack) {
 		return (stack || Dialog.globaDialogStack).show(this, Object.assign({ id: utils.getId() }, opts));
 	}
 
 	static alert(In: DialogIn, cb?: () => void, stack?: DialogStack) {
-		var _cb = cb || function () { }
+		var _cb = cb || function () {}
 		var o = typeof In == 'string' ? { text: In, title: '', id: '' } : In;
 		var { text, title, id } = o;
 		return this.show({
 			id, title, text,
 			buttons: {
-				'@确定': () => { _cb() },
+				'@Ok': () => { _cb() },
 			}
 		}, stack);
 	}
@@ -347,8 +350,8 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 		var { text, title, id } = o;
 		return this.show({
 			id, title, text, buttons: {
-				'取消': () => _cb(false),
-				'@确定': () => _cb(true),
+				'Cancel': () => _cb(false),
+				'@Ok': () => _cb(true),
 			}
 		}, stack);
 	}
@@ -359,8 +362,8 @@ export default class DefaultDialog extends Dialog<DefaultOptions> {
 		var { text, title, value, type, input, placeholder, id } = o;
 		return this.show({
 			id, title, text, buttons: {
-				'取消': e => _cb(e.refs.prompt.value, false),
-				'@确定': e => _cb(e.refs.prompt.value, true),
+				'Cancel': e => _cb(e.refs.prompt.value, false),
+				'@Ok': e => _cb(e.refs.prompt.value, true),
 			}, prompt: { value, type, input, placeholder }
 		}, stack);
 	}
