@@ -220,7 +220,10 @@ export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements
 		return this.data.length;
 	}
 
+	private _isNoMore = false;
+
 	get hasMore() {
+		if(this._isNoMore) return false;
 		var data = (this as any).state[`${this.name}_data`];
 		if (data && data.length) {
 			if (data.length % this.dataPage === 0) {
@@ -237,7 +240,10 @@ export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements
 			limit: [rawData.length, this.dataPage],
 			fetchTotal: false,
 		};
+		this._isNoMore = false;
 		var { value, total } = await this.loadData(this.m_load_data_params);
+		if (value.length == 0)
+			this._isNoMore = true;
 		this.total = total || value.length;
 		this.data = rawData.concat(value);
 	}
@@ -250,7 +256,10 @@ export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements
 			fetchTotal: true,
 			...params,
 		};
+		this._isNoMore = false;
 		var { value, total, index } = await this.loadData(this.m_load_data_params);
+		if (value.length == 0)
+			this._isNoMore = true;
 		this.index = index || 0;
 		this.total = total || value.length;
 		this.data = value;
