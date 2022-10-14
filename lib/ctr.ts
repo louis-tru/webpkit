@@ -35,13 +35,13 @@ import { Component } from 'react';
 
 const persistentState = new Map<string, any>();
 
-interface ViewControllerDefine<P = {}, S = {}> {
+export interface ViewControllerDefine<P = {}, S = {}> {
 	shouldComponentUpdate?(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean;
 }
 
 class _ { static contextType?: React.Context<any>; }
 
-declare class ViewControllerDefine<P = {}, S = {}> extends _ {
+export declare class ViewControllerDefine<P = {}, S = {}> extends _ {
 	readonly context: any;
 	get persistentID(): string;
 	constructor(props: Readonly<P>);

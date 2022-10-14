@@ -30,7 +30,7 @@
 
 // import utils from 'somes';
 import * as React from 'react';
-import {ViewController} from './ctr';
+import {ViewController,ViewControllerDefine} from './ctr';
 import GlobalState from './state';
 import * as _history from 'history';
 import {Location} from 'history';
@@ -157,8 +157,8 @@ export interface DataPageParams {
 }
 
 export interface IDataPage<Data> {
-	name: string;
-	dataPage: number;
+	readonly name: string;
+	readonly dataPage: number;
 	readonly dataPageCount: number
 	data: Data[];
 	readonly indexPage: number;
@@ -171,7 +171,13 @@ export interface IDataPage<Data> {
 	loadData(params: DataPageParams): Promise<{ value: Data[]; total?: number; index?: number }>;
 }
 
-export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements IDataPage<Data> {
+export interface LoadData<Data = Dict> {
+	(params: DataPageParams): Promise<{ value: Data[]; total?: number; index?: number }>
+}
+
+export class DataListState<Data = Dict> implements IDataPage<Data> {
+	private _name: string;
+	private _dataPage:  number;
 	private m_index?: number;
 	private m_total?: number;
 	private m_load_data_params?: DataPageParams;
@@ -180,8 +186,25 @@ export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements
 		default_data_page = Number(page) || default_data_page;
 	}
 
-	readonly name: string = '';
-	readonly dataPage = default_data_page;
+	readonly host: ViewControllerDefine<any, any>;
+	readonly loadData: LoadData<Data>;
+
+	get name() {
+		return this._name;
+	}
+	get dataPage() {
+		return this._dataPage;
+	}
+
+	constructor(
+		name: string, host: ViewControllerDefine<any, any>,
+		loadData: LoadData<Data>, dataPage = default_data_page
+	) {
+		this._name = name;
+		this._dataPage = dataPage;
+		this.host = host;
+		this.loadData = loadData;
+	}
 
 	get dataPageCount() {
 		return Math.ceil(this.total / this.dataPage);
@@ -189,11 +212,11 @@ export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements
 
 	get data(): Data[] {
 		var name = `${this.name}_data`;
-		return (this as any).state[name] || GlobalState.getGlobalState(name) || [];
+		return (this as any).host.state[name] || GlobalState.getGlobalState(name) || [];
 	}
 
 	set data(value: Data[]) {
-		this.setState({ [`${this.name}_data`]: value || [] } as any);
+		this.host.setState({ [`${this.name}_data`]: value || [] } as any);
 	}
 
 	get indexPage() {
@@ -224,7 +247,7 @@ export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements
 
 	get hasMore() {
 		if(this._isNoMore) return false;
-		var data = (this as any).state[`${this.name}_data`];
+		var data = (this as any).host.state[`${this.name}_data`];
 		if (data && data.length) {
 			if (data.length % this.dataPage === 0) {
 				return true;
@@ -264,9 +287,39 @@ export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements
 		this.total = total || value.length;
 		this.data = value;
 	}
+}
+
+class DataListStatePage<Data> extends DataListState<Data> {
+	get name() {
+		return (this.host as any).name as string;
+	}
+	get dataPage() {
+		return (this.host as any).dataPage as number;
+	}
+}
+
+export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements IDataPage<Data> {
+
+	readonly name: string = '';
+	readonly dataPage = default_data_page;
+
+	private _dataState = new DataListStatePage<Data>('', this, (p)=>this.loadData(p));
+
+	get dataPageCount() { return this._dataState.dataPageCount }
+	get data(): Data[] { return this._dataState.data }
+	set data(value: Data[]) { this._dataState.data = value }
+	get indexPage() { return this._dataState.indexPage}
+	get index() { return this._dataState.index }
+	set index(value) { this._dataState.index = value }
+	get total() { return this._dataState.total }
+	set total(value) { this._dataState.total = value }
+	get length() { return this._dataState.length }
+	get hasMore() { return this._dataState.hasMore }
+
+	loadMore() { return this._dataState.loadMore() }
+	reload(params?: DataPageParams, page = 0) { return this._dataState.reload(params, page) }
 
 	async loadData(params: DataPageParams): Promise<{ value: Data[]; total?: number; index?: number }> {
 		return { value: [] };
 	}
-
 }
