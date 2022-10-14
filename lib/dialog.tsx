@@ -50,7 +50,7 @@ export function getDefaultId(obj: any) {
 }
 
 export interface Options extends Dict {
-	id?: string;
+	id?: any;
 }
 
 export class DialogStack {

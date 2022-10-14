@@ -57,8 +57,6 @@ export class LayerGroup {
 
 	async show(D: typeof Layer, opts?: Options, animate = true, delay = 0, act?: Activity) {
 		var id = opts?.id ? opts.id: D as any;
-		utils.assert(!this._IDs.has(id), `Dialog already exists, "${id.toString()}"`);
-
 		var div = document.createElement('div');
 
 		this._panel.appendChild(div);
@@ -74,6 +72,7 @@ export class LayerGroup {
 
 		let items = this._IDs.get(id);
 		if (!items) this._IDs.set(id, (items = []));
+
 		items.push(obj);
 
 		obj.show(animate, delay);
@@ -81,11 +80,9 @@ export class LayerGroup {
 		return obj;
 	}
 
-	close(id: typeof Layer | string, animate = true) {
-		var sym = id as any;
-		// utils.assert(this._IDs.has(_id), `Layer no exists, "${id}"`);
-
-		for (let item of this._IDs.get(sym) || []) {
+	close(id: any, animate = true) {
+		let items = (this._IDs.get(id) || []).slice(0);
+		for (let item of items) {
 			item.close(animate);
 		}
 	}

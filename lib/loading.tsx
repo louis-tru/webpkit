@@ -65,11 +65,11 @@ export default class Loading extends Layer<{text?: string}> {
 		);
 	}
 
-	static show(text = 'Loading..', id?: string) {
+	static show(text = 'Loading..', id?: any) {
 		return Loading.globaLayerGroup.show(this, { text, id }, true, 200);
 	}
 
-	static close(id?: string) {
+	static close(id?: any) {
 		Loading.globaLayerGroup.close(id || this);
 	}
 
