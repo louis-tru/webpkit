@@ -65,6 +65,8 @@ module.exports = function(context, request, callback) {
 		callback(null, 'commonjs ' + request);
 	} else if (request.indexOf('flare') === 0) {
 		callback(null, 'commonjs ' + request);
+	} else if (request.indexOf('quark') === 0) {
+		callback(null, 'commonjs ' + request);
 	} else if ( externals.indexOf(request) != -1 ) {
 		callback(null, 'commonjs ' + request);
 	} else {
