@@ -35,8 +35,9 @@ var log = require('loglevel').getLogger('webpack-dev-server');
 var socket = require('webpack-dev-server/client/socket');
 var overlay = require('webpack-dev-server/client/overlay');
 
-var pathname = location.pathname.match(/^\/[^\/]+\//);
-var __resourceQuery = '?' + path.resolve('http://0.0.0.0', pathname ? pathname[0] : '', 'sockjs-node');
+// var pathname = location.pathname.match(/^\/[^\/]+\//);
+// var __resourceQuery = '?' + path.resolve('http://0.0.0.0', pathname ? pathname[0] : '', 'sockjs-node');
+var __resourceQuery = '?' + path.resolve('http://0.0.0.0', 'sockjs-node');
 
 var urlParts = void 0;
 var hotReload = true;
@@ -45,7 +46,7 @@ if (typeof window !== 'undefined') {
 	hotReload = qs.indexOf('hotreload=false') === -1;
 }
 
-urlParts = url.parse(__resourceQuery.substr(1));
+urlParts = url.parse(__resourceQuery.substring(1));
 
 if (!urlParts.port || urlParts.port === '0') {
 	urlParts.port = self.location.port;
