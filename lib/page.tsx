@@ -177,6 +177,7 @@ export interface LoadData<Data = Dict> {
 
 export class DataListState<Data = Dict> implements IDataPage<Data> {
 	private _name: string;
+	private _nameFun?: ()=>string;
 	private _dataPage:  number;
 	private m_index?: number;
 	private m_total?: number;
@@ -190,17 +191,22 @@ export class DataListState<Data = Dict> implements IDataPage<Data> {
 	readonly loadData: LoadData<Data>;
 
 	get name() {
-		return this._name;
+		return this._nameFun ? this._nameFun(): this._name;
 	}
 	get dataPage() {
 		return this._dataPage;
 	}
 
 	constructor(
-		name: string, host: ViewControllerDefine<any, any>,
+		name: string | (()=>string), host: ViewControllerDefine<any, any>,
 		loadData: LoadData<Data>, dataPage = default_data_page
 	) {
-		this._name = name;
+		if (typeof name == 'string') {
+			this._name = name;
+		} else {
+			this._name = '';
+			this._nameFun = name;
+		}
 		this._dataPage = dataPage;
 		this.host = host;
 		this.loadData = loadData;
