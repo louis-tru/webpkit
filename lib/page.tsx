@@ -277,7 +277,7 @@ export class DataListState<Data = Dict> implements IDataPage<Data> {
 		this.data = rawData.concat(value);
 	}
 
-	async reload(params?: DataPageParams, page = 0) {
+	async reload(params?: Partial<DataPageParams>, page = 0) {
 		var dataPage = this.dataPage;
 		this.m_load_data_params = {
 			...this.m_load_data_params,
@@ -323,7 +323,7 @@ export class DataPage<P = {}, S = {}, Data = Dict> extends Page<P, S> implements
 	get hasMore() { return this._dataState.hasMore }
 
 	loadMore() { return this._dataState.loadMore() }
-	reload(params?: DataPageParams, page = 0) { return this._dataState.reload(params, page) }
+	reload(params?: Partial<DataPageParams>, page = 0) { return this._dataState.reload(params, page) }
 
 	async loadData(params: DataPageParams): Promise<{ value: Data[]; total?: number; index?: number }> {
 		return { value: [] };
