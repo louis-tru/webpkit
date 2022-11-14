@@ -50,7 +50,7 @@ function fillGlobalStateValue(self: GlobalState) {
 			if (name[0] == '$') {
 				if ( name[1] == '$' ) {
 					if (!(name in global_states)) {
-						global_states[name] = storage.get('global_state_' + name);
+						global_states[name] = storage.get('global_state_' + name, state[name]);
 					}
 				}
 				if (name in global_states) {
@@ -75,7 +75,7 @@ function fillGlobalStateValue(self: GlobalState) {
 export function getGlobalState<T = any>(name: string) {
 	var r = global_states[name];
 	if (r === undefined) {
-		global_states[name] = r = storage.get('global_state_' + name);
+		r = storage.get('global_state_' + name);
 	}
 	return r as T | undefined;
 }
