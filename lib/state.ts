@@ -72,12 +72,12 @@ function fillGlobalStateValue(self: GlobalState) {
 	return set;
 }
 
-export function getGlobalState(name: string) {
+export function getGlobalState<T = any>(name: string) {
 	var r = global_states[name];
 	if (r === undefined) {
 		global_states[name] = r = storage.get('global_state_' + name);
 	}
-	return r;
+	return r as T | undefined;
 }
 
 export function setGlobalState(state: any, self?: GlobalState, callback?: ()=>void) {
@@ -145,8 +145,8 @@ export default class GlobalState<P = {}, S = {}> extends Component<P, S> {
 			global_state_components.delete(this as GlobalState);
 	}
 
-	static getGlobalState(name: string) {
-		return getGlobalState(name);
+	static getGlobalState<T = any>(name: string) {
+		return getGlobalState<T>(name);
 	}
 
 	static setGlobalState(state: any, self?: GlobalState, callback?: ()=>void) {
