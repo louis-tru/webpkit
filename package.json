@@ -5,6 +5,9 @@
 	"main": "index.js",
 	"types": "index.d.ts",
 	"author": "louistru@hotmail.com",
+	"scripts": {
+		"install": "cd tools && npm i"
+	},
 	"bin": {
 		"webpkit": "tools/shell.js"
 	},
@@ -57,11 +60,11 @@
 		"jquery": "~3.3.1",
 		"mini-css-extract-plugin": "^0.8.0",
 		"node-notifier": "^5.1.2",
+		"webpkit-tools": "file:tools",
 		"node-sass": "file:deps/node-sass",
 		"normalize.css": "^7.0.0",
 		"crypto-tx": "file:deps/crypto-tx",
 		"somes": "file:deps/somes",
-		"tools": "file:tools",
 		"optimize-css-assets-webpack-plugin": "^5.0.3",
 		"ora": "~4.0.3",
 		"postcss-import": "^11.0.0",
